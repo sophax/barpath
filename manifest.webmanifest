@@ -1,16 +1,29 @@
 {
-  "name": "Hantel-Fehlerdiagnose",
-  "short_name": "Hantel-Diagnose",
-  "description": "Fehler im Reissen, Umsetzen und Stossen erkennen und passende Übungen finden.",
-  "lang": "de",
+  "name": "Lift Fault Finder",
+  "short_name": "Fault Finder",
+  "description": "Find out why your snatch, clean or jerk goes wrong, and which exercises fix it.",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#121417",
-  "theme_color": "#16191c",
+  "background_color": "#e0e5ec",
+  "theme_color": "#e0e5ec",
   "icons": [
-    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }

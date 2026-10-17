@@ -1,13 +1,12 @@
 /* Offline-Unterstützung: App-Dateien beim Installieren speichern, Modell und Laufzeit beim ersten Gebrauch.
    Bei jeder Änderung an der App VERSION erhöhen, damit Nutzer die neue Version bekommen. */
-const VERSION = "v1";
+const VERSION = "v3";
 const CACHE = "hantel-diagnose-" + VERSION;
 const SHELL = [
   "./", "index.html", "app.css", "fonts/fonts.css", "manifest.webmanifest",
   "data/lib.js", "js/catalog.js", "js/app.js", "js/video.js", "js/analysis.js",
   "icons/icon-192.png", "icons/icon-512.png",
-  "fonts/AtkinsonHyperlegible-400.woff2", "fonts/AtkinsonHyperlegible-400i.woff2", "fonts/AtkinsonHyperlegible-700.woff2",
-  "fonts/BigShouldersDisplay-600.woff2", "fonts/IBMPlexMono-500.woff2"
+  "fonts/Inter-var.woff2", "fonts/JetBrainsMono-var.woff2"
 ];
 
 self.addEventListener("install", e => {

@@ -1,10 +1,11 @@
-# Hantel-Fehlerdiagnose
+# Lift Fault Finder
 
-Web-App für olympisches Gewichtheben: Fehler im Reissen, Umsetzen und Stossen erkennen, die wahrscheinliche Ursache eingrenzen und passende Übungen aus der [Catalyst Athletics Exercise Library](https://www.catalystathletics.com/exercises/) finden.
+Web-App (Oberfläche auf Englisch) für olympisches Gewichtheben: Fehler im Snatch, Clean und Jerk erkennen, die wahrscheinliche Ursache eingrenzen und passende Übungen aus der [Catalyst Athletics Exercise Library](https://www.catalystathletics.com/exercises/) finden.
 
-- **Diagnose:** Fehlerbild wählen, Fragen beantworten, Ursachen und Übungen bekommen.
-- **Video-Analyse:** Video wählen, Versuch markieren. Die Körpererkennung läuft auf dem Gerät, das Video wird nirgends hochgeladen.
-- **Übungsbibliothek:** alle 624 Übungen durchsuchen.
+- **Startseite** (`#/`): führt zu den drei Modulen.
+- **Diagnosis** (`#/diagnosis/…`): geführt in vier Schritten (Lift → Faults → Questions → Plan). Der Plan erscheint erst, wenn alle Fragen beantwortet sind.
+- **Video analysis** (`#/video`): Video wählen, Versuch markieren. Die Körpererkennung läuft auf dem Gerät, das Video wird nirgends hochgeladen.
+- **Exercises** (`#/exercises`): alle 624 Übungen durchsuchen.
 
 Die App ist eine reine Sammlung statischer Dateien. Sie braucht keinen Server, keine Datenbank und keine API-Schlüssel und läuft nach dem ersten Öffnen offline.
 
@@ -37,12 +38,16 @@ Dann `http://localhost:8000` im Browser öffnen.
 | `index.html`, `app.css` | Seite und Gestaltung |
 | `data/lib.js` | Liste aller Catalyst-Übungen (Name, Kategorie, Link) |
 | `js/catalog.js` | Fehlerkatalog: Übungsnotizen, Ursachen, Fragen, Fehlerbilder |
-| `js/app.js` | Diagnose, Ergebnis, Bibliothek |
+| `js/app.js` | Seiten (Router), geführte Diagnose, Bibliothek |
 | `js/analysis.js` | Körpererkennung und Messregeln der Video-Analyse |
 | `js/video.js` | Oberfläche der Video-Analyse |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Installierbare App und Offline-Betrieb |
 | `vendor/mediapipe/`, `models/` | MediaPipe Pose (Laufzeit und Modell) |
 | `fonts/` | Schriften, lokal eingebunden |
+
+### Gestaltung
+
+Die Oberfläche folgt dem Stil „Industrial Skeuomorphism“: Licht von oben links, Gehäuse, verschraubte Panels, Tasten mit Druckpunkt, LEDs und dunkle Displays. Alle Farben, Schatten, Radien, Schriften und Bewegungskurven stehen als Variablen am Anfang von `app.css`. Neue Bausteine sollen nur diese Variablen verwenden.
 
 ### Messregeln der Video-Analyse
 
@@ -63,7 +68,7 @@ Die Grenzwerte stehen in `js/analysis.js` und sind an den ersten Testvideos eing
 ## Rechtliches und Quellen
 
 - **Körpererkennung:** [MediaPipe](https://github.com/google-ai-edge/mediapipe) Pose Landmarker von Google, Apache License 2.0.
-- **Schriften:** Big Shoulders Display, Atkinson Hyperlegible, IBM Plex Mono, SIL Open Font License.
+- **Schriften:** Inter und JetBrains Mono, SIL Open Font License.
 - **Übungen:** Die App verlinkt auf die Übungsseiten und Videos von Catalyst Athletics. Die Kurznotizen zu den Übungen sind eigene Zusammenfassungen. Vor einer kommerziellen oder breiten Veröffentlichung die Nutzung mit Catalyst Athletics absprechen.
 - **Datenschutz:** Videos und Antworten bleiben auf dem Gerät (Antworten im lokalen Speicher des Browsers). GitHub als Hoster sieht beim Abruf der Seite die IP-Adresse. Für eine öffentliche Nutzung gehört eine kurze Datenschutzerklärung dazu.
 - Die App ersetzt kein Coaching.

@@ -1,308 +1,307 @@
-/* Fehlerkatalog: Übungsnotizen, Ursachen, Fragen, Fehlerbilder. */
+/* Fault catalog: exercise notes, causes, questions, fault patterns. All user-facing text is English. */
 const BYID = Object.fromEntries(LIB.map(r=>[r[0],r]));
 const url = id => "https://www.catalystathletics.com/exercise/"+BYID[id][3];
-const SEC = {SN:"Reissen",CL:"Umsetzen",JK:"Stossen",GEN:"Allgemein",TRK:"Rumpf",LOW:"Beine/Hüfte",JMP:"Sprünge",UP:"Oberkörper",PREP:"Prehab",CAR:"Tragen"};
+const SEC = {SN:"Snatch",CL:"Clean",JK:"Jerk",GEN:"General",TRK:"Trunk",LOW:"Legs & hips",JMP:"Jumps",UP:"Upper body",PREP:"Prehab",CAR:"Carries"};
 
-/* Kurznotizen (eigene Zusammenfassung der Purpose-Texte). [snatchId, cleanId] teilen sich eine Notiz. */
+/* Short notes (own summaries of the "Purpose" sections). [snatchId, cleanId] share one note. */
 const NOTE = {};
 function note(ids, text){ (Array.isArray(ids)?ids:[ids]).forEach(i=>{ if(i) NOTE[i]=text; }); }
-note([627,644],"Stange schwebt knapp über dem Boden. Stärkt Start und Balance, wenn du im 1. Zug nach vorne kippst.");
-note([391,366],"Langsamer 1. Zug, danach voll explosiv. Du spürst und korrigierst Fehler und lernst das Timing in den 2. Zug.");
-note([642,648],"Langsamer Zug ohne Umgruppieren. Balance, Position und Haltungskraft im 1. Zug.");
-note([389,368],"Nur der 1. Zug bis über das Knie. Kraft, Balance und Haltung isoliert üben.");
-note(700,"Lehrt die richtige Bewegung im 1. Zug, wenn du auf die Fersen gehst oder zu weit über die Stange kippst.");
-note([187,176],"Grundkraft für den Zug mit den echten Positionen des Hebens, langsam genug, um Balance und Rücken zu kontrollieren.");
-note([205,177],"Erhöht stehend. Betont die Kraft vom Boden und das Halten der Rückenposition unter schwerer Last.");
-note([399,370],"Schwebend vom Podest, volle Startposition. Stärkt die Haltung im 1. Zug.");
-note([208,180],"Zug vom Podest. Kraft und aufrechte Haltung beim Abheben.");
-note([317,355],"Pause in der Hocke. Rumpf- und Haltungskraft, Komfort unten, korrigiert das Aufstehen mit der Hüfte zuerst.");
-note(183,"Stärkt die isometrische Rückenstreckung, die du im Zug halten musst.");
-note(424,"Schmaler Stand, viel Quadrizeps. Unterstützt einen aufrechten Zug vom Boden.");
-note(78,"Beinkraft speziell fürs Umsetzen, stärkt den Rumpf und ein aufrechtes Abheben.");
-note([186,185],"Zug bis Mitte Oberschenkel mit Halt. Du bleibst länger über der Stange und führst sie nah am Körper.");
-note([640,645],"Schwebender Start plus Halt am Oberschenkel. Start, 1. Zug und Balance in einer Übung.");
-note([315,322],"Zug mit Pausen an den Schwachstellen, etwa knapp über dem Knie. Position und Balance fühlen und korrigieren.");
-note([392,362],"Ganzes Heben mit Pausen im Zug. Festigt Positionen und macht den Abschluss aggressiver.");
-note([388,367],"Kein Kontakt zwischen Stange und Hüfte. Erzwingt vertikalen Beindruck und korrigiert frühen 2. Zug und Zurücklehnen.");
-note([628,629],"Zug bis zur Hüfte. Du bringst die Stange aktiv zu dir zurück, statt dich von ihr nach vorne ziehen zu lassen.");
-note(577,"Stärkt Lats und Schultern, um die Stange im Zug eng an den Beinen zu führen.");
-note(906,"Isoliert die Lats, die die Stange im Zug zum Körper drücken.");
-note(907,"Lat-Kraft ohne Bizeps, für mehr Stangennähe im Zug.");
-note([401,371],"Aus kleinem Dip. Beindruck statt Hüftstoss, länger flache Füsse, Stange am Körper, sauberes Armtiming.");
-note([434,433],"Aus der Power-Position mit Pause. Kontrollierter, harter Beindruck ohne Schwung, flache Füsse, Armtiming.");
-note([316,321],"Für Heber, die die Stange von Hüfte oder Oberschenkel nach vorne schlagen. Lehrt die Armmechanik des 3. Zugs.");
-note([466,665],"Armmechanik und Stangennähe aus der Power-Position, betont den vertikalen Beindruck.");
-note([400,378],"Füsse bleiben stehen. Längerer Beindruck, Timing 2.→3. Zug, korrigiert Ungleichgewichte und hohes Füsseheben.");
-note([453,450],"In die volle Streckung ziehen und halten. Vollständige Extension und vertikalen Beindruck spüren.");
-note([99,100],"Zug mit Armen bis maximale Höhe. Aggressive, vollständige, vertikale Streckung und Timing Beine→Arme.");
-note([92,93],"Trainiert die letzte, aggressive Streckung der Beine. Erlaubt sehr schwere Lasten.");
-note([394,365],"Sehr hohe Hang-Position. Zwingt zu aggressivem Abschluss und schnellem Umgruppieren.");
-note([545,688],"Stange muss eine Markierung erreichen. Erzwingt einen vollständigen, konstanten Zug.");
-note([667,657],"Oberer Zug aus der Power-Position. Position und vertikaler Beindruck, auch zum Überladen.");
-note(426,"Explosivität der Beine, überträgt sich auf Tempo und Kraft im Abschluss.");
-note([456,455],"Zug mit flachen Füssen, wenn du die Fersen zu früh hebst oder nach vorne driftest.");
-note([457,454],"Flachfüssig in die Streckung und halten. Balance über den ganzen Fuss.");
-note([479,689],"Kein Sprung, kein Kontakt. Vertikaler Beindruck, korrigiert Zurücklehnen und frühen 2. Zug.");
-note([96,149],"Lernt und stärkt die Armmechanik im 3. Zug. Aktives statt passives Umgruppieren.");
-note([385,373],"Zug plus Bewegung nach unten. Trainiert Timing und Mechanik des Darunterziehens.");
-note([681,699],"Zug in Etappen, dann sofort komplett. Überträgt das Gefühl der Positionen ins ganze Heben.");
-note([217,150],"Aus dem Stand unter die Stange. Tempo, Aggressivität und Präzision im Umgruppieren.");
-note([543,542],"Lehr- und Aufwärmdrill für das Umgruppieren.");
-note([61,67],"Weniger Zeit und Weg nach unten. Tempo und Aggressivität, lehrt die Stange zu treffen statt die Verbindung zu verlieren.");
-note(312,"Tempo und Aggressivität im letzten Teil, präzise Fuss- und Stangenposition, Vertrauen in der Hocke.");
-note([62,69],"Kürzerer Weg. Vollständiger Zug, aggressiveres Umgruppieren, Vertrauen.");
-note([439,442],"Hoch empfangen mit richtigem Stand und Spannung, dann in die Hocke. Lehrt, die Stange zu treffen.");
-note([419,647],"Pausen im Zug plus Power-Empfang. Kontrolle des Umgruppierens.");
-note(80,"Kraft, Timing und Vertrauen im Empfang, schnelle Füsse. Mit schweren Lasten Mut fürs tiefe Darunterziehen.");
-note(82,"Füsse bleiben stehen. Festigt Empfangsposition und Spannung gegen die Stange, weniger einschüchternd.");
-note(79,"Grundübung der Reiss-Empfangsposition. Kraft, Mobilität und Stabilität über Kopf.");
-note(674,"Hängende Gewichte erhöhen die Stabilisationsarbeit. Für eine wacklige Überkopfposition.");
-note(95,"Drücken in der tiefen Hocke. Mobilität von Sprunggelenk, Hüfte, Brustwirbelsäule und Schultern, dazu Überkopfkraft.");
-note(537,"Sots Press mit hängenden Gewichten. Mehr Stabilisationsarbeit im Oberkörper.");
-note(89,"Mehr Gewicht über Kopf mit Beinhilfe. Stärkt Arme, Schultern, oberen Rücken und Handgelenke.");
-note(386,"Kraft und Stabilität im oberen Rücken. Gutes Aufwärmen für eine genaue Überkopfposition.");
-note(890,"Überkopf tragen. Stabilität für das Reissen, gewöhnt Hände und Handgelenke an die Last.");
-note(892,"Überkopf tragen mit hängenden Gewichten. Noch mehr Stabilisationsarbeit.");
-note(204,"Lehrt die korrekte Überkopfposition, Schulterblatt- und obere Rückenkraft.");
-note(181,"Schwere Last im Rack halten. Rumpf, Rack-Position und Vertrauen.");
-note([168,605],"Stärkt den tiefsten Punkt der Hocke für ein sauberes Aufstehen.");
-note(81,"Langsam unter die Stange drücken. Position und Balance spüren, aktive Dehnung.");
-note(420,"Mobilität von Sprunggelenk, Hüfte, Schulter und BWS, dazu Kraft im oberen Rücken.");
-note(588,"Kurzhantel-Drücken in der Hocke. Mobilität und Seitenvergleich, deckt Asymmetrien auf.");
-note(584,"Hüftmobilität unter Last, mit Stabilität in den neuen Bewegungsbereichen.");
-note(209,"Drücken in der Frontkniebeuge. Mobilität für die Umsetz-Hocke, Rumpfstabilität.");
-note(761,"Schulterblattkontrolle, hilft der Mobilität in der Rack-Position.");
-note([631,695],"Power-Variante ohne Sprung. Langer Beindruck und schnellerer Richtungswechsel.");
-note([435,438],"Stopp auf Parallel, dem mechanisch schwächsten Punkt. Kraft für den Sticking Point.");
-note([444,445],"Start von Pins ohne Vorspannung. Explosivkraft und Kraft in bestimmten Bereichen.");
-note([618,619],"Pausen im schwächsten Bereich. Haltung, Balance und Kraft durch den Sticking Point.");
-note(77,"Grundkraft für Beine und Rumpf.");
-note(381,"Schnelleres, aufrechteres Aufstehen. Danach der Jerk mit ermüdeten Beinen.");
-note(448,"Hält die Beziehung Becken–Wirbelsäule stabil, gegen ein Hohlkreuz.");
-note(494,"Becken und Wirbelsäule gegen Bewegung stabilisieren.");
-note([207,379],"Vom Block aus totem Start. Schnellkraft, weil der Beschleunigungsweg kurz ist.");
-note([203,380],"Block plus Power-Empfang. Schnellkraft bei geringerer Belastung.");
-note([63,68],"Aus dem Hang. Schnellkraft, vollständiger Zug, aggressives Umgruppieren, Positionsgefühl.");
-note([65,70],"Drei Positionen von unten nach oben. Schnellkraft und vollständige Streckung.");
-note(353,"Kniebeuge-Sprung. Explosivität über die volle Hocke, hilft beim Aufstehen.");
-note(552,"Sitzender Sprung ohne Ausholen. Reine Schnellkraft ohne Elastizität.");
-note(548,"Grundübung für explosive Bein- und Hüftstreckung.");
-note([97,98],"Mehr Gewicht als im Heben. Kraft, Tempo, Haltung und Balance der Streckung.");
-note([396,361],"Zug aus dem Hang. Kraft in einem bestimmten Bereich, gezielt für Schwachstellen.");
-note(101,"Glutes, Hamstrings, isometrische Rückenstreckung und Lats für Stangennähe.");
-note(171,"Oberer Rücken und Haltungskraft, hilft die Stange im Zug nah zu halten.");
-note([402,359],"Vom Block. Gezielt den Problembereich rund um die Knie üben.");
-note([443,686],"Nur wenn sonst nichts hilft: Notfall-Drill, wenn das Unterschieben der Knie nicht von selbst klappt.");
-note(544,"Lehrdrill für das Zustellen der Stange in den Rack.");
-note(662,"Muscle Clean aus dem Dip. Präzises Zustellen in den Rack, Beindruck und Stangennähe.");
-note(580,"Jede Abweichung wird bestraft. Genaues Umgruppieren und voller Griff, aggressiver Drive.");
-note(194,"Dip und Drive mit schwerer Last. Kraft, Balance und Position im ganzen Dip.");
-note(410,"Pause unten im Dip. Kraftvoller, vollständiger Drive und richtige Dip-Tiefe.");
-note(626,"Pause am tiefsten Punkt des Dips. Stärkt die untere Position.");
-note(472,"Jerk Drive mit Bändern. Verhindert das Wegdrücken nach vorne, fördert langen Beindruck.");
-note(639,"Push Press mit Pause im Dip. Dip-Position, Balance, Drive und Timing.");
-note(541,"Langsamer Jerk. Positionen und Balance bewusst spüren.");
-note(414,"Stärkt die Dip-Tiefe und das Abfangen der Last für den Richtungswechsel.");
-note(196,"Schwere Last im Jerk-Rack halten. Rack-Position, Rumpf, Vertrauen.");
-note(87,"Gleicher Dip und Drive wie im Jerk. Härterer, längerer Beindruck und Timing Beine→Arme.");
-note(413,"Dip und Drive mit schwerer Last. Timing, Elastizität und ein vollständiger Drive.");
-note(625,"Wie der Jerk Drive, aber ohne dessen typische schlechte Gewohnheiten.");
-note(462,"Aus dem Stand ohne Dip-Schwung. Maximale Kraftentwicklung und vollständiger Drive vor dem Darunterziehen.");
-note(405,"Füsse bleiben am Boden. Höherer, vertikaler Drive und Balance im Dip.");
-note(72,"Höherer und präziser Drive, schneller Übergang nach unten.");
-note(651,"Frontkniebeuge, dann Jerk. Vollständiger Beindruck mit ermüdeten Beinen.");
-note(213,"Hinter dem Nacken: Stange geht direkt vertikal. Lehrt die ideale Überkopf- und Split-Position.");
-note(202,"Hinter dem Nacken, Power-Empfang. Vertikale Bahn und vollständiger Drive.");
-note(652,"Hinter dem Nacken, Füsse bleiben. Vertikale Bahn und Balance-Kontrolle.");
-note(655,"Aus dem Stand, hinter dem Nacken. Timing, Aggressivität und korrekte Überkopfposition.");
-note(88,"Push Press hinter dem Nacken. Vertikale Bahn und Schulterblattposition über Kopf.");
-note(406,"Im Split stehend drücken. Lehrt die leichte Rückwärtsbewegung der Stange, ohne mit der Brust nach vorne zu fallen.");
-note(407,"Drücken, dann in den Split. Geduld im Drive und schnelle, präzise Füsse.");
-note(193,"Für Heber, die mit Kopf und Brust eintauchen, hinten zu weit oder vorne zu kurz steppen.");
-note(459,"Aus dem Split. Stärkt Split und Überkopfposition, gegen das Eintauchen der Brust.");
-note(458,"Aus dem Split, hinter dem Nacken. Fussposition und Überkopfposition kontrollieren.");
-note(408,"Drücken im Split. Position und Balance im Split, Primer vor Jerks.");
-note(441,"In den Split steppen. Abbremsen und Halten, kein Gewicht nach vorne verlagern.");
-note(428,"In den Split gehen. Halten, Balance und Ausgleich zwischen den Beinen.");
-note(411,"In den Split springen. Schnelle, genaue Füsse und aufrechter Rumpf.");
-note(417,"In den Split fallen. Schnelle, genaue Füsse und aufrechter Rumpf.");
-note(218,"Aus dem Stand. Aggressivität, Timing und Genauigkeit im Jerk.");
-note(653,"Power-Variante aus dem Stand. Aggressivität, Timing und Genauigkeit.");
-note(198,"Mehr Gewicht als dein Jerk über Kopf halten. Stabilität und Vertrauen.");
-note(469,"Schwere Last im tiefen Split halten. Überkopf- und Split-Stabilität.");
-note(197,"Schwer über Kopf halten und aus dem Split zurückkommen. Fussarbeit und Balance.");
-note(409,"Drücken hinter dem Nacken im Split. Überkopfposition plus Komfort im Split.");
-note(853,"Überkopf tragen mit Jerk-Griff. Stabilität, Hände und Handgelenke.");
-note(854,"Überkopf tragen mit hängenden Gewichten. Mehr Stabilisationsarbeit.");
-note(412,"Rhythmisches Dippen. Schneller abbremsen und die Elastizität nutzen.");
-note(649,"Rhythmus-Dip direkt in den Jerk. Überträgt das Timing ohne Nachdenken.");
-note(404,"Rebound aus dem Dip. Schnelles Abbremsen und Elastizität.");
-note(550,"Landen und abfangen. Kraft sicher und in Position aufnehmen.");
-note(764,"Schulterblatt-Protraktion und Beweglichkeit der Schulter.");
-note(174,"Kraft für den Split, gleicht Seitenunterschiede aus.");
-note(737,"Split Squat mit Band. Stabilität im Split.");
-note(173,"Einbeinig. Gleicht Schwächen aus, Hüftstabilität, Hüftbeuger-Mobilität.");
-note(427,"Split Squat über Kopf. Beine, Rumpf und Überkopfposition zusammen.");
-note(714,"Anti-Rotation im Split. Rumpf- und Beinstabilität.");
-note(354,"Einbeinige Grundübung. Balance zwischen den Seiten und Split-Kraft.");
-note(429,"Schwer über Kopf aus tiefem Power-Empfang aufstehen. Für Heber, die bei tiefem Empfang aufgeben.");
-note(485,"In den Split steppen mit Last über Kopf. Stabilität von Beinen und Überkopf.");
-note(372,"Clean, dann direkt Jerk. Aggressives Aufstehen, genaues Umgruppieren, Drive mit müden Beinen.");
+note([627,644],"Bar floats just above the floor. Builds the start and first-pull balance if you tip forward off the floor.");
+note([391,366],"Slow first pull, then full speed. Lets you feel and fix errors and trains the timing into the second pull.");
+note([642,648],"Slow pull without the turnover. Balance, position and postural strength in the first pull.");
+note([389,368],"First pull only, to just above the knee. Strength, balance and posture in isolation.");
+note(700,"Teaches the correct first-pull movement if you rock back to the heels or tip too far over the bar.");
+note([187,176],"Basic pulling strength in the real positions of the lift, slow enough to control balance and back.");
+note([205,177],"Standing on a riser. Emphasises strength off the floor and holding your back position under heavy load.");
+note([399,370],"Floating from a riser at full start depth. Strengthens first-pull posture.");
+note([208,180],"Pull from a riser. Strength and upright posture off the floor.");
+note([317,355],"Pause in the bottom. Trunk and postural strength, comfort in the hole, stops you leading with the hips.");
+note(183,"Strengthens the isometric back extension you have to hold during the pull.");
+note(424,"Narrow stance, lots of quads. Supports an upright pull off the floor.");
+note(78,"Leg strength specific to the clean, plus trunk strength and an upright pull off the floor.");
+note([186,185],"Pull to mid-thigh and hold. Teaches you to stay over the bar longer and keep it close.");
+note([640,645],"Floating start plus a halt at mid-thigh. Start, first pull and balance in one exercise.");
+note([315,322],"Pull with pauses at weak points, e.g. just above the knee. Feel and correct position and balance.");
+note([392,362],"Full lift with pauses in the pull. Reinforces positions and makes the finish more aggressive.");
+note([388,367],"No contact between bar and hips. Forces vertical leg drive and fixes an early second pull and leaning back.");
+note([628,629],"Pull to the hip. Teaches you to bring the bar back to you instead of letting it pull you forward.");
+note(577,"Strengthens lats and shoulders to keep the bar tight to the legs in the pull.");
+note(906,"Isolates the lats that push the bar back into the body during the pull.");
+note(907,"Lat strength without the biceps, for keeping the bar close.");
+note([401,371],"From a small dip. Leg drive instead of hip bang, flat feet longer, bar against the body, clean arm timing.");
+note([434,433],"From the power position with a pause. Controlled, hard leg drive without momentum, flat feet, arm timing.");
+note([316,321],"For lifters who swing the bar forward off the hips or thighs. Teaches third-pull arm mechanics.");
+note([466,665],"Arm mechanics and bar proximity from the power position, with an emphasis on vertical leg drive.");
+note([400,378],"Feet stay planted. Longer leg drive, second-to-third pull timing, fixes imbalances and high foot lift.");
+note([453,450],"Pull into full extension and hold. Feel complete extension and vertical leg drive.");
+note([99,100],"Pull to maximum height with the arms. Aggressive, complete, vertical extension and legs-to-arms timing.");
+note([92,93],"Trains the final aggressive leg extension. Allows very heavy loads.");
+note([394,365],"Very high hang position. Forces an aggressive finish and a fast turnover.");
+note([545,688],"The bar has to reach a mark. Forces a complete, consistent pull.");
+note([667,657],"Top of the pull from the power position. Position and vertical leg drive, also for overload.");
+note(426,"Leg explosiveness that carries over to speed and strength at the finish.");
+note([456,455],"Pull with flat feet if you lift the heels early or drift forward.");
+note([457,454],"Flat-footed pull into extension and hold. Balance over the whole foot.");
+note([479,689],"No jump, no contact. Vertical leg drive, fixes leaning back and an early second pull.");
+note([96,149],"Learns and strengthens third-pull arm mechanics. An active rather than passive turnover.");
+note([385,373],"Pull plus the move down. Trains timing and mechanics of pulling under.");
+note([681,699],"Pull in stages, then the full lift. Transfers the feel of each position into the complete lift.");
+note([217,150],"From standing tall straight under the bar. Speed, aggression and precision in the turnover.");
+note([543,542],"Teaching and warm-up drill for the turnover.");
+note([61,67],"Less time and distance to get under. Speed and aggression, teaches you to meet the bar instead of losing connection.");
+note(312,"Speed and aggression at the end of the turnover, precise foot and bar placement, confidence in the bottom.");
+note([62,69],"Shorter pull. Complete extension, more aggressive turnover, confidence.");
+note([439,442],"Catch high with the correct stance and tension, then ride into the squat. Teaches meeting the bar.");
+note([419,647],"Pauses in the pull plus a power receipt. Control of the turnover.");
+note(80,"Strength, timing and confidence in the receipt, fast feet. With heavy loads, courage to pull under deep.");
+note(82,"Feet stay put. Reinforces the receiving position and tension against the bar, less intimidating.");
+note(79,"The basic snatch receiving position exercise. Strength, mobility and overhead stability.");
+note(674,"Hanging weights add stabilisation work. For a shaky overhead position.");
+note(95,"Press in the bottom of the squat. Ankle, hip, thoracic and shoulder mobility plus overhead strength.");
+note(537,"Sots press with hanging weights. More upper-body stabilisation.");
+note(89,"More weight overhead with leg help. Strengthens arms, shoulders, upper back and wrists.");
+note(386,"Strength and stability in the upper back. A good warm-up for an accurate overhead position.");
+note(890,"Overhead carry. Stability for the snatch, conditions hands and wrists to the load.");
+note(892,"Overhead carry with hanging weights. Even more stabilisation work.");
+note(204,"Teaches the correct overhead position, plus scapular and upper-back strength.");
+note(181,"Hold a heavy weight in the rack. Trunk, rack position and confidence.");
+note([168,605],"Strengthens the very bottom of the squat for a clean recovery.");
+note(81,"Press yourself slowly under the bar. Feel position and balance, active stretch.");
+note(420,"Ankle, hip, shoulder and thoracic mobility plus upper-back strength.");
+note(588,"Dumbbell press in the squat. Mobility and side-to-side comparison, reveals asymmetries.");
+note(584,"Hip mobility under load, with stability in the new range.");
+note(209,"Press in the front squat. Mobility for the clean receiving position, trunk stability.");
+note(761,"Scapular control, helps rack mobility.");
+note([631,695],"Power variation without a jump. Long leg drive and a faster change of direction.");
+note([435,438],"Stop at parallel, the weakest point mechanically. Strength through the sticking point.");
+note([444,445],"Start from pins with no pre-tension. Explosive strength and strength in specific ranges.");
+note([618,619],"Pauses in the weakest range. Posture, balance and strength through the sticking point.");
+note(77,"Basic strength for legs and trunk.");
+note(381,"Faster, more upright recovery. Then the jerk with tired legs.");
+note(448,"Keeps the pelvis–spine relationship stable, against overarching the lower back.");
+note(494,"Stabilises pelvis and spine against unwanted movement.");
+note([207,379],"From blocks with a dead start. Rate of force development, because the distance to accelerate is short.");
+note([203,380],"Blocks plus a power receipt. Speed with lower overall load.");
+note([63,68],"From the hang. Rate of force development, complete pull, aggressive turnover, sense of position.");
+note([65,70],"Three positions from bottom to top. Speed and complete extension.");
+note(353,"Squat jump. Explosiveness through the full squat, helps the recovery.");
+note(552,"Seated jump with no countermovement. Pure rate of force development without elasticity.");
+note(548,"The basic exercise for explosive leg and hip extension.");
+note([97,98],"More weight than the lift itself. Strength, speed, posture and balance in the extension.");
+note([396,361],"Pull from the hang. Strength in a specific range, targeted at weak points.");
+note(101,"Glutes, hamstrings, isometric back extension and lats for bar proximity.");
+note(171,"Upper back and postural strength, helps keep the bar close in the pull.");
+note([402,359],"From blocks. Work the problem range around the knees.");
+note([443,686],"Only if nothing else works: a remedial drill when the knees don't re-bend under the bar naturally.");
+note(544,"Teaching drill for delivering the bar into the rack.");
+note(662,"Muscle clean from a dip. Precise delivery into the rack, leg drive and bar proximity.");
+note(580,"Every deviation gets punished. Accurate turnover with a full grip, aggressive drive.");
+note(194,"Dip and drive with a heavy load. Strength, balance and position through the whole dip.");
+note(410,"Pause in the bottom of the dip. A powerful, complete drive and the right dip depth.");
+note(626,"Pause at the lowest point of the dip. Strengthens the bottom position.");
+note(472,"Jerk drive with bands. Stops you pushing the bar forward and encourages a long leg drive.");
+note(639,"Push press with a pause in the dip. Dip position, balance, drive and timing.");
+note(541,"Slow-motion jerk. Feel positions and balance deliberately.");
+note(414,"Strengthens dip depth and absorbing the load for the change of direction.");
+note(196,"Hold a heavy weight in the jerk rack. Rack position, trunk, confidence.");
+note(87,"Same dip and drive as the jerk. Harder, longer leg drive and legs-to-arms timing.");
+note(413,"Dip and drive with a heavy load. Timing, elasticity and a complete drive.");
+note(625,"Like the jerk drive, but without its typical bad habits.");
+note(462,"From a dead stop without a dip. Maximum force production and a complete drive before going under.");
+note(405,"Feet stay on the floor. A higher, vertical drive and balance in the dip.");
+note(72,"Higher and more precise drive, fast transition under the bar.");
+note(651,"Front squat, then jerk. A complete leg drive with tired legs.");
+note(213,"Behind the neck the bar travels straight up. Teaches the ideal overhead and split position.");
+note(202,"Behind the neck with a power receipt. Vertical bar path and a complete drive.");
+note(652,"Behind the neck, feet stay put. Vertical bar path and balance control.");
+note(655,"From standing tall, behind the neck. Timing, aggression and a correct overhead position.");
+note(88,"Push press behind the neck. Vertical bar path and scapular position overhead.");
+note(406,"Drive from a split stance. Teaches the slight backward bar movement without falling forward with the chest.");
+note(407,"Press, then split. Patience in the drive and fast, precise feet.");
+note(193,"For lifters who dive with head and chest, over-reach the back foot or short-step the front.");
+note(459,"From the split. Strengthens split and overhead position, against diving the chest.");
+note(458,"From the split, behind the neck. Control of foot and overhead position.");
+note(408,"Press in the split. Position and balance in the split, a primer before jerks.");
+note(441,"Step into the split. Braking and holding without shifting weight forward.");
+note(428,"Walk into the split. Holding, balance and evening out the two legs.");
+note(411,"Jump into the split. Fast, accurate feet and an upright trunk.");
+note(417,"Drop into the split. Fast, accurate feet and an upright trunk.");
+note(218,"From standing tall. Aggression, timing and accuracy in the jerk.");
+note(653,"Power version from standing tall. Aggression, timing and accuracy.");
+note(198,"Hold more than your jerk overhead. Stability and confidence.");
+note(469,"Hold a heavy weight in a deep split. Overhead and split stability.");
+note(197,"Hold heavy overhead and recover from the split. Footwork and balance.");
+note(409,"Press behind the neck in the split. Overhead position plus comfort in the split.");
+note(853,"Overhead carry with a jerk grip. Stability, hands and wrists.");
+note(854,"Overhead carry with hanging weights. More stabilisation work.");
+note(412,"Rhythmic dipping. Brake faster and use the elasticity.");
+note(649,"Rhythm dip straight into the jerk. Transfers the timing without overthinking.");
+note(404,"Rebound out of the dip. Fast braking and elasticity.");
+note(550,"Land and absorb. Take force safely and in position.");
+note(764,"Scapular protraction and shoulder range of motion.");
+note(174,"Strength for the split, evens out side-to-side differences.");
+note(737,"Split squat with a band. Stability in the split.");
+note(173,"Single leg. Fixes weaknesses, hip stability, hip-flexor mobility.");
+note(427,"Overhead split squat. Legs, trunk and overhead position together.");
+note(714,"Anti-rotation in the split. Trunk and leg stability.");
+note(354,"Basic single-leg exercise. Balance between sides and split strength.");
+note(429,"Recover from a deep power receipt with heavy weight overhead. For lifters who bail when they catch low.");
+note(485,"Step into the split with weight overhead. Leg and overhead stability.");
+note(372,"Clean, then jerk right away. Aggressive recovery, accurate turnover, drive with tired legs.");
 
-/* Ursachen. ex: Liste von IDs oder [Reissen, Umsetzen]; 0 = gibt es für diese Disziplin nicht. */
+/* Causes. ex: list of IDs or [snatch, clean]; 0 = not available for that lift. */
 const CAUSES = {
- pull_balance:{t:"Balance im 1. Zug",why:"Beim Abheben wandert das Gewicht auf die Zehen oder auf die Fersen. Alles danach baut auf einer falschen Ausgangslage auf.",test:"Ziehe leicht bis knapp unter das Knie und halte 2 s. Spürst du den Druck über dem ganzen Fuss (Mitte), stimmt es.",ex:[[627,644],[391,366],[642,648],[389,368],700,[187,176]]},
- pull_posture:{t:"Rückenposition und Kraft vom Boden",why:"Die Hüfte schiesst hoch oder der Rücken gibt nach, weil Beine oder Rückenstrecker die Position unter Last nicht halten.",test:"Vergleiche Front Squat und dein Umsetzen. Liegt der Front Squat unter etwa 115 % deines Umsetzens, fehlt meist Beinkraft.",ex:[[205,177],[399,370],[208,180],[317,355],183,424,78]},
- stay_over:{t:"Zu früh aufgerichtet",why:"Die Schultern kommen vor der Mitte des Oberschenkels hinter die Stange. Der 2. Zug startet zu früh und die Kraft geht nach vorne statt nach oben.",test:"Video von der Seite: Sind deine Schultern beim Passieren des Knies noch vor der Stange?",ex:[[186,185],[640,645],[315,322],[392,362],[388,367]]},
- bar_away:{t:"Stange entfernt sich vom Körper",why:"Die Lats drücken die Stange nicht zurück an die Beine. Sie wandert nach vorne und zieht dich mit.",test:"Ziehe mit gestreckten Armen und denke ‚Stange in die Oberschenkel drücken‘. Spürst du dabei deine Lats arbeiten?",ex:[[628,629],[186,185],577,906,907,[401,371]]},
- hip_bang:{t:"Hüftstoss statt Beindruck",why:"Die Hüfte schlägt die Stange nach vorne weg. Die Bahn wird zur Schleife und du musst ihr nachspringen.",test:"Hörst oder spürst du einen harten Schlag an der Hüfte, nach dem die Stange vor dir wegfliegt?",ex:[[316,321],[434,433],[401,371],[466,665],[388,367]]},
- legs_quit:{t:"Beine hören zu früh auf zu drücken",why:"Die Streckung ist unvollständig. Die Stange bekommt zu wenig Höhe, und du musst sie mit den Armen retten.",test:"Mache einen Zug mit 100 % und halte oben. Stehst du auf den Fussballen mit gestreckten Knien und Hüfte?",ex:[[400,378],[453,450],[99,100],[92,93],[394,365],[545,688],[667,657],426]},
- heels_early:{t:"Fersen zu früh oben, Gewicht vorne",why:"Du gehst zu früh auf den Vorfuss, das Gewicht driftet nach vorne und die Stange folgt.",test:"Mache einen Zug barfuss oder mit Kreide unter der Ferse. Hebt die Ferse schon vor der Mitte des Oberschenkels ab?",ex:[[456,455],[457,454],[434,433],[401,371]]},
- lean_back:{t:"Zu starkes Zurücklehnen am Ende",why:"Du lehnst dich mit dem Oberkörper weit hinter die Stange. Das schiebt die Stange weg und dich nach hinten.",test:"Video: Ist dein Oberkörper am Ende deutlich hinter der Senkrechten, bevor du dich unter die Stange ziehst?",ex:[[388,367],[479,689],[453,450],[400,378]]},
- early_arms:{t:"Arme beugen zu früh",why:"Wer früh mit den Armen zieht, nimmt den Beinen Kraft und bringt die Stange vom Körper weg.",test:"Video: Sind deine Ellbogen schon gebeugt, bevor Knie und Hüfte gestreckt sind?",ex:[[434,433],[401,371],[316,321],[96,149],[99,100]]},
- transition_timing:{t:"Timing vom 2. in den 3. Zug",why:"Du gehst zu früh oder zu spät nach unten. Richtig ist: weiter gegen den Boden drücken, während du dich unter die Stange ziehst.",test:"Kannst du ein Heben ohne Sprung (Füsse bleiben stehen) sauber machen? Wenn nicht, stimmt das Timing nicht.",ex:[[400,378],[388,367],[391,366],[385,373],[681,699]]},
- slow_turnover:{t:"Passives, langsames Umgruppieren",why:"Nach der Streckung wartest du, statt dich aktiv unter die Stange zu ziehen.",test:"Wie schnell ist dein Tall Snatch oder Tall Clean mit leichtem Gewicht? Fühlt er sich zäh an, fehlt Aggressivität.",ex:[[217,150],[543,542],[96,149],[61,67],[394,365],[312,0],[385,373],[62,69]]},
- meet_bar:{t:"Verbindung zur Stange verloren",why:"Du lässt die Stange los, statt sie mit Spannung zu treffen. Sie fällt auf dich oder die Ellbogen werden weich.",test:"Spürst du die ganze Zeit Zug an der Stange, oder gibt es einen Moment, in dem sie ‚frei hängt‘?",ex:[[61,67],[439,442],[62,69],[419,647],[80,0]]},
- clean_rack:{t:"Zustellen in den Rack",why:"Die Ellbogen drehen zu spät durch. Die Stange crasht auf die Schultern statt geführt dort anzukommen.",test:"Mache einen Muscle Clean mit leichtem Gewicht. Landet die Stange weich und kontrolliert auf den Schultern?",ex:[[0,149],[0,542],[0,544],[0,662],[0,665],[0,580]]},
- overhead_stab:{t:"Instabile Überkopfposition",why:"Schultern, oberer Rücken oder Handgelenke stabilisieren die Stange nicht. Sie wandert oder die Arme geben nach.",test:"Halte 5 Overhead Squats mit 70 % deines Reissens. Bleibt die Stange ruhig über der Fussmitte?",ex:[[79,0],[674,0],[95,0],[89,0],[386,0],[890,0],[892,0],[204,0]]},
- receive_conf:{t:"Vertrauen im tiefen Empfang",why:"Du ziehst dich nicht ganz nach unten, weil du der Hocke unter schwerer Last nicht traust.",test:"Fühlt sich ein Snatch Balance oder ein schwerer Clean in die volle Hocke unangenehm oder ängstlich an?",ex:[[80,442],[82,181],[312,605],[439,355],[79,0]]},
- mobility:{t:"Mobilität in der Hocke",why:"Sprunggelenk, Hüfte, Brustwirbelsäule oder Schultern lassen die aufrechte Hockposition nicht zu.",test:"Kommst du mit leerer Stange in eine tiefe, aufrechte Hocke (über Kopf bzw. im Rack) ohne Ausgleichsbewegung?",ex:[[95,209],[81,420],[420,355],[588,761],[584,584]]},
- footwork:{t:"Fussarbeit und Stand im Empfang",why:"Die Füsse landen zu breit, ungleich oder an anderer Stelle als nötig. Das kostet Stabilität im Empfang.",test:"Markiere mit Kreide Start- und Landeposition. Landen deine Füsse jedes Mal gleich?",ex:[[400,378],[439,442],[631,695],[312,0],[80,0],[479,689]]},
- squat_strength:{t:"Kraft aus der Hocke",why:"Du empfängst die Stange, aber kommst nicht hoch. Es fehlt Beinkraft am Umkehrpunkt.",test:"Schaffst du mit deinem Bestwert eine Pause-Kniebeuge (2 s unten)?",ex:[[317,355],[435,438],[444,445],[168,605],[618,619],[77,78]]},
- trunk_receive:{t:"Rumpfspannung im Empfang",why:"Der Rumpf gibt unter der Last nach. Die Brust fällt nach vorne und die Stange folgt.",test:"Fällt in deiner Front- oder Überkopfkniebeuge die Brust beim Aufstehen nach vorne?",ex:[[317,355],[0,181],[0,381],448,494,78]},
- rfd:{t:"Schnellkraft",why:"Die Kraft ist da, aber du bringst sie nicht schnell genug auf die Stange.",test:"Vergleiche Zug-Bestwert und Heben. Ziehst du deutlich über 120 % deines Hebens, fehlt eher Schnellkraft als Kraft.",ex:[[207,379],[203,380],[63,68],[65,70],353,552,548]},
- pull_strength:{t:"Zugkraft",why:"Die Kraft für den Zug reicht für schwere Versuche nicht aus.",test:"Schaffst du einen Zug mit 110 % deines Bestwerts mit sauberer Position?",ex:[[97,98],[187,176],[396,361],[208,180],101,171]},
- scoop:{t:"Knie-Unterschieben im 2. Zug",why:"Die Knie kommen nach dem Passieren der Stange nicht sauber wieder unter die Stange. Die Bewegung wird zum Ruck.",test:"Video: Bewegen sich deine Knie, nachdem die Stange sie passiert hat, wieder nach vorne unter die Stange?",ex:[[402,359],[315,322],[186,185],[681,699],[443,686]]},
- /* Stossen */
- dip_balance:{t:"Balance im Dip",why:"Im Dip wandert das Gewicht auf die Zehen oder der Oberkörper kippt. Der Drive geht dann nach vorne.",test:"Halte die tiefste Dip-Position 3 s. Bleibt der Druck über Fussmitte und Ferse, mit senkrechtem Oberkörper?",ex:[194,410,626,472,639,541,414]},
- dip_posture:{t:"Rumpf im Dip",why:"Die Brust sinkt im Dip ein. Die Stange verliert die feste Unterlage und Kraft geht verloren.",test:"Bleibt die Stange im Dip fest auf den Schultern, oder fühlst du, wie der Rumpf ‚weich‘ wird?",ex:[196,414,78,448]},
- drive_short:{t:"Drive zu kurz",why:"Die Beine hören auf zu drücken, bevor sie ganz gestreckt sind. Die Stange bekommt zu wenig Höhe.",test:"Mache einen Push Press. Stehst du am Ende auf den Fussballen mit vollständig gestreckten Beinen?",ex:[87,413,625,462,472,405,651]},
- bar_path_forward:{t:"Stangenbahn nach vorne",why:"Die Stange wird um das Kinn herum nach vorne gedrückt, statt gerade nach oben. Du musst ihr folgen.",test:"Gelingt dir der Jerk hinter dem Nacken deutlich besser? Dann liegt das Problem bei Bahn und Kopfbewegung.",ex:[213,202,652,655,88,405,406]},
- patience:{t:"Ungeduld im Drive",why:"Du startest die Füsse, bevor der Drive fertig ist. Die Stange hat zu wenig Höhe, wenn du darunter ankommst.",test:"Video: Verlassen deine Füsse den Boden, bevor die Beine gestreckt sind?",ex:[407,410,462,87]},
- split_position:{t:"Split-Position",why:"Der Split ist zu kurz, zu lang oder die Füsse stehen in einer Linie. Die Basis ist nicht stabil.",test:"Markiere deine ideale Split-Position mit Kreide und vergleiche mit der Landung nach einem schweren Jerk.",ex:[193,459,458,408,441,428]},
- chest_dive:{t:"Brust taucht ein, Hüfte bleibt hinten",why:"Kopf und Brust gehen nach vorne, die Hüfte bleibt hinter der Stange. Das Gewicht landet auf dem vorderen Bein.",test:"Video: Ist die Hüfte im Split unter der Stange, oder dahinter?",ex:[193,411,417,459,406]},
- foot_speed:{t:"Füsse zu langsam",why:"Du kommst zu spät unter die Stange und musst sie mit den Armen ausdrücken.",test:"Wie schnell ist dein Tall Jerk mit leichtem Gewicht? Hörst du beide Füsse gleichzeitig landen?",ex:[218,653,411,417,407]},
- overhead_jerk:{t:"Überkopf-Stabilität im Jerk",why:"Schultern und oberer Rücken fixieren die Stange nicht. Die Arme geben nach oder die Stange wandert.",test:"Kannst du 110 % deines Jerks 5 s im Jerk Support ruhig über Kopf halten?",ex:[198,469,197,204,409,853,854]},
- dip_elastic:{t:"Abbremsen im Dip",why:"Der Umkehrpunkt ist weich und langsam. Die elastische Energie aus Stange und Beinen geht verloren.",test:"Fühlt sich der tiefste Punkt deines Dips wie ein ‚Absacken‘ an statt wie ein schneller Rückprall?",ex:[412,649,404,414,550]},
- rack_jerk:{t:"Jerk-Rack-Position",why:"Die Stange liegt nicht stabil auf den Schultern. Sie rutscht oder drückt auf die Handgelenke.",test:"Liegt die Stange auf den Schultern, wenn du die Hände kurz öffnest?",ex:[196,761,764,78]},
- split_strength:{t:"Kraft und Symmetrie im Split",why:"Ein Bein ist schwächer oder instabil. Der Split wackelt oder knickt ein.",test:"Mache Split Squats mit gleicher Last auf beiden Seiten. Merkst du einen deutlichen Unterschied?",ex:[174,737,428,173,427,714,354]},
- recovery:{t:"Zurückkommen aus dem Split",why:"Die Fussarbeit beim Aufstehen aus dem Split ist unsicher. Die Stange verliert ihre Position.",test:"Kommst du vorne Fuss zuerst, dann hinten, zurück, ohne dass die Stange wandert?",ex:[197,429,485]},
- cj_fatigue:{t:"Ermüdung nach dem Clean",why:"Der Clean kostet so viel Kraft, dass für den Jerk Beine oder Rumpf fehlen.",test:"Ist dein Jerk aus dem Ständer deutlich besser als nach einem Clean?",ex:[381,372,651]}
+ pull_balance:{t:"Balance in the first pull",why:"Off the floor your weight shifts to the toes or the heels. Everything after that builds on the wrong starting point.",test:"Pull lightly to just below the knee and hold for 2 s. If you feel the pressure over the whole foot (mid-foot), it's right.",ex:[[627,644],[391,366],[642,648],[389,368],700,[187,176]]},
+ pull_posture:{t:"Back position and strength off the floor",why:"The hips shoot up or the back gives way because the legs or back extensors can't hold the position under load.",test:"Compare your front squat with your clean. If the front squat is below about 115 % of your clean, leg strength is usually missing.",ex:[[205,177],[399,370],[208,180],[317,355],183,424,78]},
+ stay_over:{t:"Standing up too early",why:"Your shoulders get behind the bar before mid-thigh. The second pull starts early and the force goes forward instead of up.",test:"Side-view video: are your shoulders still in front of the bar as it passes the knee?",ex:[[186,185],[640,645],[315,322],[392,362],[388,367]]},
+ bar_away:{t:"Bar drifts away from the body",why:"The lats don't push the bar back into the legs. It travels forward and pulls you with it.",test:"Pull with straight arms and think 'push the bar into my thighs'. Can you feel your lats working?",ex:[[628,629],[186,185],577,906,907,[401,371]]},
+ hip_bang:{t:"Hip bang instead of leg drive",why:"The hips knock the bar forward. The path becomes a loop and you have to jump after it.",test:"Do you hear or feel a hard hit at the hips, after which the bar flies away from you?",ex:[[316,321],[434,433],[401,371],[466,665],[388,367]]},
+ legs_quit:{t:"Legs stop driving too early",why:"The extension is incomplete. The bar gets too little height and you have to save it with the arms.",test:"Pull with 100 % and hold at the top. Are you on the balls of your feet with knees and hips fully extended?",ex:[[400,378],[453,450],[99,100],[92,93],[394,365],[545,688],[667,657],426]},
+ heels_early:{t:"Heels up too early, weight forward",why:"You get onto the forefoot too soon, the weight drifts forward and the bar follows.",test:"Pull barefoot or with chalk under the heel. Does the heel come up before mid-thigh?",ex:[[456,455],[457,454],[434,433],[401,371]]},
+ lean_back:{t:"Leaning back too far at the finish",why:"Your torso goes far behind the bar. That pushes the bar away and you backward.",test:"Video: is your torso clearly behind vertical at the finish, before you pull yourself under?",ex:[[388,367],[479,689],[453,450],[400,378]]},
+ early_arms:{t:"Bending the arms too early",why:"Pulling with the arms early takes power from the legs and moves the bar away from the body.",test:"Video: are your elbows already bent before knees and hips are extended?",ex:[[434,433],[401,371],[316,321],[96,149],[99,100]]},
+ transition_timing:{t:"Second-to-third pull timing",why:"You go under too early or too late. Correct is: keep driving against the floor while you start pulling under.",test:"Can you do a clean lift with no jump (feet stay planted)? If not, the timing is off.",ex:[[400,378],[388,367],[391,366],[385,373],[681,699]]},
+ slow_turnover:{t:"Passive, slow turnover",why:"After the extension you wait instead of pulling yourself under the bar actively.",test:"How fast is your tall snatch or tall clean with light weight? If it feels sluggish, aggression is missing.",ex:[[217,150],[543,542],[96,149],[61,67],[394,365],[312,0],[385,373],[62,69]]},
+ meet_bar:{t:"Losing connection with the bar",why:"You let go of the bar instead of meeting it with tension. It crashes on you or the elbows go soft.",test:"Do you feel tension on the bar the whole time, or is there a moment where it 'floats'?",ex:[[61,67],[439,442],[62,69],[419,647],[80,0]]},
+ clean_rack:{t:"Delivery into the rack",why:"The elbows come through too late. The bar crashes on the shoulders instead of being guided there.",test:"Do a light muscle clean. Does the bar land softly and under control on your shoulders?",ex:[[0,149],[0,542],[0,544],[0,662],[0,665],[0,580]]},
+ overhead_stab:{t:"Unstable overhead position",why:"Shoulders, upper back or wrists don't stabilise the bar. It drifts or the arms give way.",test:"Do 5 overhead squats with 70 % of your snatch. Does the bar stay quiet over mid-foot?",ex:[[79,0],[674,0],[95,0],[89,0],[386,0],[890,0],[892,0],[204,0]]},
+ receive_conf:{t:"Confidence in a deep receipt",why:"You don't pull yourself all the way down because you don't trust the squat under heavy load.",test:"Does a snatch balance or a heavy clean into a full squat feel uncomfortable or scary?",ex:[[80,442],[82,181],[312,605],[439,355],[79,0]]},
+ mobility:{t:"Mobility in the squat",why:"Ankles, hips, thoracic spine or shoulders don't allow an upright squat position.",test:"With an empty bar, can you sit into a deep, upright squat (overhead or in the rack) without compensating?",ex:[[95,209],[81,420],[420,355],[588,761],[584,584]]},
+ footwork:{t:"Footwork and receiving stance",why:"The feet land too wide, uneven or in a different spot than needed. That costs stability in the receipt.",test:"Mark your start and landing positions with chalk. Do your feet land in the same place every time?",ex:[[400,378],[439,442],[631,695],[312,0],[80,0],[479,689]]},
+ squat_strength:{t:"Strength out of the squat",why:"You catch the bar but can't stand up. Leg strength at the turnaround is missing.",test:"Can you do a pause squat (2 s in the bottom) with your best lift?",ex:[[317,355],[435,438],[444,445],[168,605],[618,619],[77,78]]},
+ trunk_receive:{t:"Trunk tension in the receipt",why:"The trunk gives way under the load. The chest falls forward and the bar follows.",test:"In your front or overhead squat, does the chest fall forward when you stand up?",ex:[[317,355],[0,181],[0,381],448,494,78]},
+ rfd:{t:"Speed strength",why:"The strength is there, but you can't apply it to the bar quickly enough.",test:"Compare your best pull with your lift. If you pull well over 120 % of your lift, speed is missing more than strength.",ex:[[207,379],[203,380],[63,68],[65,70],353,552,548]},
+ pull_strength:{t:"Pulling strength",why:"Strength in the pull isn't enough for heavy attempts.",test:"Can you pull 110 % of your best lift with a clean position?",ex:[[97,98],[187,176],[396,361],[208,180],101,171]},
+ scoop:{t:"Knee re-bend in the second pull",why:"After the bar passes the knees, they don't move back under the bar smoothly. The movement turns into a jerk.",test:"Video: after the bar passes your knees, do they move forward under the bar again?",ex:[[402,359],[315,322],[186,185],[681,699],[443,686]]},
+ /* Jerk */
+ dip_balance:{t:"Balance in the dip",why:"In the dip the weight moves to the toes or the torso tips. The drive then goes forward.",test:"Hold the bottom of the dip for 3 s. Does the pressure stay over mid-foot and heel, with a vertical torso?",ex:[194,410,626,472,639,541,414]},
+ dip_posture:{t:"Trunk in the dip",why:"The chest sinks in the dip. The bar loses its solid platform and power leaks out.",test:"Does the bar stay solid on your shoulders in the dip, or does the trunk feel 'soft'?",ex:[196,414,78,448]},
+ drive_short:{t:"Drive too short",why:"The legs stop driving before they're fully extended. The bar gets too little height.",test:"Do a push press. Do you finish on the balls of your feet with fully extended legs?",ex:[87,413,625,462,472,405,651]},
+ bar_path_forward:{t:"Bar path goes forward",why:"The bar is pushed forward around the chin instead of straight up. You have to follow it.",test:"Is your jerk clearly better from behind the neck? Then the problem is bar path and head movement.",ex:[213,202,652,655,88,405,406]},
+ patience:{t:"Impatience in the drive",why:"You move your feet before the drive is finished. The bar has too little height when you arrive under it.",test:"Video: do your feet leave the floor before your legs are extended?",ex:[407,410,462,87]},
+ split_position:{t:"Split position",why:"The split is too short, too long, or the feet land in line. The base isn't stable.",test:"Mark your ideal split with chalk and compare it with your landing after a heavy jerk.",ex:[193,459,458,408,441,428]},
+ chest_dive:{t:"Chest dives, hips stay back",why:"Head and chest go forward, the hips stay behind the bar. The weight ends up on the front leg.",test:"Video: are your hips under the bar in the split, or behind it?",ex:[193,411,417,459,406]},
+ foot_speed:{t:"Feet too slow",why:"You arrive under the bar too late and have to press it out with the arms.",test:"How fast is your tall jerk with light weight? Do you hear both feet land at the same time?",ex:[218,653,411,417,407]},
+ overhead_jerk:{t:"Overhead stability in the jerk",why:"Shoulders and upper back don't lock the bar. The arms give way or the bar drifts.",test:"Can you hold 110 % of your jerk quietly overhead for 5 s in a jerk support?",ex:[198,469,197,204,409,853,854]},
+ dip_elastic:{t:"Braking in the dip",why:"The turnaround is soft and slow. The elastic energy of bar and legs is lost.",test:"Does the bottom of your dip feel like 'sinking' rather than a quick rebound?",ex:[412,649,404,414,550]},
+ rack_jerk:{t:"Jerk rack position",why:"The bar doesn't sit securely on the shoulders. It slips or loads the wrists.",test:"Does the bar stay on your shoulders when you briefly open your hands?",ex:[196,761,764,78]},
+ split_strength:{t:"Strength and symmetry in the split",why:"One leg is weaker or unstable. The split wobbles or collapses.",test:"Do split squats with the same load on both sides. Do you notice a clear difference?",ex:[174,737,428,173,427,714,354]},
+ recovery:{t:"Recovering from the split",why:"Your footwork out of the split is unsure. The bar loses its position.",test:"Can you recover front foot first, then back foot, without the bar moving?",ex:[197,429,485]},
+ cj_fatigue:{t:"Fatigue after the clean",why:"The clean costs so much that legs or trunk are missing for the jerk.",test:"Is your jerk from the rack clearly better than after a clean?",ex:[381,372,651]}
 };
 
-/* Fragen. o: [Label, {Ursache:Gewicht}] */
-const YN = (yes, no={}) => [["Ja",yes],["Nein",no],["Weiss nicht",{}]];
+/* Questions. o: [label, {cause: weight}]. The last option is always "Not sure". */
+const YN = (yes, no={}) => [["Yes",yes],["No",no],["Not sure",{}]];
 const Q = {
- q_footpress:{t:"Wo spürst du den Druck im Fuss, wenn die Stange am Knie vorbei ist?",o:[["Vorfuss / Zehen",{heels_early:2,pull_balance:2}],["Ganzer Fuss",{}],["Ferse",{pull_balance:2}],["Weiss nicht",{}]],how:"Ziehe leicht bis über das Knie und halte dort. Achte nur auf den Fuss."},
- q_baraway:{t:"Entfernt sich die Stange vom Körper (Video von der Seite: Stange vor den Zehen)?",o:YN({bar_away:2,hip_bang:1}),how:"Filme von der Seite auf Hüfthöhe. Ziehe eine gedachte Linie durch die Fussmitte."},
- q_hipsfirst:{t:"Steigt beim Abheben die Hüfte schneller als die Schultern?",o:YN({pull_posture:2,pull_balance:1}),how:"Video von der Seite: Ändert sich der Rückenwinkel bis zum Knie stark?"},
- q_hipbang:{t:"Schlägt deine Hüfte die Stange nach vorne weg?",o:YN({hip_bang:3}),how:"Hörst du einen lauten Schlag, nach dem die Stange vor dir wegfliegt?"},
- q_leanback:{t:"Lehnst du dich am Ende des Zuges deutlich nach hinten?",o:YN({lean_back:3,transition_timing:1}),how:"Video: Wie weit ist dein Oberkörper hinter der Senkrechten, bevor du nach unten gehst?"},
- q_heels1:{t:"Spürst du schon beim Abheben vor allem Druck auf den Fersen?",o:YN({pull_balance:2}),how:"Mache 3 Lift-offs bis zum Knie und achte auf den Fuss."},
- q_hipthrough:{t:"Schiebst du die Hüfte durch die Stange, statt mit den Beinen nach oben zu drücken?",o:YN({hip_bang:2,legs_quit:1}),how:"Kannst du einen Dip Snatch oder Dip Clean ohne Hüftschlag ausführen?"},
- q_earlyarms:{t:"Beugst du die Arme, bevor Knie und Hüfte gestreckt sind?",o:YN({early_arms:3}),how:"Video: Schau auf die Ellbogen im Moment der vollen Streckung."},
- q_jumpdist:{t:"Wie weit springst du nach hinten?",o:[["Ein paar Zentimeter",{}],["Etwa eine Fusslänge oder mehr",{lean_back:1,footwork:2}],["Weiss nicht",{}]],how:"Lege einen Kreidestrich an die Fersen der Startposition und miss nach dem Heben. Ein leichter Rückwärtssprung ist bei vielen guten Hebern normal und kein Fehler."},
- q_barwhere:{t:"Wo entfernt sich die Stange zuerst?",o:[["Schon beim Abheben",{pull_balance:2,bar_away:1}],["Am Knie / Oberschenkel",{scoop:2,stay_over:1,bar_away:1}],["An der Hüfte",{hip_bang:3}],["Weiss nicht",{}]],how:"Video von der Seite in Zeitlupe. Viele Handys können 240 fps."},
- q_lats:{t:"Drückst du die Stange mit gestreckten Armen aktiv in die Beine?",o:[["Ja",{}],["Nein",{bar_away:2}],["Weiss nicht",{}]],how:"Stell dir vor, du drückst die Stange nach hinten in deine Schienbeine. Spürst du die Lats?"},
- q_overknee:{t:"Sind deine Schultern am Knie noch vor der Stange?",o:[["Ja",{}],["Nein",{stay_over:3}],["Weiss nicht",{}]],how:"Video: Halte das Bild an, wenn die Stange auf Kniehöhe ist."},
- q_backweak:{t:"Fühlt sich dein Rücken in der Position Mitte Oberschenkel schwach an?",o:YN({stay_over:1,pull_strength:1}),how:"Mache einen Halting Deadlift mit 100 % und halte 3 s."},
- q_kneesfwd:{t:"Kommen die Knie nach dem Passieren der Stange wieder unter die Stange?",o:[["Ja",{}],["Nein / ruckartig",{scoop:2}],["Weiss nicht",{}]],how:"Video: Achte auf die Knie zwischen Kniehöhe und Mitte Oberschenkel."},
- q_legsquit:{t:"Hören die Beine auf zu drücken, bevor du nach unten gehst?",o:YN({legs_quit:3}),how:"Bist du am höchsten Punkt auf den Fussballen mit gestreckten Knien?"},
- q_rush:{t:"Hast du den Drang, möglichst schnell nach unten zu kommen?",o:YN({transition_timing:1,legs_quit:1}),how:"Fühlt sich das Heben ohne Sprung (Füsse bleiben stehen) sehr ungewohnt an?"},
- q_pullratio:{t:"Ist ein Zug mit 110 % deines Bestwerts schwer?",o:YN({pull_strength:2}),how:"Teste einen Zug mit 110 % in sauberer Position."},
- q_jumps:{t:"Fühlen sich Sprünge oder Block-Varianten langsam an?",o:YN({rfd:2}),how:"Vergleiche: Box Jump, Block Snatch oder Clean im Verhältnis zum Heben vom Boden."},
- q_armspull:{t:"Ziehst du bewusst mit den Armen, um die Stange hochzubringen?",o:YN({early_arms:1,legs_quit:1}),how:"Wie fühlt sich ein Heben aus der Power-Position mit lockeren Armen an?"},
- q_tightarms:{t:"Sind deine Arme schon beim Start verkrampft?",o:YN({early_arms:1}),how:"Die Arme sollen lang und locker sein, die Ellbogen nach aussen gedreht."},
- q_wait:{t:"Wartest du nach der Streckung, bis die Stange oben ist?",o:YN({slow_turnover:2,transition_timing:1}),how:"Fühlst du eine kurze Pause zwischen Streckung und Darunterziehen?"},
- q_connection:{t:"Gibt es einen Moment, in dem die Stange ‚frei hängt‘?",o:YN({meet_bar:3}),how:"Achte auf den Zug in den Händen beim Umgruppieren."},
- q_fear:{t:"Bist du unsicher, ganz tief unter die Stange zu gehen?",o:YN({receive_conf:3}),how:"Wie fühlt sich ein Snatch Balance mit deinem Bestwert an?"},
- q_musclebad:{t:"Ist dein Muscle Snatch oder Muscle Clean technisch unsauber?",o:YN({slow_turnover:2}),how:"Mache 3 Wiederholungen mit leichtem Gewicht vor dem Spiegel."},
- q_armslate:{t:"Drücken deine Arme die Stange erst nach der Landung durch?",o:YN({meet_bar:2,slow_turnover:2}),how:"Video: Sind die Arme im Moment der Fusslandung schon gestreckt?"},
- q_ohswobble:{t:"Wackelt die Stange auch bei Overhead Squats mit leichtem Gewicht?",o:YN({overhead_stab:3}),how:"5 Overhead Squats mit 60 bis 70 % deines Reissens."},
- q_mob:{t:"Ist die tiefe Hocke über Kopf bzw. im Rack unbequem?",o:YN({mobility:2}),how:"Mit leerer Stange: Kommst du tief, aufrecht und ohne Ausweichbewegung runter?"},
- q_wrists:{t:"Geben deine Handgelenke über Kopf nach oder schmerzen sie?",o:YN({overhead_stab:1}),how:"Bei echten Schmerzen: abklären lassen."},
- q_stance:{t:"Ist dein Stand im Power-Empfang anders als in der tiefen Hocke?",o:YN({footwork:2}),how:"Kreide unter die Füsse und vergleiche Power und volle Hocke."},
- q_feethigh:{t:"Hebst du die Füsse hoch vom Boden, bevor du sie umsetzt?",o:YN({footwork:2,transition_timing:1}),how:"Die Füsse sollen flach und kurz umgesetzt werden, kein Hochspringen."},
- q_chestfall:{t:"Fällt der Oberkörper beim Aufstehen nach vorne?",o:YN({trunk_receive:2,squat_strength:1}),how:"Video von der Seite beim Aufstehen aus der Hocke."},
- q_squatweak:{t:"Ist deine Kniebeuge im Verhältnis zum Heben schwach?",o:YN({squat_strength:3}),how:"Richtwert: Front Squat mindestens 115 bis 120 % deines Umsetzens."},
- q_ohrecover:{t:"Wird die Stange beim Aufstehen instabil?",o:YN({overhead_stab:2}),how:"Bleibt die Stange beim Aufstehen über der Fussmitte?"},
- q_catchhigh:{t:"Fängst du die Stange hoch und rutschst dann erst in die Hocke?",o:YN({receive_conf:2,slow_turnover:1}),how:"Video: In welcher Höhe treffen sich Stange und Körper?"},
- q_elbowslate:{t:"Drehen die Ellbogen spät durch?",o:YN({clean_rack:3,slow_turnover:1}),how:"Video von vorne oder der Seite in Zeitlupe."},
- q_dropbar:{t:"Lässt du die Stange auf die Schultern fallen, statt sie zu führen?",o:YN({meet_bar:2,clean_rack:1}),how:"Wie hart ist der Aufprall auf den Schultern?"},
- q_rackmob:{t:"Ist die Rack-Position unbequem (Handgelenke, Lats, Trizeps)?",o:YN({mobility:2}),how:"Mit leerer Stange: Liegen die Ellbogen hoch, die Finger locker unter der Stange?"},
- q_elbowsdrop:{t:"Fallen die Ellbogen im Rack ab?",o:YN({trunk_receive:1,clean_rack:1}),how:"Video von der Seite in der Front Squat."},
- q_fschest:{t:"Fällt in der Front Squat die Brust nach vorne?",o:YN({trunk_receive:2,squat_strength:1}),how:"Front Squat mit 85 % und Video."},
- q_fastfloor:{t:"Reisst du die Stange schnell vom Boden?",o:YN({pull_balance:1}),how:"Der 1. Zug soll kontrolliert sein, beschleunigt wird danach."},
- q_roundback:{t:"Rundet sich dein Rücken beim Abheben?",o:YN({pull_posture:3}),how:"Video von der Seite. Achte auf den unteren Rücken."},
- q_fsratio:{t:"Ist deine Front Squat relativ schwach?",o:YN({pull_posture:2,squat_strength:1}),how:"Richtwert: Front Squat mindestens 115 % deines Umsetzens."},
- q_startunstable:{t:"Fühlt sich deine Startposition instabil an?",o:YN({pull_balance:2}),how:"Halte die Startposition 3 s mit der Stange knapp über dem Boden."},
- q_ohdrift:{t:"Wird die Stange über Kopf zu weit nach hinten gedrückt?",o:YN({overhead_stab:2}),how:"Video: Wo steht die Stange im Verhältnis zur Fussmitte?"},
- q_headfwd:{t:"Schiebst du den Kopf im Empfang weit nach vorne?",o:YN({overhead_stab:1,mobility:1}),how:"Video: Ist der Kopf deutlich vor den Armen?"},
- q_soft:{t:"Sind deine Ellbogen beim Empfang weich?",o:YN({overhead_stab:2,meet_bar:1}),how:"Video von vorne: Sind die Arme komplett gestreckt?"},
- q_trunkfwd:{t:"Kippt dein Oberkörper in der Hocke nach vorne?",o:YN({mobility:2,trunk_receive:1}),how:"Video von der Seite in der Hocke."},
- /* Stossen */
- j_dipfwd:{t:"Kippt der Oberkörper im Dip nach vorne oder geht das Gewicht auf die Zehen?",o:YN({dip_balance:3}),how:"Halte die tiefste Dip-Position 3 s. Wo liegt der Druck im Fuss?"},
- j_head:{t:"Nimmst du den Kopf beim Drive nach hinten aus der Bahn?",o:[["Ja",{}],["Nein",{bar_path_forward:3}],["Weiss nicht",{}]],how:"Die Stange soll gerade nach oben gehen, der Kopf weicht kurz zurück und kommt dann durch."},
- j_chest:{t:"Taucht die Brust im Split nach vorne?",o:YN({chest_dive:2}),how:"Video von der Seite. Ist der Oberkörper im Split senkrecht?"},
- j_rack:{t:"Rutscht die Stange im Dip von den Schultern?",o:YN({rack_jerk:2,dip_posture:1}),how:"Öffne im Rack kurz die Hände. Bleibt die Stange liegen?"},
- j_earlyunder:{t:"Gehst du unter die Stange, bevor die Beine gestreckt sind?",o:YN({drive_short:2,patience:2}),how:"Video: Verlassen die Füsse den Boden vor der vollen Streckung?"},
- j_feetlate:{t:"Landen die Füsse später als die Stange oben ankommt?",o:YN({foot_speed:2}),how:"Hörst du die Landung erst, wenn die Arme schon drücken?"},
- j_supportweak:{t:"Ist die Stange auch beim Jerk Support oder Überkopf-Halten instabil?",o:YN({overhead_jerk:3}),how:"Halte 100 % deines Jerks 5 s über Kopf aus dem Ständer."},
- j_lowheight:{t:"Bekommt die Stange beim Drive zu wenig Höhe?",o:YN({drive_short:2}),how:"Mache einen Push Press. Wie hoch geht die Stange vor dem Armstrecken?"},
- j_slowdip:{t:"Ist der Umkehrpunkt im Dip weich oder langsam?",o:YN({dip_elastic:3}),how:"Fühlt sich der Dip wie ein Absacken an statt wie ein Rückprall?"},
- j_trunksoft:{t:"Gibt der Rumpf im Dip nach (Brust sinkt)?",o:YN({dip_posture:3}),how:"Atme tief ein und spanne vor dem Dip. Ändert sich etwas?"},
- j_kneesin:{t:"Gehen die Knie im Dip nach innen oder weit nach vorne?",o:YN({dip_balance:2}),how:"Video von vorne und von der Seite."},
- j_legsok:{t:"Drücken die Beine gut, aber die Füsse starten zu früh?",o:YN({patience:2}),how:"Mache einen Press Into Jerk. Fühlt sich das Warten ungewohnt an?"},
- j_aftercleanq:{t:"Ist dein Jerk aus dem Ständer deutlich besser als nach dem Clean?",o:YN({cj_fatigue:3}),how:"Vergleiche Jerk aus dem Ständer und Clean & Jerk mit gleichem Gewicht."},
- j_backleg:{t:"Ist das hintere Bein überstreckt oder zu weit hinten?",o:YN({split_position:2}),how:"Das hintere Knie soll leicht gebeugt sein, die Ferse oben."},
- j_frontshort:{t:"Ist der vordere Schritt zu kurz (Schienbein nicht senkrecht)?",o:YN({split_position:2}),how:"Video von der Seite. Steht das vordere Schienbein etwa senkrecht?"},
- j_line:{t:"Landen die Füsse auf einer Linie, wie auf einem Seil?",o:YN({split_position:2}),how:"Die Füsse sollen etwa hüftbreit auseinander landen."},
- j_oneleg:{t:"Ist ein Bein deutlich schwächer?",o:YN({split_strength:2}),how:"Split Squats mit gleicher Last auf beiden Seiten vergleichen."},
- j_frontload:{t:"Liegt das Gewicht im Split vor allem auf dem vorderen Bein?",o:YN({split_position:2,chest_dive:2}),how:"Halte den Split 3 s. Kannst du das vordere Bein kurz entlasten?"},
- j_hipsback:{t:"Bleibt die Hüfte im Split hinter der Stange?",o:YN({chest_dive:3,bar_path_forward:1}),how:"Video: Liegen Ohr, Schulter, Hüfte und Stange übereinander?"},
- j_tallslow:{t:"Fühlt sich ein Tall Jerk mit leichtem Gewicht langsam an?",o:YN({foot_speed:2}),how:"Mache 3 Tall Jerks mit leerer Stange."},
- j_recover:{t:"Wandert die Stange, wenn du aus dem Split zurückkommst?",o:YN({recovery:3,overhead_jerk:1}),how:"Vorderer Fuss zuerst zurück, dann der hintere."},
- j_rackpain:{t:"Ist die Rack-Position unbequem oder drückt sie auf die Handgelenke?",o:YN({rack_jerk:3}),how:"Mit leerer Stange: Liegt die Stange auf den Schultern, Hände nur locker?"},
- j_breath:{t:"Bist du nach dem Clean ausser Atem oder verlierst die Spannung?",o:YN({cj_fatigue:1,dip_posture:1}),how:"Nimm dir nach dem Clean einen bewussten Atemzug und spanne neu."}
+ q_footpress:{t:"Where do you feel the pressure in your foot as the bar passes the knee?",o:[["Toes / forefoot",{heels_early:2,pull_balance:2}],["Whole foot",{}],["Heels",{pull_balance:2}],["Not sure",{}]],how:"Pull lightly to just above the knee and hold. Pay attention to your feet only."},
+ q_baraway:{t:"Does the bar drift away from your body (side-view video: bar in front of the toes)?",o:YN({bar_away:2,hip_bang:1}),how:"Film from the side at hip height. Imagine a vertical line through mid-foot."},
+ q_hipsfirst:{t:"Off the floor, do your hips rise faster than your shoulders?",o:YN({pull_posture:2,pull_balance:1}),how:"Side-view video: does your back angle change a lot before the knee?"},
+ q_hipbang:{t:"Do your hips knock the bar forward?",o:YN({hip_bang:3}),how:"Do you hear a loud hit, after which the bar flies away in front of you?"},
+ q_leanback:{t:"Do you lean back clearly at the end of the pull?",o:YN({lean_back:3,transition_timing:1}),how:"Video: how far behind vertical is your torso before you go under?"},
+ q_heels1:{t:"Off the floor, do you feel the pressure mostly on your heels?",o:YN({pull_balance:2}),how:"Do 3 lift-offs to the knee and pay attention to your feet."},
+ q_hipthrough:{t:"Do you push your hips through the bar instead of driving up with your legs?",o:YN({hip_bang:2,legs_quit:1}),how:"Can you do a dip snatch or dip clean without hitting the bar with your hips?"},
+ q_earlyarms:{t:"Do you bend your arms before knees and hips are extended?",o:YN({early_arms:3}),how:"Video: look at your elbows at the moment of full extension."},
+ q_jumpdist:{t:"How far do you jump back?",o:[["A few centimetres",{}],["About a foot length or more",{lean_back:1,footwork:2}],["Not sure",{}]],how:"Put a chalk line at your heels in the start position and measure after the lift. A small jump back is normal for many good lifters and not a fault."},
+ q_barwhere:{t:"Where does the bar first move away from you?",o:[["Right off the floor",{pull_balance:2,bar_away:1}],["At the knee / thigh",{scoop:2,stay_over:1,bar_away:1}],["At the hips",{hip_bang:3}],["Not sure",{}]],how:"Side-view video in slow motion. Many phones can film at 240 fps."},
+ q_lats:{t:"Do you actively push the bar into your legs with straight arms?",o:[["Yes",{}],["No",{bar_away:2}],["Not sure",{}]],how:"Imagine pushing the bar back into your shins. Can you feel your lats?"},
+ q_overknee:{t:"Are your shoulders still in front of the bar at the knee?",o:[["Yes",{}],["No",{stay_over:3}],["Not sure",{}]],how:"Video: pause the frame when the bar is at knee height."},
+ q_backweak:{t:"Does your back feel weak in the mid-thigh position?",o:YN({stay_over:1,pull_strength:1}),how:"Do a halting deadlift with 100 % and hold for 3 s."},
+ q_kneesfwd:{t:"After the bar passes the knees, do they move back under the bar?",o:[["Yes",{}],["No / jerky",{scoop:2}],["Not sure",{}]],how:"Video: watch the knees between knee height and mid-thigh."},
+ q_legsquit:{t:"Do your legs stop driving before you go under?",o:YN({legs_quit:3}),how:"At the top, are you on the balls of your feet with straight knees?"},
+ q_rush:{t:"Do you feel the urge to get under as fast as possible?",o:YN({transition_timing:1,legs_quit:1}),how:"Does a lift with no jump (feet stay planted) feel very unfamiliar?"},
+ q_pullratio:{t:"Is a pull with 110 % of your best lift hard?",o:YN({pull_strength:2}),how:"Test a pull with 110 % in a clean position."},
+ q_jumps:{t:"Do jumps or block lifts feel slow?",o:YN({rfd:2}),how:"Compare box jumps, block snatches or block cleans with your lifts from the floor."},
+ q_armspull:{t:"Do you deliberately pull with your arms to get the bar up?",o:YN({early_arms:1,legs_quit:1}),how:"How does a lift from the power position with relaxed arms feel?"},
+ q_tightarms:{t:"Are your arms already tense at the start?",o:YN({early_arms:1}),how:"Arms should be long and relaxed, elbows turned out."},
+ q_wait:{t:"After the extension, do you wait until the bar is up?",o:YN({slow_turnover:2,transition_timing:1}),how:"Do you feel a short pause between extension and pulling under?"},
+ q_connection:{t:"Is there a moment where the bar 'floats' free?",o:YN({meet_bar:3}),how:"Pay attention to the tension in your hands during the turnover."},
+ q_fear:{t:"Are you unsure about getting all the way under the bar?",o:YN({receive_conf:3}),how:"How does a snatch balance with your best snatch feel?"},
+ q_musclebad:{t:"Is your muscle snatch or muscle clean technically messy?",o:YN({slow_turnover:2}),how:"Do 3 reps with light weight in front of a mirror."},
+ q_armslate:{t:"Do your arms only lock out after you land?",o:YN({meet_bar:2,slow_turnover:2}),how:"Video: are your arms already straight when your feet land?"},
+ q_ohswobble:{t:"Does the bar wobble even in light overhead squats?",o:YN({overhead_stab:3}),how:"5 overhead squats with 60 to 70 % of your snatch."},
+ q_mob:{t:"Is the deep squat uncomfortable overhead or in the rack?",o:YN({mobility:2}),how:"With an empty bar: can you sit deep and upright without compensating?"},
+ q_wrists:{t:"Do your wrists give way or hurt overhead?",o:YN({overhead_stab:1}),how:"If there is real pain, get it checked."},
+ q_stance:{t:"Is your power receiving stance different from your squat stance?",o:YN({footwork:2}),how:"Chalk under your feet, then compare power and full squat receipts."},
+ q_feethigh:{t:"Do you lift your feet high off the floor before moving them?",o:YN({footwork:2,transition_timing:1}),how:"The feet should move flat and quickly, no jumping up."},
+ q_chestfall:{t:"Does your torso fall forward when you stand up?",o:YN({trunk_receive:2,squat_strength:1}),how:"Side-view video of the recovery from the squat."},
+ q_squatweak:{t:"Is your squat weak compared to your lifts?",o:YN({squat_strength:3}),how:"Guideline: front squat at least 115 to 120 % of your clean."},
+ q_ohrecover:{t:"Does the bar get unstable as you stand up?",o:YN({overhead_stab:2}),how:"Does the bar stay over mid-foot during the recovery?"},
+ q_catchhigh:{t:"Do you catch the bar high and only then slide into the squat?",o:YN({receive_conf:2,slow_turnover:1}),how:"Video: at what height do bar and body meet?"},
+ q_elbowslate:{t:"Do your elbows come through late?",o:YN({clean_rack:3,slow_turnover:1}),how:"Front or side video in slow motion."},
+ q_dropbar:{t:"Do you let the bar drop onto your shoulders instead of guiding it?",o:YN({meet_bar:2,clean_rack:1}),how:"How hard is the impact on your shoulders?"},
+ q_rackmob:{t:"Is the rack position uncomfortable (wrists, lats, triceps)?",o:YN({mobility:2}),how:"With an empty bar: are the elbows high and the fingers relaxed under the bar?"},
+ q_elbowsdrop:{t:"Do your elbows drop in the rack?",o:YN({trunk_receive:1,clean_rack:1}),how:"Side-view video of your front squat."},
+ q_fschest:{t:"Does your chest fall forward in the front squat?",o:YN({trunk_receive:2,squat_strength:1}),how:"Front squat at 85 % on video."},
+ q_fastfloor:{t:"Do you rip the bar off the floor quickly?",o:YN({pull_balance:1}),how:"The first pull should be controlled, acceleration comes after."},
+ q_roundback:{t:"Does your back round off the floor?",o:YN({pull_posture:3}),how:"Side-view video. Watch the lower back."},
+ q_fsratio:{t:"Is your front squat relatively weak?",o:YN({pull_posture:2,squat_strength:1}),how:"Guideline: front squat at least 115 % of your clean."},
+ q_startunstable:{t:"Does your start position feel unstable?",o:YN({pull_balance:2}),how:"Hold the start position for 3 s with the bar just off the floor."},
+ q_ohdrift:{t:"Does the bar get pushed too far back overhead?",o:YN({overhead_stab:2}),how:"Video: where is the bar relative to mid-foot?"},
+ q_headfwd:{t:"Do you push your head far forward in the receipt?",o:YN({overhead_stab:1,mobility:1}),how:"Video: is your head clearly in front of your arms?"},
+ q_soft:{t:"Are your elbows soft in the receipt?",o:YN({overhead_stab:2,meet_bar:1}),how:"Front-view video: are the arms fully locked?"},
+ q_trunkfwd:{t:"Does your torso tip forward in the squat?",o:YN({mobility:2,trunk_receive:1}),how:"Side-view video in the squat."},
+ /* Jerk */
+ j_dipfwd:{t:"Does your torso tip forward or your weight move to the toes in the dip?",o:YN({dip_balance:3}),how:"Hold the bottom of the dip for 3 s. Where is the pressure in your foot?"},
+ j_head:{t:"Do you move your head back out of the bar path during the drive?",o:[["Yes",{}],["No",{bar_path_forward:3}],["Not sure",{}]],how:"The bar should travel straight up; the head moves back briefly and then comes through."},
+ j_chest:{t:"Does your chest dive forward in the split?",o:YN({chest_dive:2}),how:"Side-view video. Is your torso vertical in the split?"},
+ j_rack:{t:"Does the bar slip off your shoulders in the dip?",o:YN({rack_jerk:2,dip_posture:1}),how:"Open your hands briefly in the rack. Does the bar stay put?"},
+ j_earlyunder:{t:"Do you go under the bar before your legs are extended?",o:YN({drive_short:2,patience:2}),how:"Video: do your feet leave the floor before full extension?"},
+ j_feetlate:{t:"Do your feet land after the bar reaches the top?",o:YN({foot_speed:2}),how:"Do you only hear the landing once the arms are already pressing?"},
+ j_supportweak:{t:"Is the bar unstable even in a jerk support or overhead hold?",o:YN({overhead_jerk:3}),how:"Hold 100 % of your jerk overhead from the rack for 5 s."},
+ j_lowheight:{t:"Does the bar get too little height from the drive?",o:YN({drive_short:2}),how:"Do a push press. How high does the bar go before the arms extend?"},
+ j_slowdip:{t:"Is the turnaround in the dip soft or slow?",o:YN({dip_elastic:3}),how:"Does the dip feel like sinking rather than rebounding?"},
+ j_trunksoft:{t:"Does your trunk give way in the dip (chest sinks)?",o:YN({dip_posture:3}),how:"Take a deep breath and brace before the dip. Does anything change?"},
+ j_kneesin:{t:"Do your knees cave in or travel far forward in the dip?",o:YN({dip_balance:2}),how:"Video from the front and from the side."},
+ j_legsok:{t:"Do your legs drive well, but your feet start too early?",o:YN({patience:2}),how:"Do a press into jerk. Does the waiting feel unfamiliar?"},
+ j_aftercleanq:{t:"Is your jerk from the rack clearly better than after the clean?",o:YN({cj_fatigue:3}),how:"Compare a jerk from the rack and a clean & jerk with the same weight."},
+ j_backleg:{t:"Is your back leg locked straight or too far back?",o:YN({split_position:2}),how:"The back knee should be slightly bent, heel up."},
+ j_frontshort:{t:"Is your front step too short (shin not vertical)?",o:YN({split_position:2}),how:"Side-view video. Is the front shin roughly vertical?"},
+ j_line:{t:"Do your feet land in line, like on a tightrope?",o:YN({split_position:2}),how:"The feet should land about hip-width apart."},
+ j_oneleg:{t:"Is one leg clearly weaker?",o:YN({split_strength:2}),how:"Compare split squats with the same load on both sides."},
+ j_frontload:{t:"Is most of your weight on the front leg in the split?",o:YN({split_position:2,chest_dive:2}),how:"Hold the split for 3 s. Can you briefly unload the front leg?"},
+ j_hipsback:{t:"Do your hips stay behind the bar in the split?",o:YN({chest_dive:3,bar_path_forward:1}),how:"Video: are ear, shoulder, hip and bar stacked?"},
+ j_tallslow:{t:"Does a light tall jerk feel slow?",o:YN({foot_speed:2}),how:"Do 3 tall jerks with an empty bar."},
+ j_recover:{t:"Does the bar drift when you recover from the split?",o:YN({recovery:3,overhead_jerk:1}),how:"Front foot back first, then the back foot."},
+ j_rackpain:{t:"Is the rack position uncomfortable or does it load your wrists?",o:YN({rack_jerk:3}),how:"With an empty bar: does the bar sit on the shoulders with only loose hands?"},
+ j_breath:{t:"Are you out of breath or do you lose tension after the clean?",o:YN({cj_fatigue:1,dip_posture:1}),how:"Take a deliberate breath after the clean and brace again."}
 };
 
-/* Fehlerbilder je Disziplin. b = Grundgewicht für die Ursache, q = Fragen. */
+/* Fault patterns per lift. b = base weight per cause, q = questions. */
 const PULL_FAULTS = [
- {id:"jump_fwd",ph:"Empfang",t:"Ich springe nach vorne",b:{heels_early:1,bar_away:1},q:["q_footpress","q_baraway","q_hipsfirst","q_hipbang"]},
- {id:"jump_back",ph:"Empfang",t:"Ich springe nach hinten",b:{lean_back:1},q:["q_jumpdist","q_leanback","q_heels1","q_hipthrough","q_earlyarms"]},
- {id:"bar_fwd",ph:"Empfang",t:"Ich verliere die Stange nach vorne",b:{bar_away:1},lift:"sn",q:["q_baraway","q_hipbang","q_soft","q_trunkfwd","q_footpress"]},
- {id:"bar_back",ph:"Empfang",t:"Die Stange fällt nach hinten",b:{overhead_stab:1},lift:"sn",q:["q_leanback","q_ohdrift","q_headfwd","q_earlyarms"]},
- {id:"hips_first",ph:"1. Zug",t:"Die Hüfte steigt beim Abheben zuerst",b:{pull_posture:1},q:["q_startunstable","q_roundback","q_fsratio","q_fastfloor"]},
- {id:"bar_loop",ph:"2. Zug",t:"Die Stange entfernt sich vom Körper",b:{bar_away:1},q:["q_barwhere","q_lats","q_hipbang"]},
- {id:"early_finish",ph:"2. Zug",t:"Ich richte mich zu früh auf",b:{stay_over:1},q:["q_overknee","q_backweak","q_kneesfwd"]},
- {id:"incomplete",ph:"2. Zug",t:"Zu wenig Streckung, Stange zu tief",b:{legs_quit:1},q:["q_legsquit","q_rush","q_pullratio","q_jumps"]},
- {id:"early_arms",ph:"2. Zug",t:"Ich ziehe zu früh mit den Armen",b:{early_arms:2},q:["q_earlyarms","q_armspull","q_tightarms"]},
- {id:"slow_under",ph:"3. Zug",t:"Ich komme langsam unter die Stange",b:{slow_turnover:1},q:["q_wait","q_connection","q_fear","q_musclebad"]},
- {id:"catch_high",ph:"3. Zug",t:"Ich fange hoch und rutsche dann runter",b:{receive_conf:1},q:["q_catchhigh","q_fear","q_stance"]},
- {id:"pressout",ph:"Empfang",t:"Ausdrücken, weiche Ellbogen",b:{overhead_stab:1},lift:"sn",q:["q_armslate","q_ohswobble","q_mob","q_wrists"]},
- {id:"crash",ph:"Empfang",t:"Die Stange crasht auf die Schultern",b:{clean_rack:1},lift:"cl",q:["q_elbowslate","q_dropbar","q_rackmob"]},
- {id:"collapse",ph:"Empfang",t:"Ellbogen auf den Knien, Rumpf fällt ein",b:{trunk_receive:1},lift:"cl",q:["q_elbowsdrop","q_fschest","q_rackmob"]},
- {id:"feet",ph:"Empfang",t:"Die Füsse landen unregelmässig oder zu breit",b:{footwork:2},q:["q_stance","q_feethigh"]},
- {id:"recover",ph:"Aufstehen",t:"Ich komme aus der Hocke nicht hoch",b:{squat_strength:1},lift:"sn",q:["q_chestfall","q_squatweak","q_ohrecover","q_mob"]},
- {id:"recover_cl",ph:"Aufstehen",t:"Ich komme aus der Hocke nicht hoch",b:{squat_strength:1},lift:"cl",q:["q_chestfall","q_squatweak","q_elbowsdrop","q_mob"]}
+ {id:"jump_fwd",ph:"Catch",t:"I jump forward",b:{heels_early:1,bar_away:1},q:["q_footpress","q_baraway","q_hipsfirst","q_hipbang"]},
+ {id:"jump_back",ph:"Catch",t:"I jump backward",b:{lean_back:1},q:["q_jumpdist","q_leanback","q_heels1","q_hipthrough","q_earlyarms"]},
+ {id:"bar_fwd",ph:"Catch",t:"I lose the bar forward",b:{bar_away:1},lift:"sn",q:["q_baraway","q_hipbang","q_soft","q_trunkfwd","q_footpress"]},
+ {id:"bar_back",ph:"Catch",t:"The bar falls behind me",b:{overhead_stab:1},lift:"sn",q:["q_leanback","q_ohdrift","q_headfwd","q_earlyarms"]},
+ {id:"hips_first",ph:"First pull",t:"My hips rise first off the floor",b:{pull_posture:1},q:["q_startunstable","q_roundback","q_fsratio","q_fastfloor"]},
+ {id:"bar_loop",ph:"Second pull",t:"The bar moves away from my body",b:{bar_away:1},q:["q_barwhere","q_lats","q_hipbang"]},
+ {id:"early_finish",ph:"Second pull",t:"I stand up too early",b:{stay_over:1},q:["q_overknee","q_backweak","q_kneesfwd"]},
+ {id:"incomplete",ph:"Second pull",t:"Incomplete extension, bar too low",b:{legs_quit:1},q:["q_legsquit","q_rush","q_pullratio","q_jumps"]},
+ {id:"early_arms",ph:"Second pull",t:"I pull with my arms too early",b:{early_arms:2},q:["q_earlyarms","q_armspull","q_tightarms"]},
+ {id:"slow_under",ph:"Third pull",t:"I'm slow getting under the bar",b:{slow_turnover:1},q:["q_wait","q_connection","q_fear","q_musclebad"]},
+ {id:"catch_high",ph:"Third pull",t:"I catch high, then slide down",b:{receive_conf:1},q:["q_catchhigh","q_fear","q_stance"]},
+ {id:"pressout",ph:"Catch",t:"Press-out, soft elbows",b:{overhead_stab:1},lift:"sn",q:["q_armslate","q_ohswobble","q_mob","q_wrists"]},
+ {id:"crash",ph:"Catch",t:"The bar crashes on my shoulders",b:{clean_rack:1},lift:"cl",q:["q_elbowslate","q_dropbar","q_rackmob"]},
+ {id:"collapse",ph:"Catch",t:"Elbows hit the knees, trunk collapses",b:{trunk_receive:1},lift:"cl",q:["q_elbowsdrop","q_fschest","q_rackmob"]},
+ {id:"feet",ph:"Catch",t:"My feet land uneven or too wide",b:{footwork:2},q:["q_stance","q_feethigh"]},
+ {id:"recover",ph:"Recovery",t:"I can't stand up from the squat",b:{squat_strength:1},lift:"sn",q:["q_chestfall","q_squatweak","q_ohrecover","q_mob"]},
+ {id:"recover_cl",ph:"Recovery",t:"I can't stand up from the squat",b:{squat_strength:1},lift:"cl",q:["q_chestfall","q_squatweak","q_elbowsdrop","q_mob"]}
 ];
 const JERK_FAULTS = [
- {id:"j_rack",ph:"Rack",t:"Die Rack-Position ist unbequem",b:{rack_jerk:1},q:["j_rackpain","j_rack"]},
- {id:"j_dip",ph:"Dip",t:"Der Dip ist unruhig oder kippt",b:{dip_balance:1},q:["j_dipfwd","j_kneesin","j_slowdip","j_trunksoft"]},
- {id:"j_drive",ph:"Drive",t:"Die Stange geht zu wenig hoch",b:{drive_short:1},q:["j_lowheight","j_legsok","j_aftercleanq"]},
- {id:"j_fwd",ph:"Drive",t:"Die Stange geht nach vorne",b:{bar_path_forward:1},q:["j_dipfwd","j_head","j_chest","j_rack"]},
- {id:"j_pressout",ph:"Unter die Stange",t:"Ausdrücken",b:{drive_short:1,foot_speed:1},q:["j_earlyunder","j_feetlate","j_supportweak","j_lowheight"]},
- {id:"j_slowfeet",ph:"Unter die Stange",t:"Meine Füsse sind zu langsam",b:{foot_speed:1},q:["j_tallslow","j_legsok"]},
- {id:"j_split",ph:"Split",t:"Der Split ist zu kurz, zu lang oder schmal",b:{split_position:1},q:["j_backleg","j_frontshort","j_line","j_oneleg"]},
- {id:"j_frontleg",ph:"Split",t:"Das vordere Bein ist überlastet",b:{split_position:1,chest_dive:1},q:["j_frontload","j_hipsback","j_oneleg"]},
- {id:"j_dive",ph:"Split",t:"Die Brust taucht nach vorne",b:{chest_dive:1},q:["j_hipsback","j_chest","j_head"]},
- {id:"j_recover",ph:"Recovery",t:"Ich wackle beim Zurückkommen",b:{recovery:1},q:["j_recover","j_oneleg","j_supportweak"]},
- {id:"j_afterclean",ph:"Recovery",t:"Der Jerk scheitert nach schwerem Clean",b:{cj_fatigue:1},q:["j_aftercleanq","j_breath","j_trunksoft"]}
+ {id:"j_rack",ph:"Rack",t:"The rack position is uncomfortable",b:{rack_jerk:1},q:["j_rackpain","j_rack"]},
+ {id:"j_dip",ph:"Dip",t:"My dip is unsteady or tips",b:{dip_balance:1},q:["j_dipfwd","j_kneesin","j_slowdip","j_trunksoft"]},
+ {id:"j_drive",ph:"Drive",t:"The bar doesn't get enough height",b:{drive_short:1},q:["j_lowheight","j_legsok","j_aftercleanq"]},
+ {id:"j_fwd",ph:"Drive",t:"The bar goes forward",b:{bar_path_forward:1},q:["j_dipfwd","j_head","j_chest","j_rack"]},
+ {id:"j_pressout",ph:"Under the bar",t:"Press-out",b:{drive_short:1,foot_speed:1},q:["j_earlyunder","j_feetlate","j_supportweak","j_lowheight"]},
+ {id:"j_slowfeet",ph:"Under the bar",t:"My feet are too slow",b:{foot_speed:1},q:["j_tallslow","j_legsok"]},
+ {id:"j_split",ph:"Split",t:"My split is too short, too long or narrow",b:{split_position:1},q:["j_backleg","j_frontshort","j_line","j_oneleg"]},
+ {id:"j_frontleg",ph:"Split",t:"My front leg is overloaded",b:{split_position:1,chest_dive:1},q:["j_frontload","j_hipsback","j_oneleg"]},
+ {id:"j_dive",ph:"Split",t:"My chest dives forward",b:{chest_dive:1},q:["j_hipsback","j_chest","j_head"]},
+ {id:"j_recover",ph:"Recovery",t:"I wobble when I recover",b:{recovery:1},q:["j_recover","j_oneleg","j_supportweak"]},
+ {id:"j_afterclean",ph:"Recovery",t:"My jerk fails after a heavy clean",b:{cj_fatigue:1},q:["j_aftercleanq","j_breath","j_trunksoft"]}
 ];
 const LIFTS = {
- sn:{t:"Reissen",s:"Snatch",faults:PULL_FAULTS.filter(f=>!f.lift||f.lift==="sn")},
- cl:{t:"Umsetzen",s:"Clean",faults:PULL_FAULTS.filter(f=>!f.lift||f.lift==="cl")},
- jk:{t:"Stossen",s:"Jerk",faults:JERK_FAULTS}
+ sn:{t:"Snatch",s:"Bar to overhead in one move",faults:PULL_FAULTS.filter(f=>!f.lift||f.lift==="sn")},
+ cl:{t:"Clean",s:"Bar to the shoulders",faults:PULL_FAULTS.filter(f=>!f.lift||f.lift==="cl")},
+ jk:{t:"Jerk",s:"From the shoulders overhead",faults:JERK_FAULTS}
 };
-const PHASES = {sn:["1. Zug","2. Zug","3. Zug","Empfang","Aufstehen"],cl:["1. Zug","2. Zug","3. Zug","Empfang","Aufstehen"],jk:["Rack","Dip","Drive","Unter die Stange","Split","Recovery"]};
-
+const PHASES = {sn:["First pull","Second pull","Third pull","Catch","Recovery"],cl:["First pull","Second pull","Third pull","Catch","Recovery"],jk:["Rack","Dip","Drive","Under the bar","Split","Recovery"]};
