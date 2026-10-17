@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hantel-Fehlerdiagnose</title>
+<meta name="description" content="Fehler im Reissen, Umsetzen und Stossen erkennen und passende Übungen finden.">
+<meta name="theme-color" content="#16191c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="titlerow">
+      <div class="plates" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <h1>Hantel-Fehlerdiagnose</h1>
+    </div>
+    <p class="lede">Wähle den Fehler, den du bei dir siehst, und beantworte die Fragen dazu. Daraus ergeben sich die wahrscheinlichen Ursachen und die passenden Übungen aus der Catalyst-Athletics-Bibliothek.</p>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-diag" aria-selected="true">Diagnose</button>
+      <button class="tab" role="tab" id="tab-video" aria-selected="false">Video-Analyse</button>
+      <button class="tab" role="tab" id="tab-lib" aria-selected="false">Übungsbibliothek</button>
+    </nav>
+  </header>
+
+  <section id="view-diag" class="col">
+    <div class="lifts" id="lifts"></div>
+    <div class="grid">
+      <div class="col">
+        <div class="step">
+          <div class="stephead"><span class="stepnum">Schritt 1</span><h2>Was siehst du?</h2></div>
+          <p class="lede">Mehrfachauswahl möglich. Am besten filmst du dich von der Seite auf Hüfthöhe.</p>
+          <div id="faults" class="col" style="gap:14px"></div>
+        </div>
+        <div class="step">
+          <div class="stephead"><span class="stepnum">Schritt 2</span><h2>Kenne dich selbst</h2></div>
+          <p class="lede">Bei „Weiss nicht“ findest du unter jeder Frage einen Selbsttest.</p>
+          <div id="questions" class="col" style="gap:10px"></div>
+        </div>
+      </div>
+      <aside class="result">
+        <div class="sheet" id="sheet"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="view-video" class="col" hidden>
+    <div class="lifts" id="vlifts"></div>
+    <div class="grid">
+      <div class="col">
+        <div class="step">
+          <div class="stephead"><span class="stepnum">Schritt 1</span><h2>Video wählen</h2></div>
+          <p class="lede">Die Analyse läuft komplett auf deinem Gerät. Das Video wird nirgends hochgeladen.</p>
+          <div class="libbar">
+            <input id="vfile" type="file" accept="video/*" aria-label="Video auswählen oder aufnehmen">
+            <select id="vangle" aria-label="Blickwinkel der Kamera">
+              <option value="oblique-front">Schräg von vorne</option>
+              <option value="oblique-back">Schräg von hinten</option>
+              <option value="side">Von der Seite</option>
+              <option value="front">Von vorne</option>
+              <option value="back">Von hinten</option>
+            </select>
+          </div>
+          <div class="vbox" id="vbox" hidden>
+            <video id="vid" controls playsinline muted preload="auto"></video>
+            <div class="vctl">
+              <button class="btn" id="vback" type="button">−1 Bild</button>
+              <button class="btn" id="vfwd" type="button">+1 Bild</button>
+              <span class="vtime" id="vtime">0.00 s</span>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="vmarkstep" hidden>
+          <div class="stephead"><span class="stepnum">Schritt 2</span><h2>Versuch markieren</h2></div>
+          <p class="lede">Spule zum Moment kurz vor dem Abheben (beim Stossen: kurz vor dem Dip) und setze den Start. Dann zum Moment, in dem du stehst, und setze das Ende. Ideal sind 2 bis 4 Sekunden.</p>
+          <div class="vctl">
+            <button class="btn" id="vsetA" type="button">Start hier</button>
+            <button class="btn" id="vsetB" type="button">Ende hier</button>
+            <span class="vtime" id="vrange">Start – · Ende –</span>
+          </div>
+          <div class="vctl">
+            <button class="btn primary" id="vgo" type="button" disabled>Analysieren</button>
+            <button class="btn" id="vstop" type="button" hidden>Stopp</button>
+          </div>
+          <div class="prog" id="vprog" hidden><i></i></div>
+          <p class="toast" id="vmsg" aria-live="polite"></p>
+          <details class="how"><summary>Tipps für gute Aufnahmen</summary><p>Ganzer Körper und Hantel immer im Bild, Kamera auf einem Stativ etwa auf Hüfthöhe, niemand läuft durchs Bild. Am genauesten ist eine Aufnahme von der Seite. Zeitlupe (60 fps oder mehr) hilft bei den Zeitmessungen.</p></details>
+        </div>
+      </div>
+      <aside class="result">
+        <div class="sheet" id="vsheet">
+          <div class="sheethead"><div><span class="stepnum">Ergebnis</span><h2>Video-Befund</h2></div></div>
+          <div class="empty">Wähle ein Video, markiere einen Versuch und starte die Analyse. Hier erscheinen dann die Befunde mit Sicherheit, Bildnummer, Messwerten und Übungen.</div>
+        </div>
+        <div class="vframes" id="vframes"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="view-lib" class="col" hidden>
+    <div class="stephead"><h2>Alle Übungen</h2></div>
+    <p class="lede">Die komplette Bibliothek von Catalyst Athletics. Übungen, die die Diagnose verwendet, sind markiert.</p>
+    <div class="libbar">
+      <input id="libq" type="search" placeholder="Suchen, z. B. „halting“ oder „jerk“" aria-label="Übung suchen">
+      <select id="libsec" aria-label="Kategorie">
+        <option value="">Alle Kategorien</option>
+      </select>
+      <label style="display:flex;gap:6px;align-items:center;font-size:.9rem"><input id="libused" type="checkbox"> nur Diagnose-Übungen</label>
+    </div>
+    <div class="libcount" id="libcount"></div>
+    <ul class="lib" id="lib"></ul>
+  </section>
+
+  <p class="foot">Übungen und Videos: <a href="https://www.catalystathletics.com/exercises/" target="_blank" rel="noopener">Catalyst Athletics Exercise Library</a>. Die Zuordnung Fehler → Ursache → Übung ist aus den „Purpose“-Beschreibungen der Übungen abgeleitet und ersetzt kein Coaching. Körpererkennung: MediaPipe Pose (Google, Apache-2.0). Schmerzen oder wiederkehrende Fehlversuche gehören vor einen Trainer.</p>
+  <details class="how foot"><summary>Als App installieren</summary><p>iPhone (Safari): Teilen-Symbol, dann „Zum Home-Bildschirm“. Android (Chrome): Menü ⋮, dann „App installieren“. Nach dem ersten Öffnen funktioniert die App auch ohne Internet.</p></details>
+</div>
+
+<script src="data/lib.js"></script>
+<script src="js/catalog.js"></script>
+<script src="js/app.js"></script>
+<script type="module" src="js/video.js"></script>
+<script>if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
+</body>
+</html>
