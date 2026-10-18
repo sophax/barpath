@@ -1,11 +1,19 @@
-# Lift Fault Finder
+# BarPath
 
-Web-App (Oberfläche auf Englisch) für olympisches Gewichtheben: Fehler im Snatch, Clean und Jerk erkennen, die wahrscheinliche Ursache eingrenzen und passende Übungen aus der [Catalyst Athletics Exercise Library](https://www.catalystathletics.com/exercises/) finden.
+Web-App für olympisches Gewichtheben und Functional Fitness, auf Englisch, Deutsch und Französisch: Fehler im Snatch, Clean und Jerk erkennen, die wahrscheinliche Ursache eingrenzen und passende Übungen aus der [Catalyst Athletics Exercise Library](https://www.catalystathletics.com/exercises/) finden.
 
 - **Startseite** (`#/`): führt zu den drei Modulen.
 - **Diagnosis** (`#/diagnosis/…`): geführt in vier Schritten (Lift → Faults → Questions → Plan). Der Plan erscheint erst, wenn alle Fragen beantwortet sind.
 - **Video analysis** (`#/video`): Video wählen, Versuch markieren. Die Körpererkennung läuft auf dem Gerät, das Video wird nirgends hochgeladen.
 - **Exercises** (`#/exercises`): alle 624 Übungen durchsuchen.
+
+Weitere Funktionen:
+
+- **Sprachen:** EN, DE und FR, umschaltbar oben rechts. Ohne Wahl gilt die Sprache des Geräts, die Wahl bleibt auf dem Gerät gespeichert. Lift- und Übungsnamen bleiben überall Englisch. Grundtexte in `js/i18n.js` (Oberfläche) und `js/catalog.js` (Katalog), Übersetzungen in `js/lang/de.js` und `js/lang/fr.js`. Fehlt eine Übersetzung, erscheint der englische Text.
+
+- **Coaching Cues:** Zu jeder Ursache ein kurzer Satz zum Mitdenken im nächsten Versuch (in `js/catalog.js`, Abschnitt `CUES`).
+- **Versuche automatisch finden:** Die App geht das Video mit 5 Bildern pro Sekunde durch und listet jeden Versuch (Funktion `findLifts` in `js/analysis.js`).
+- **Teilen:** Video-Befund als Bild oder Text, Übungsplan als Text. Am Handy über das Teilen-Menü, am Computer als Download bzw. in die Zwischenablage (`js/share.js`).
 
 Die App ist eine reine Sammlung statischer Dateien. Sie braucht keinen Server, keine Datenbank und keine API-Schlüssel und läuft nach dem ersten Öffnen offline.
 
@@ -41,17 +49,20 @@ Dann `http://localhost:8000` im Browser öffnen.
 | `js/app.js` | Seiten (Router), geführte Diagnose, Bibliothek |
 | `js/analysis.js` | Körpererkennung und Messregeln der Video-Analyse |
 | `js/video.js` | Oberfläche der Video-Analyse |
+| `js/share.js` | Befund als Bild oder Text teilen |
+| `js/i18n.js` | Sprachwahl, Texte der Oberfläche (Englisch) |
+| `js/lang/de.js`, `js/lang/fr.js` | Deutsche und französische Texte für Oberfläche, Katalog und Video-Befunde |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Installierbare App und Offline-Betrieb |
 | `vendor/mediapipe/`, `models/` | MediaPipe Pose (Laufzeit und Modell) |
 | `fonts/` | Schriften, lokal eingebunden |
 
 ### Gestaltung
 
-Die Oberfläche folgt dem Stil „Industrial Skeuomorphism“: Licht von oben links, Gehäuse, verschraubte Panels, Tasten mit Druckpunkt, LEDs und dunkle Displays. Alle Farben, Schatten, Radien, Schriften und Bewegungskurven stehen als Variablen am Anfang von `app.css`. Neue Bausteine sollen nur diese Variablen verwenden.
+Die Oberfläche ist hell und schlicht, in Anlehnung an Apple: weisse Karten auf hellem Grau, feine Linien statt kräftiger Schatten, Pillen-Tasten, Segment-Schalter und matte Glas-Leisten. Akzentfarbe ist das Rot der Hantelscheibe. Auf Apple-Geräten erscheint die Systemschrift SF Pro, sonst Inter. Alle Farben, Schatten, Radien, Schriften und Bewegungskurven stehen als Variablen am Anfang von `app.css`. Neue Bausteine sollen nur diese Variablen verwenden.
 
 ### Messregeln der Video-Analyse
 
-Die Grenzwerte stehen in `js/analysis.js` und sind an den ersten Testvideos eingestellt (Aufnahme schräg von vorne, 30 fps). Sie sind Richtwerte. Mit mehr Videos, guten wie misslungenen Versuchen, lassen sie sich verbessern.
+Die Grenzwerte stehen in `js/analysis.js` und sind an den ersten Testvideos eingestellt (Aufnahme schräg von vorne, 30 fps). Sie sind Richtwerte. Den Kamerawinkel erkennt die App selbst (`detectView`): Schulterbreite im Bild geteilt durch die Körperlänge im Stand, unter 0.07 seitlich, ab 0.22 von vorne oder hinten, dazwischen schräg. Mit mehr Videos, guten wie misslungenen Versuchen, lassen sie sich verbessern.
 
 | Befund | Messung |
 | --- | --- |
@@ -70,5 +81,5 @@ Die Grenzwerte stehen in `js/analysis.js` und sind an den ersten Testvideos eing
 - **Körpererkennung:** [MediaPipe](https://github.com/google-ai-edge/mediapipe) Pose Landmarker von Google, Apache License 2.0.
 - **Schriften:** Inter und JetBrains Mono, SIL Open Font License.
 - **Übungen:** Die App verlinkt auf die Übungsseiten und Videos von Catalyst Athletics. Die Kurznotizen zu den Übungen sind eigene Zusammenfassungen. Vor einer kommerziellen oder breiten Veröffentlichung die Nutzung mit Catalyst Athletics absprechen.
-- **Datenschutz:** Videos und Antworten bleiben auf dem Gerät (Antworten im lokalen Speicher des Browsers). GitHub als Hoster sieht beim Abruf der Seite die IP-Adresse. Für eine öffentliche Nutzung gehört eine kurze Datenschutzerklärung dazu.
+- **Datenschutz:** Videos und Antworten bleiben auf dem Gerät. Die App speichert nichts: Jede Diagnose beginnt neu, sobald man die Diagnose-Seite wieder öffnet. GitHub als Hoster sieht beim Abruf der Seite die IP-Adresse. Für eine öffentliche Nutzung gehört eine kurze Datenschutzerklärung dazu.
 - Die App ersetzt kein Coaching.

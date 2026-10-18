@@ -1,11 +1,12 @@
-/* Fault catalog: exercise notes, causes, questions, fault patterns. All user-facing text is English. */
+/* Fault catalog: exercise notes, causes, questions, fault patterns.
+   The texts here are English. German and French come from I18N[lang].cat (js/lang/*.js), see applyCatalogLang. */
 const BYID = Object.fromEntries(LIB.map(r=>[r[0],r]));
 const url = id => "https://www.catalystathletics.com/exercise/"+BYID[id][3];
 const SEC = {SN:"Snatch",CL:"Clean",JK:"Jerk",GEN:"General",TRK:"Trunk",LOW:"Legs & hips",JMP:"Jumps",UP:"Upper body",PREP:"Prehab",CAR:"Carries"};
 
 /* Short notes (own summaries of the "Purpose" sections). [snatchId, cleanId] share one note. */
-const NOTE = {};
-function note(ids, text){ (Array.isArray(ids)?ids:[ids]).forEach(i=>{ if(i) NOTE[i]=text; }); }
+const NOTE = {}, NOTE_GROUPS = [];
+function note(ids, text){ ids=[].concat(ids); NOTE_GROUPS.push([ids,text]); ids.forEach(i=>{ if(i) NOTE[i]=text; }); }
 note([627,644],"Bar floats just above the floor. Builds the start and first-pull balance if you tip forward off the floor.");
 note([391,366],"Slow first pull, then full speed. Lets you feel and fix errors and trains the timing into the second pull.");
 note([642,648],"Slow pull without the turnover. Balance, position and postural strength in the first pull.");
@@ -305,3 +306,69 @@ const LIFTS = {
  jk:{t:"Jerk",s:"From the shoulders overhead",faults:JERK_FAULTS}
 };
 const PHASES = {sn:["First pull","Second pull","Third pull","Catch","Recovery"],cl:["First pull","Second pull","Third pull","Catch","Recovery"],jk:["Rack","Dip","Drive","Under the bar","Split","Recovery"]};
+
+/* Coaching cues: one short thought to take into the next lift. */
+const CUES = {
+ pull_balance:"Push through the whole foot. Keep the bar over mid-foot.",
+ pull_posture:"Push the floor away. Chest and hips rise together.",
+ stay_over:"Shoulders over the bar until mid-thigh.",
+ bar_away:"Push the bar back into your legs.",
+ hip_bang:"Drive with the legs and let the bar brush the hips. Don't hit it.",
+ legs_quit:"Finish the push with your legs before you pull under.",
+ heels_early:"Stay flat-footed until the bar is high on the thighs.",
+ lean_back:"Push up, not back. Then pull yourself down.",
+ early_arms:"Long, loose arms until the legs are done.",
+ transition_timing:"Keep pushing the floor as you start pulling under.",
+ slow_turnover:"Snap under. Go to the bar, don't wait for it.",
+ meet_bar:"Pull yourself down against the bar the whole way.",
+ clean_rack:"Fast elbows. Bring the bar to your shoulders, don't let it drop there.",
+ overhead_stab:"Push up into the bar and squeeze your shoulder blades.",
+ receive_conf:"Commit to the bottom. Sit and catch.",
+ mobility:"Chest up, knees out, sit between your heels.",
+ footwork:"Quick and flat. Same landing spot every time.",
+ squat_strength:"Drive straight up out of the bottom. No pause.",
+ trunk_receive:"Big breath, tight trunk, chest up as you stand.",
+ rfd:"Patient off the floor, violent at the finish.",
+ pull_strength:"Same positions as the lift, just heavier.",
+ scoop:"Let the knees come back under the bar. Don't force it.",
+ dip_balance:"Dip straight down, weight on mid-foot and heels.",
+ dip_posture:"Brace before the dip. Keep the bar on your shoulders.",
+ drive_short:"Drive until your legs are straight, then punch under.",
+ bar_path_forward:"Head back, bar straight up.",
+ patience:"Finish the drive before your feet move.",
+ split_position:"Front shin vertical, back knee slightly bent.",
+ chest_dive:"Hips under the bar, chest tall.",
+ foot_speed:"Fast, flat feet. Land with both at the same time.",
+ overhead_jerk:"Lock your elbows and push up into the bar.",
+ dip_elastic:"Short, quick dip. Bounce out of the bottom.",
+ rack_jerk:"Bar on the shoulders, hands loose.",
+ split_strength:"Even weight on both feet in the split.",
+ recovery:"Front foot back first, then the back foot.",
+ cj_fatigue:"Breathe, re-brace, then jerk."
+};
+Object.entries(CUES).forEach(([k,v])=>{ if(CAUSES[k]) CAUSES[k].cue=v; });
+
+/* ---------- Languages ----------
+   Translations: I18N[lang].cat = {sec, ph, lifts, notes:{firstId:text}, causes:{id:[t,why,test,cue]}, q:{id:[t,how,[options]]}, faults:{id:text}}.
+   Missing entries fall back to English. Lift and exercise names stay English in every language. */
+const EN_CAT = {
+  sec: {...SEC}, notes: NOTE_GROUPS.map(g=>g[1]),
+  causes: Object.fromEntries(Object.entries(CAUSES).map(([k,c])=>[k,[c.t,c.why,c.test,c.cue]])),
+  q: Object.fromEntries(Object.entries(Q).map(([k,v])=>[k,[v.t,v.how,v.o.map(o=>o[0])]])),
+  faults: Object.fromEntries([...PULL_FAULTS,...JERK_FAULTS].map(f=>[f.lift?f.id+"@"+f.lift:f.id,f.t])),
+  lifts: Object.fromEntries(Object.entries(LIFTS).map(([k,v])=>[k,v.s]))
+};
+const catLang = () => I18N[LANG].cat || {};
+const phName = ph => catLang().ph?.[ph] || ph;
+function applyCatalogLang(){
+  const C = catLang(), ui = I18N[LANG].ui;
+  Object.keys(SEC).forEach(k=>{ SEC[k] = C.sec?.[k] || EN_CAT.sec[k]; });
+  NOTE_GROUPS.forEach(([ids],i)=>{ const tx = C.notes?.[ids.find(Boolean)] || EN_CAT.notes[i]; ids.forEach(x=>{ if(x) NOTE[x]=tx; }); });
+  Object.entries(CAUSES).forEach(([k,c])=>{ const e=EN_CAT.causes[k], d=C.causes?.[k]||[]; [c.t,c.why,c.test,c.cue] = e.map((x,j)=>d[j]||x); });
+  Object.entries(Q).forEach(([k,v])=>{ const e=EN_CAT.q[k], d=C.q?.[k]||[];
+    v.t = d[0]||e[0]; v.how = d[1]||e[1];
+    v.o.forEach((o,j)=>{ o[0] = d[2]?.[j] || ui["opt."+e[2][j]] || e[2][j]; }); });
+  [...PULL_FAULTS,...JERK_FAULTS].forEach(f=>{ const k=f.lift?f.id+"@"+f.lift:f.id; f.t = C.faults?.[f.id] || EN_CAT.faults[k]; });
+  Object.entries(LIFTS).forEach(([k,v])=>{ v.s = C.lifts?.[k] || EN_CAT.lifts[k]; });
+}
+applyCatalogLang();

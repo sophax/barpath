@@ -1,13 +1,13 @@
 {
-  "name": "Lift Fault Finder",
-  "short_name": "Fault Finder",
-  "description": "Find out why your snatch, clean or jerk goes wrong, and which exercises fix it.",
+  "name": "BarPath",
+  "short_name": "BarPath",
+  "description": "Find out why your snatch, clean or jerk goes wrong, and which exercises fix it. For weightlifters and functional fitness athletes.",
   "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#e0e5ec",
-  "theme_color": "#e0e5ec",
+  "background_color": "#f5f5f7",
+  "theme_color": "#f5f5f7",
   "icons": [
     {
       "src": "icons/icon-192.png",

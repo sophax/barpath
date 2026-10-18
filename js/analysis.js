@@ -171,6 +171,19 @@ function argmin(arr, a, b) { let m = Infinity, k = -1; for (let i = Math.max(0, 
 const r2 = x => Math.round(x * 100) / 100;
 const deg = x => Math.round(x);
 
+/* ---------- Kamerawinkel ---------- */
+/* Schulterbreite im Bild im Verhältnis zur Körperlänge im Stand (Schulter bis Knöchel).
+   Von vorne oder hinten etwa 0.27, schräg (45°) etwa 0.19, von der Seite fast 0.
+   Die z-Werte von MediaPipe sind dafür zu ungenau. */
+export function detectView(track) {
+  const P = track.frames.filter(f => f.p).map(f => f.p);
+  const len = pct(P.map(p => dist(mid(p, K.shL, K.shR), mid(p, K.anL, K.anR))), 0.95);
+  const ratio = median(P.filter(p => Math.min(p[K.shL].v, p[K.shR].v) > 0.3).map(p => Math.abs(p[K.shL].x - p[K.shR].x) / len));
+  const view = !Number.isFinite(ratio) ? "oblique" : ratio < VIEW_SIDE ? "side" : ratio < VIEW_FRONT ? "oblique" : "front";
+  return { view, ratio };
+}
+const VIEW_SIDE = 0.07, VIEW_FRONT = 0.22;
+
 /* ---------- Auswertung ---------- */
 /* view: "side" | "oblique" | "front" | "back"  · lift: "sn" | "cl" | "jk" */
 export function analyze(track, lift, view) {
@@ -180,12 +193,12 @@ export function analyze(track, lift, view) {
   const capFA = view === "side" ? "hoch" : "mittel"; // Vor-/Rückwärts-Messungen bei schräger Sicht höchstens „mittel“
   if (s.found < 0.7 || s.vis < 0.35) {
     out.ok = false;
-    out.summary = "The lifter was detected reliably in too few frames. Make sure the whole body is in the shot and nothing is in front of it.";
+    out.summary = t("a.fail.detect");
     return out;
   }
-  if (!sideways) out.notAssessable.push("Leaning back, jumping forward or back, and split length need a side or diagonal view.");
-  out.notAssessable.push("Foot pressure (toes, mid-foot, heel) can't be measured from video.");
-  out.notAssessable.push("Bar path: the app uses the wrists as a stand-in for the bar, so the exact distance to the body can't be measured.");
+  if (!sideways) out.notAssessable.push(t("a.na.view"));
+  out.notAssessable.push(t("a.na.foot"));
+  out.notAssessable.push(t("a.na.bar"));
   const add = f => out.findings.push(f);
   const lvl = (v, mid, hi) => (v >= hi ? "hoch" : v >= mid ? "mittel" : null);
   const cap = (a, c) => (a === "hoch" && c === "mittel" ? "mittel" : a);
@@ -197,12 +210,12 @@ export function analyze(track, lift, view) {
   /* Abheben: Handgelenke steigen deutlich über die Ausgangshöhe */
   const base = median(s.hWr.slice(0, Math.min(6, n)));
   let i0 = firstIdx(n, 0, i => s.hWr[i] > base + 0.05 && s.hWr[Math.min(n - 1, i + 3)] > s.hWr[i]);
-  if (i0 < 0) { out.ok = false; out.summary = "No lift-off is visible in the marked clip. Set the start just before the bar leaves the floor."; return out; }
+  if (i0 < 0) { out.ok = false; out.summary = t("a.fail.liftoff"); return out; }
   while (i0 > 0 && s.hWr[i0 - 1] > base + 0.015) i0--;
   const iK = firstIdx(n, i0, i => s.hWr[i] >= s.hKn[i]);
   const reach = lift === "sn" ? (i => s.hWr[i] > s.hSh[i]) : (i => s.hWr[i] > s.hSh[i] - 0.15);
   const iS = firstIdx(n, i0 + 1, reach);
-  if (iS < 0) { out.ok = false; out.summary = "The bar never gets above shoulder height in the clip. Set the end later, once you're standing."; return out; }
+  if (iS < 0) { out.ok = false; out.summary = t("a.fail.shoulder"); return out; }
   // Volle Streckung: erstes Bild, in dem Knie und Hüfte gestreckt sind. Danach steigt die Hüfte oft nur noch durch Zehenstand.
   // Relativ zum gestrecktesten Knie im Zug, weil gestreckte Gelenke aus schräger Sicht nicht 180° messen.
   const kStart = Math.max(i0 + 1, iK), kneeMax = s.knee[argmax(s.knee, kStart, iS)], hipMax = s.hipAng[argmax(s.hipAng, kStart, iS)];
@@ -213,10 +226,10 @@ export function analyze(track, lift, view) {
     : firstIdx(n, iE + 1, i => Math.abs(s.hWr[i] - s.hSh[i]) < 0.13 && s.elbow[i] < 95 && s.hHip[i] < s.hHip[iE] - 0.03, 2);
   if (iL >= 0 && (iL - iS) / fps > 0.8) {
     out.ok = false;
-    out.summary = "The arms overhead weren't detected reliably (the lifter is too small in the frame, or arms and plates overlap). Film closer or from the side.";
+    out.summary = t("a.fail.arms");
     return out;
   }
-  if (iL < 0) { out.ok = false; out.summary = lift === "sn" ? "I can't find a moment with locked arms overhead. Is the whole lift inside the clip?" : "I can't find the moment the bar reaches the rack. Is the whole lift inside the clip?"; return out; }
+  if (iL < 0) { out.ok = false; out.summary = t(lift === "sn" ? "a.fail.lock.sn" : "a.fail.lock.cl"); return out; }
   const iB = argmin(s.hHip, iL, n - 1);
   const iU = firstIdx(n, iB, i => s.knee[i] >= 158 && s.hipAng[i] >= 160, 3);
   out.events = { start: i0, knie: iK, streckung: iE, empfang: iL, tiefster: iB, stand: iU };
@@ -225,10 +238,10 @@ export function analyze(track, lift, view) {
   if (sideways) {
     const w0 = Math.max(i0, iE - 2), w1 = Math.min(iL, iS + 2);
     const iLean = argmin(s.lean, w0, w1), back = -s.lean[iLean];
-    out.metrics.push({ label: "Lean-back at the finish", value: Math.max(0, deg(back)) + "°", note: view === "oblique" ? "likely underestimated from a diagonal view" : "" });
+    out.metrics.push({ label: t("m.lean"), value: Math.max(0, deg(back)) + "°", note: view === "oblique" ? t("a.note.under") : "" });
     const a = lvl(back, 8, 15);
-    if (a) add({ titel: "Leaning back hard at the finish", sicherheit: cap(a, capFA), bilder: fr(iLean), key: iLean,
-      beobachtung: `Your torso is ${deg(back)}° behind vertical (frame ${iLean + 1}, ${sec(iLean)} s). The force goes backward instead of up.`,
+    if (a) add({ rule: "lean", titel: t("f.lean.t"), sicherheit: cap(a, capFA), bilder: fr(iLean), key: iLean,
+      beobachtung: t("f.lean.o", { d: deg(back), f: iLean + 1, s: sec(iLean) }),
       fehler_ids: [], ursachen_ids: ["lean_back", "transition_timing"] });
   }
 
@@ -236,21 +249,21 @@ export function analyze(track, lift, view) {
   {
     const baseHead = median(s.head.slice(Math.max(0, i0 - 8), i0 + 1));
     const iH = argmax(s.head, iE - 2, Math.min(iL, iS + 3)), dHead = s.head[iH] - baseHead;
-    out.metrics.push({ label: "Head tilted back (vs. start)", value: "+" + Math.max(0, deg(dHead)) + "°" });
+    out.metrics.push({ label: t("m.head"), value: "+" + Math.max(0, deg(dHead)) + "°" });
     const a = lvl(dHead, 25, 40);
-    if (a) add({ titel: "Head thrown back", sicherheit: a === "hoch" ? "mittel" : "niedrig", bilder: fr(iH), key: iH,
-      beobachtung: `Your head tilts back by about ${deg(dHead)}° (frame ${iH + 1}). This usually adds to the lean-back.`,
+    if (a) add({ rule: "head", titel: t("f.head.t"), sicherheit: a === "hoch" ? "mittel" : "niedrig", bilder: fr(iH), key: iH,
+      beobachtung: t("f.head.o", { d: deg(dHead), f: iH + 1 }),
       fehler_ids: [], ursachen_ids: ["lean_back"] });
   }
 
   /* 3. Übergang unter die Stange */
   {
     const tt = (iL - iE) / fps;
-    out.metrics.push({ label: lift === "sn" ? "Extension to lockout overhead" : "Extension to bar in the rack", value: r2(tt) + " s" });
+    out.metrics.push({ label: t(lift === "sn" ? "m.trans.sn" : "m.trans.cl"), value: num(r2(tt)) + " s" });
     const lim = lift === "sn" ? [0.38, 0.48] : [0.32, 0.42];
     const a = lvl(tt, lim[0], lim[1]);
-    if (a) add({ titel: "Slow transition under the bar", sicherheit: a, bilder: fr(iE, iL), key: iE,
-      beobachtung: `From full extension (frame ${iE + 1}) until ${lift === "sn" ? "the arms are locked" : "the bar is in the rack"} (frame ${iL + 1}) takes ${r2(tt)} s.`,
+    if (a) add({ titel: t("f.trans.t"), sicherheit: a, bilder: fr(iE, iL), key: iE,
+      beobachtung: t(lift === "sn" ? "f.trans.o.sn" : "f.trans.o.cl", { a: iE + 1, b: iL + 1, s: r2(tt) }),
       fehler_ids: ["slow_under"], ursachen_ids: ["slow_turnover", "transition_timing"] });
   }
 
@@ -258,31 +271,31 @@ export function analyze(track, lift, view) {
   {
     const drop = s.hHip[iL] - s.hHip[iB];
     const hipAboveKneeAtCatch = s.hHip[iL] > s.hKn[iL] + 0.02;
-    out.metrics.push({ label: "Drop after the catch", value: Math.round(drop * 100) + " % of body length" });
-    out.metrics.push({ label: "Catch height", value: hipAboveKneeAtCatch ? "Hips above knees (power height)" : "Hips at or below knees" });
+    out.metrics.push({ label: t("m.drop"), value: t("a.pct", { n: Math.round(drop * 100) }) });
+    out.metrics.push({ label: t("m.catchH"), value: t(hipAboveKneeAtCatch ? "m.catchH.power" : "m.catchH.low") });
     const a = lvl(drop, 0.09, 0.18);
-    if (a) add({ titel: "Caught high, then slid into the squat", sicherheit: a, bilder: fr(iL, iB), key: iL,
-      beobachtung: `At the catch (frame ${iL + 1}) your hips are still ${hipAboveKneeAtCatch ? "above the knees" : "fairly high"} and then drop clearly until frame ${iB + 1}. If you meant to do a power lift, this isn't a fault.`,
+    if (a) add({ titel: t("f.high.t"), sicherheit: a, bilder: fr(iL, iB), key: iL,
+      beobachtung: t(hipAboveKneeAtCatch ? "f.high.o.above" : "f.high.o.fair", { a: iL + 1, b: iB + 1 }),
       fehler_ids: ["catch_high"], ursachen_ids: ["receive_conf", "meet_bar"] });
   }
 
   /* 5. Arme beugen zu früh */
   if (iK >= 0 && iE - 1 > iK) {
     const iA = argmin(s.elbow, iK, iE - 1), ang = s.elbow[iA];
-    out.metrics.push({ label: "Smallest elbow angle before extension", value: deg(ang) + "°" });
+    out.metrics.push({ label: t("m.elbow"), value: deg(ang) + "°" });
     const a = ang < 140 ? "mittel" : ang < 152 ? "niedrig" : null;
-    if (a) add({ titel: "Arms bend before full extension", sicherheit: a, bilder: fr(iA), key: iA,
-      beobachtung: `Already in frame ${iA + 1}, before full extension, the elbow is bent to about ${deg(ang)}°.`,
+    if (a) add({ titel: t("f.arms.t"), sicherheit: a, bilder: fr(iA), key: iA,
+      beobachtung: t("f.arms.o", { f: iA + 1, d: deg(ang) }),
       fehler_ids: ["early_arms"], ursachen_ids: ["early_arms"] });
   }
 
   /* 6. Hüfte steigt zuerst */
   if (iK > i0 + 2) {
     const dHip = s.hHip[iK] - s.hHip[i0], dSh = s.hSh[iK] - s.hSh[i0], ratio = dHip / Math.max(0.01, dSh);
-    out.metrics.push({ label: "First pull: hip rise vs. shoulder rise", value: r2(ratio) + " ×" });
+    out.metrics.push({ label: t("m.hip"), value: num(r2(ratio)) + " ×" });
     const a = ratio > 2.2 ? "mittel" : ratio > 1.6 ? "niedrig" : null;
-    if (a) add({ titel: "Hips rise faster than shoulders in the first pull", sicherheit: a, bilder: fr(i0, iK), key: iK,
-      beobachtung: `Until the bar reaches knee height (frame ${iK + 1}), your hips rise ${r2(ratio)} times as much as your shoulders.`,
+    if (a) add({ titel: t("f.hips.t"), sicherheit: a, bilder: fr(i0, iK), key: iK,
+      beobachtung: t("f.hips.o", { f: iK + 1, r: r2(ratio) }),
       fehler_ids: ["hips_first"], ursachen_ids: ["pull_posture", "pull_balance"] });
   }
 
@@ -291,12 +304,12 @@ export function analyze(track, lift, view) {
     const pre = [Math.max(0, i0 - 6), i0], land = [iL, Math.min(n - 1, iL + 4)];
     const mx = (arr, [a, b]) => median(arr.slice(a, b + 1));
     const dx = s.face * (mx(s.xAn, land) - mx(s.xAn, pre));
-    out.metrics.push({ label: "Foot shift after the catch", value: (dx >= 0 ? "+" : "") + Math.round(dx * 100) + " % (forward +, back −)", note: view === "oblique" ? "rough estimate from a diagonal view" : "" });
-    if (dx < -0.08) add({ titel: "Jumping backward", sicherheit: dx < -0.14 ? cap("hoch", capFA) : "niedrig", bilder: fr(iL), key: iL,
-      beobachtung: `Your feet land about ${Math.round(-dx * 100)} % of body length behind the start position. A small jump back is normal.`,
+    out.metrics.push({ label: t("m.feet"), value: t("m.feet.v", { v: (dx >= 0 ? "+" : "") + Math.round(dx * 100) }), note: view === "oblique" ? t("a.note.rough") : "" });
+    if (dx < -0.08) add({ titel: t("f.jback.t"), sicherheit: dx < -0.14 ? cap("hoch", capFA) : "niedrig", bilder: fr(iL), key: iL,
+      beobachtung: t("f.jback.o", { n: Math.round(-dx * 100) }),
       fehler_ids: ["jump_back"], ursachen_ids: ["lean_back", "footwork"] });
-    if (dx > 0.08) add({ titel: "Jumping forward", sicherheit: dx > 0.14 ? cap("hoch", capFA) : "niedrig", bilder: fr(iL), key: iL,
-      beobachtung: `Your feet land about ${Math.round(dx * 100)} % of body length in front of the start position. The bar is probably in front of you.`,
+    if (dx > 0.08) add({ titel: t("f.jfwd.t"), sicherheit: dx > 0.14 ? cap("hoch", capFA) : "niedrig", bilder: fr(iL), key: iL,
+      beobachtung: t("f.jfwd.o", { n: Math.round(dx * 100) }),
       fehler_ids: ["jump_fwd"], ursachen_ids: ["bar_away", "heels_early"] });
   }
 
@@ -305,25 +318,25 @@ export function analyze(track, lift, view) {
     let k = iB; while (k > iL && s.hHip[k - 1] < s.hHip[iB] + 0.03) k--;
     let m = iB; while (m < n - 1 && s.hHip[m + 1] < s.hHip[iB] + 0.03) m++;
     const hold = (m - k) / fps;
-    out.metrics.push({ label: "Time in the lowest position", value: r2(hold) + " s" });
-    if (hold > 0.8) add({ titel: "Long stabilisation in the squat", sicherheit: "niedrig", bilder: fr(k, m), key: k,
-      beobachtung: `You stay almost still in the lowest position for ${r2(hold)} s (frames ${k + 1} to ${m + 1}) before standing up. That points to an insecure position.`,
+    out.metrics.push({ label: t("m.hold"), value: num(r2(hold)) + " s" });
+    if (hold > 0.8) add({ titel: t("f.hold.t"), sicherheit: "niedrig", bilder: fr(k, m), key: k,
+      beobachtung: t("f.hold.o", { s: r2(hold), a: k + 1, b: m + 1 }),
       fehler_ids: [], ursachen_ids: lift === "sn" ? ["overhead_stab", "mobility"] : ["trunk_receive", "mobility"] });
     if (iU > 0) {
       const up = (iU - m) / fps;
-      out.metrics.push({ label: "Standing up from the lowest position", value: r2(up) + " s" });
-      if (up > 1.6) add({ titel: "Slow recovery", sicherheit: "niedrig", bilder: fr(m, iU), key: m,
-        beobachtung: `Standing up takes ${r2(up)} s.`, fehler_ids: [lift === "sn" ? "recover" : "recover_cl"], ursachen_ids: ["squat_strength"] });
-    } else out.notAssessable.push("The recovery isn't fully visible in the clip.");
+      out.metrics.push({ label: t("m.up"), value: num(r2(up)) + " s" });
+      if (up > 1.6) add({ titel: t("f.up.t"), sicherheit: "niedrig", bilder: fr(m, iU), key: m,
+        beobachtung: t("f.up.o", { s: r2(up) }), fehler_ids: [lift === "sn" ? "recover" : "recover_cl"], ursachen_ids: ["squat_strength"] });
+    } else out.notAssessable.push(t("a.na.recovery"));
   }
 
   /* 9. Überkopf-Stabilität (Reissen) */
   if (lift === "sn" && sideways && iU > iL) {
     const rel = []; for (let i = iL; i <= iU; i++) rel.push(s.face * (s.xWr[i] - s.xAn[i]));
     const span = Math.max(...rel) - Math.min(...rel);
-    out.metrics.push({ label: "Bar drift overhead (forward/back)", value: Math.round(span * 100) + " % of body length" });
-    if (span > (view === "side" ? 0.14 : 0.22)) add({ titel: "Bar drifts overhead", sicherheit: "niedrig", bilder: fr(iL, iU), key: iL,
-      beobachtung: `Between the catch and standing, your hands drift forward and back by about ${Math.round(span * 100)} % of body length.`,
+    out.metrics.push({ label: t("m.drift"), value: t("a.pct", { n: Math.round(span * 100) }) });
+    if (span > (view === "side" ? 0.14 : 0.22)) add({ titel: t("f.drift.t"), sicherheit: "niedrig", bilder: fr(iL, iU), key: iL,
+      beobachtung: t("f.drift.o", { n: Math.round(span * 100) }),
       fehler_ids: [], ursachen_ids: ["overhead_stab"] });
   }
 
@@ -335,15 +348,15 @@ export function analyze(track, lift, view) {
 /* Kleine Person im Bild: Hand- und Fusspunkte werden unruhig. Sicherheit herabstufen, Ausreisser-Regeln abschwächen. */
 function smallCheck(s, out) {
   if (s.L >= 130) return;
-  out.notAssessable.unshift("The lifter is small in the frame, so measurements at hands and feet are less accurate. Film closer, so you fill about two thirds of the frame height.");
-  const robust = /Leaning back|Head/;
-  out.findings.forEach(f => { if (!robust.test(f.titel)) f.sicherheit = "niedrig"; else if (f.sicherheit === "hoch") f.sicherheit = "mittel"; });
+  out.notAssessable.unshift(t("a.na.small"));
+  const robust = f => f.rule === "lean" || f.rule === "head";
+  out.findings.forEach(f => { if (!robust(f)) f.sicherheit = "niedrig"; else if (f.sicherheit === "hoch") f.sicherheit = "mittel"; });
 }
 
 function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, fps, n }) {
   const startHip = median(s.hHip.slice(0, Math.min(6, n)));
   const iW = firstIdx(n, 0, i => s.hWr[i] > s.hNose[i]);
-  if (iW < 0) { out.ok = false; out.summary = "The bar never gets overhead in the clip. Set the end later."; return out; }
+  if (iW < 0) { out.ok = false; out.summary = t("a.fail.overhead"); return out; }
   const iD = argmin(s.hHip, 0, iW);
   const iD0 = Math.max(0, firstIdx(n, 0, i => s.hHip[i] < startHip - 0.01));
   const iT = argmax(s.hHip, iD, Math.min(n - 1, iW + 3));
@@ -353,24 +366,24 @@ function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, f
   out.events = { start: iD0, dip: iD, drive: iT, fuesse: iF, fest: iL };
 
   const depth = startHip - s.hHip[iD];
-  out.metrics.push({ label: "Dip depth", value: Math.round(depth * 100) + " % of body length" });
-  if (depth > 0.16) add({ titel: "Very deep dip", sicherheit: "niedrig", bilder: fr(iD), key: iD,
-    beobachtung: `Your dip goes ${Math.round(depth * 100)} % of body length deep. A dip that deep costs tension.`, fehler_ids: ["j_dip"], ursachen_ids: ["dip_balance", "dip_posture"] });
+  out.metrics.push({ label: t("m.dip"), value: t("a.pct", { n: Math.round(depth * 100) }) });
+  if (depth > 0.16) add({ titel: t("f.dipdeep.t"), sicherheit: "niedrig", bilder: fr(iD), key: iD,
+    beobachtung: t("f.dipdeep.o", { n: Math.round(depth * 100) }), fehler_ids: ["j_dip"], ursachen_ids: ["dip_balance", "dip_posture"] });
 
   if (sideways) {
     const tilt = s.lean[iD] - median(s.lean.slice(0, 6));
-    out.metrics.push({ label: "Torso tips forward in the dip", value: deg(tilt) + "°" });
+    out.metrics.push({ label: t("m.tilt"), value: deg(tilt) + "°" });
     const a = lvl(tilt, 7, 12);
-    if (a) add({ titel: "Torso tips forward in the dip", sicherheit: cap(a, capFA), bilder: fr(iD), key: iD,
-      beobachtung: `At the bottom of the dip (frame ${iD + 1}) your torso is tipped forward by ${deg(tilt)}°. The drive then goes forward.`,
+    if (a) add({ titel: t("f.tilt.t"), sicherheit: cap(a, capFA), bilder: fr(iD), key: iD,
+      beobachtung: t("f.tilt.o", { f: iD + 1, d: deg(tilt) }),
       fehler_ids: ["j_dip", "j_fwd"], ursachen_ids: ["dip_balance", "dip_posture"] });
   }
 
   if (iF >= 0) {
     const early = (iT - iF) / fps;
-    out.metrics.push({ label: "Feet move before the drive ends", value: (early > 0 ? r2(early) : 0) + " s" });
-    if (early > 0.04) add({ titel: "Feet move before the drive is finished", sicherheit: early > 0.08 ? "mittel" : "niedrig", bilder: fr(iF, iT), key: iF,
-      beobachtung: `Your feet already move in frame ${iF + 1}, but your hips only reach their highest point in frame ${iT + 1}.`,
+    out.metrics.push({ label: t("m.early"), value: num(early > 0 ? r2(early) : 0) + " s" });
+    if (early > 0.04) add({ titel: t("f.early.t"), sicherheit: early > 0.08 ? "mittel" : "niedrig", bilder: fr(iF, iT), key: iF,
+      beobachtung: t("f.early.o", { a: iF + 1, b: iT + 1 }),
       fehler_ids: ["j_drive", "j_pressout"], ursachen_ids: ["patience", "drive_short"] });
   }
 
@@ -378,22 +391,22 @@ function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, f
     const land = firstIdx(n, Math.max(iF, iT), i => i > 0 && Math.abs(s.xAnL[i] - s.xAnL[i - 1]) < 0.01 && Math.abs(s.xAnR[i] - s.xAnR[i - 1]) < 0.01, 2);
     if (land >= 0) {
       const el = s.elbow[land];
-      out.metrics.push({ label: "Elbow angle at landing", value: deg(el) + "°" });
-      if (el < 150) add({ titel: "Arms still bent at landing", sicherheit: el < 135 ? "mittel" : "niedrig", bilder: fr(land, iL), key: land,
-        beobachtung: `At landing (frame ${land + 1}) the elbow is only at ${deg(el)}°, locked in frame ${iL + 1}. That points to a press-out.`,
+      out.metrics.push({ label: t("m.elbowLand"), value: deg(el) + "°" });
+      if (el < 150) add({ titel: t("f.bent.t"), sicherheit: el < 135 ? "mittel" : "niedrig", bilder: fr(land, iL), key: land,
+        beobachtung: t("f.bent.o", { a: land + 1, d: deg(el), b: iL + 1 }),
         fehler_ids: ["j_pressout"], ursachen_ids: ["foot_speed", "drive_short", "overhead_jerk"] });
     }
     if (sideways) {
       const split = Math.abs(s.xAnL[iL] - s.xAnR[iL]);
-      out.metrics.push({ label: "Foot distance at lockout", value: Math.round(split * 100) + " % of body length", note: "rough estimate from a diagonal view" });
-      if (split > 0.22 && split < 0.38) add({ titel: "Split rather short", sicherheit: "niedrig", bilder: fr(iL), key: iL,
-        beobachtung: `At lockout your feet are only about ${Math.round(split * 100)} % of body length apart.`, fehler_ids: ["j_split"], ursachen_ids: ["split_position"] });
+      out.metrics.push({ label: t("m.split"), value: t("a.pct", { n: Math.round(split * 100) }), note: t("a.note.rough") });
+      if (split > 0.22 && split < 0.38) add({ titel: t("f.split.t"), sicherheit: "niedrig", bilder: fr(iL), key: iL,
+        beobachtung: t("f.split.o", { n: Math.round(split * 100) }), fehler_ids: ["j_split"], ursachen_ids: ["split_position"] });
       const fwd = s.lean[iL];
-      out.metrics.push({ label: "Torso at lockout", value: deg(fwd) + "° forward" });
-      if (fwd > 10) add({ titel: "Chest dives forward in the split", sicherheit: cap(fwd > 16 ? "hoch" : "mittel", capFA), bilder: fr(iL), key: iL,
-        beobachtung: `At lockout (frame ${iL + 1}) your torso leans ${deg(fwd)}° forward.`, fehler_ids: ["j_dive", "j_frontleg"], ursachen_ids: ["chest_dive"] });
+      out.metrics.push({ label: t("m.torso"), value: t("m.torso.v", { d: deg(fwd) }) });
+      if (fwd > 10) add({ titel: t("f.dive.t"), sicherheit: cap(fwd > 16 ? "hoch" : "mittel", capFA), bilder: fr(iL), key: iL,
+        beobachtung: t("f.dive.o", { f: iL + 1, d: deg(fwd) }), fehler_ids: ["j_dive", "j_frontleg"], ursachen_ids: ["chest_dive"] });
     }
-  } else out.notAssessable.push("The moment with locked arms can't be found in the clip.");
+  } else out.notAssessable.push(t("a.na.lockout"));
 
   smallCheck(s, out);
   finish(out);
@@ -404,7 +417,80 @@ const RANK = { hoch: 0, mittel: 1, niedrig: 2 };
 function finish(out) {
   out.findings.sort((a, b) => RANK[a.sicherheit] - RANK[b.sicherheit]);
   const top = out.findings.filter(f => f.sicherheit !== "niedrig").map(f => f.titel);
+  // Titel im Satz: Englisch und Französisch klein weiterführen, Deutsch in Anführungszeichen (Gross-/Kleinschreibung bleibt richtig)
+  const low = x => (LANG === "de" ? "«" + x + "»" : x.charAt(0).toLowerCase() + x.slice(1));
   out.summary = out.findings.length
-    ? (top.length ? "Most clearly: " + top.slice(0, 2).join(" and ").toLowerCase() + "." : "Only weak signs found, see below.") + " The measurements below show what this is based on."
-    : "The measurement rules found no clear faults in this lift.";
+    ? (top.length ? t("sum.top", { list: top.slice(0, 2).map(low).join(t("sum.and")) }) : t("sum.weak")) + t("sum.basis")
+    : t("sum.none");
+}
+
+/* ---------- Find lifts automatically ----------
+   Scans the whole video at a low frame rate. A lift is a moment where the wrists are overhead
+   (snatch, jerk) or at the shoulders (clean), preceded by the bar low near the floor (snatch, clean)
+   or in the rack (jerk). Returns windows {a, b} that are then analysed in full. */
+export async function findLifts(video, lift, { fps = 5, onProgress, signal, debug } = {}) {
+  const lm = await initPose();
+  const W = video.videoWidth, H = video.videoHeight, dur = video.duration;
+  const canvas = document.createElement("canvas"); canvas.width = canvas.height = CROP;
+  const g = canvas.getContext("2d");
+  const full = { x: 0, y: 0, s: Math.max(W, H) };
+  const n = Math.max(2, Math.floor(dur * fps));
+  const samples = [];
+  let prev = null;
+  for (let i = 0; i < n; i++) {
+    if (signal?.aborted) throw { code: "cancelled" };
+    const t = Math.min(dur - 0.05, i / fps);
+    await seek(video, t);
+    g.fillStyle = "#000"; g.fillRect(0, 0, CROP, CROP);
+    const k = CROP / full.s; g.drawImage(video, 0, 0, W * k, H * k);
+    ts += 200;
+    const p = pick(lm.detectForVideo(canvas, ts).landmarks, prev, full);
+    if (p) prev = p;
+    samples.push({ t, p });
+    onProgress?.(i + 1, n);
+    if (i % 4 === 3) await new Promise(r => setTimeout(r, 0));
+  }
+  // Per sample: heights relative to the ankles, normalised by shoulder–ankle length
+  const rows = samples.map(({ t, p }) => {
+    if (!p) return { t, ok: false };
+    const sh = mid(p, K.shL, K.shR), an = mid(p, K.anL, K.anR), wr = mid(p, K.wrL, K.wrR), kn = mid(p, K.knL, K.knR), hp = mid(p, K.hipL, K.hipR), no = p[K.nose];
+    const L = Math.max(dist(sh, an), 20);
+    const h = q => (an.y - q.y) / L;
+    const knee = sideAngle(p, K.hipL, K.knL, K.anL, K.hipR, K.knR, K.anR);
+    return { t, ok: Math.min(wr.v, sh.v, an.v) > 0.3, wr: h(wr), sh: h(sh), kn: h(kn), hip: h(hp), nose: h(no), knee };
+  });
+  const high = r => r.ok && (lift === "cl" ? Math.abs(r.wr - r.sh) < 0.14 && r.wr > r.hip + 0.2 : r.wr > r.nose - 0.02 && r.wr > r.sh + 0.08);
+  const low = r => r.ok && (lift === "jk" ? Math.abs(r.wr - r.sh) < 0.15 : r.wr < r.kn + 0.08);
+  // Runs of "high" samples (at least 2 in a row)
+  // Missed detections (e.g. a small lifter deep in the squat) are bridged for up to 1.2 s
+  const runs = [];
+  for (let i = 0; i < rows.length; i++) {
+    if (!high(rows[i])) continue;
+    let j = i, hits = 1;
+    for (let k = i + 1; k < rows.length; k++) {
+      if (high(rows[k])) { j = k; hits++; continue; }
+      if (rows[k].t - rows[j].t > 1.2) break;
+      if (rows[k].ok && low(rows[k])) break;
+    }
+    if (hits >= 2) runs.push([i, j]);
+    i = j;
+  }
+  const lifts = [];
+  for (const [i, j] of runs) {
+    // Look back up to 4 s for the bar low (floor) or in the rack (jerk)
+    let s = -1;
+    for (let k = i - 1; k >= 0 && rows[i].t - rows[k].t <= 5; k--) { if (low(rows[k])) { s = k; break; } }
+    if (s < 0) continue;
+    const a = Math.max(0, rows[s].t - (lift === "jk" ? 0.4 : 0.3));
+    // Standing again: knees straight while the bar is still up, otherwise a fixed margin
+    let e = -1;
+    for (let k = i + 1; k < rows.length && rows[k].t - rows[i].t <= 4; k++) { if (rows[k].ok && rows[k].knee >= 160 && high(rows[k])) { e = k; break; } }
+    const b = Math.min(dur, e >= 0 ? rows[e].t + 0.4 : rows[j].t + 0.4, a + 6);
+    if (b - a < 0.8) continue;
+    const last = lifts[lifts.length - 1];
+    if (last && a < last.b) { last.b = Math.max(last.b, b); continue; } // same lift
+    lifts.push({ a, b });
+  }
+  if (debug) lifts.rows = rows;
+  return lifts;
 }
