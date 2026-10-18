@@ -193,3 +193,18 @@ I18N.en.ui = {
   /* Catalog: options shared by many questions */
   "opt.Yes": "Yes", "opt.No": "No", "opt.Not sure": "Not sure"
 };
+
+/* Clubs page and home banner */
+Object.assign(I18N.en.ui, {
+  "nav.clubs": "Clubs", "title.clubs": "Clubs · BarPath",
+  "promo.eyebrow": "Swiss Weightlifting", "promo.h": "Ready for the next step?",
+  "promo.p": "From functional fitness to weightlifting: find a club with a coach near you.", "promo.btn": "Find a club",
+  "clubs.eyebrow": "Swiss Weightlifting", "clubs.h1": "From functional fitness to weightlifting?",
+  "clubs.lede": "Improve your lifts for good: find a club with a qualified coach. Here are all clubs of the Swiss Weightlifting Federation.",
+  "clubs.mapLabel": "Map of Switzerland with all weightlifting clubs", "clubs.mapEyebrow": "Map",
+  "clubs.pickH": "Find your club", "clubs.pick": "Tap a red dot on the map to see the clubs in that town and contact them directly.",
+  "clubs.n.one": "1 club", "clubs.n.other": "{n} clubs", "clubs.count": "{n} clubs in {towns} towns",
+  "clubs.mail": "Send email", "clubs.web": "Website", "clubs.all": "All clubs",
+  "clubs.subject": "Interested in a trial session",
+  "clubs.source": "List: Swiss Weightlifting Federation (swiss-weightlifting.ch), as of October 2026. Is a club missing or out of date? Let the federation know."
+});

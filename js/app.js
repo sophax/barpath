@@ -32,12 +32,13 @@ function compute(){
 function resetLift(lift){ S.sel[lift]=[]; Object.keys(S.ans).forEach(k=>{ if(k.startsWith(lift+":")) delete S.ans[k]; }); }
 
 /* ---------- Router ---------- */
+const PAGES = ["home","diagnosis","video","exercises","clubs"];
 const STEPS = ["lift","faults","questions","plan"];
 function go(hash){ if(location.hash===hash) route(); else location.hash=hash; }
 function parse(){
   const parts=(location.hash.replace(/^#\/?/,"")||"").split("/");
   const page=parts[0]||"home";
-  return {page: ["home","diagnosis","video","exercises"].includes(page)?page:"home", sub: parts[1]};
+  return {page: PAGES.includes(page)?page:"home", sub: parts[1]};
 }
 let lastPage = null;
 function route(keep){
@@ -52,12 +53,13 @@ function route(keep){
     if(sub==="plan" && !allAnswered()) sub = S.sel[S.lift].length ? "questions" : "faults";
     if(location.hash!=="#/diagnosis/"+sub){ history.replaceState(null,"","#/diagnosis/"+sub); }
   }
-  ["home","diagnosis","video","exercises"].forEach(p=>{ $("page-"+p).hidden = p!==page; });
+  PAGES.forEach(p=>{ $("page-"+p).hidden = p!==page; });
   document.querySelectorAll("nav.tabs .tab").forEach(t=>t.setAttribute("aria-current", t.dataset.page===page ? "page" : "false"));
   document.title = t("title."+page);
   if(page==="diagnosis") renderDiagnosis(sub);
   if(page==="video") renderLifts();
   if(page==="exercises") renderLib();
+  if(page==="clubs" && typeof renderClubs==="function") renderClubs();
   if(keep) return;
   window.scrollTo({top:0});
   const h=$("page-"+page).querySelector("h1,h2"); if(h){ h.setAttribute("tabindex","-1"); h.focus({preventScroll:true}); }

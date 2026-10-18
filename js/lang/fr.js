@@ -421,3 +421,17 @@ I18N.fr.cat = {
   j_recover: "Je vacille en sortant de la fente", j_afterclean: "Mon jerk échoue après un clean lourd"
  }
 };
+
+Object.assign(I18N.fr.ui, {
+  "nav.clubs": "Clubs", "title.clubs": "Clubs · BarPath",
+  "promo.eyebrow": "Swiss Weightlifting", "promo.h": "Prêt pour la prochaine étape ?",
+  "promo.p": "Du functional fitness à l’haltérophilie : trouve un club avec un coach près de chez toi.", "promo.btn": "Trouver un club",
+  "clubs.eyebrow": "Swiss Weightlifting", "clubs.h1": "Du functional fitness à l’haltérophilie ?",
+  "clubs.lede": "Améliore tes lifts durablement : trouve un club avec un coach qualifié. Voici tous les clubs de la Fédération Suisse d’Haltérophilie.",
+  "clubs.mapLabel": "Carte de la Suisse avec tous les clubs d’haltérophilie", "clubs.mapEyebrow": "Carte",
+  "clubs.pickH": "Trouve ton club", "clubs.pick": "Touche un point rouge sur la carte pour voir les clubs de cette localité et les contacter directement.",
+  "clubs.n.one": "1 club", "clubs.n.other": "{n} clubs", "clubs.count": "{n} clubs dans {towns} localités",
+  "clubs.mail": "Envoyer un e-mail", "clubs.web": "Site web", "clubs.all": "Tous les clubs",
+  "clubs.subject": "Intéressé·e par un entraînement d’essai",
+  "clubs.source": "Liste : Fédération Suisse d’Haltérophilie (swiss-weightlifting.ch), état octobre 2026. Un club manque ou n’est plus à jour ? Signale-le à la fédération."
+});

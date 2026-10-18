@@ -25,6 +25,7 @@
       <a class="tab" href="#/diagnosis" data-page="diagnosis"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="18" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg><span data-i18n="nav.diagnosis">Diagnosis</span></a>
       <a class="tab" href="#/video" data-page="video"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="13.5" height="12" rx="2"/><path d="M16 10.5l5.5-3v9l-5.5-3z"/><circle cx="7" cy="10" r="1.2"/></svg><span data-i18n="nav.video">Video</span></a>
       <a class="tab" href="#/exercises" data-page="exercises"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4.5h4v15H4z"/><path d="M10 4.5h4v15h-4z"/><path d="M16.2 5.3l3.8-1 3 14.5-3.8 1z"/></svg><span data-i18n="nav.exercises">Exercises</span></a>
+      <a class="tab" href="#/clubs" data-page="clubs"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><span data-i18n="nav.clubs">Clubs</span></a>
     </nav>
     <div class="langs" role="group" aria-label="Language" data-i18n-aria="lang.label">
       <button type="button" data-lang="en" lang="en" aria-label="English">EN</button><button type="button" data-lang="de" lang="de" aria-label="Deutsch">DE</button><button type="button" data-lang="fr" lang="fr" aria-label="Français">FR</button>
@@ -85,6 +86,12 @@
         <span class="btn" data-i18n="mod.ex.btn">Browse exercises</span>
       </a>
     </div>
+
+    <a class="promo" href="#/clubs">
+      <span class="promo-pin" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
+      <span class="promo-text"><span class="label" data-i18n="promo.eyebrow">Swiss Weightlifting</span><b data-i18n="promo.h">Ready for the next step?</b><span data-i18n="promo.p">From functional fitness to weightlifting: find a club with a coach near you.</span></span>
+      <span class="btn primary" data-i18n="promo.btn">Find a club</span>
+    </a>
 
     <div class="how-it-works" aria-label="How it works" data-i18n-aria="hiw.label">
       <div class="pipe" aria-hidden="true"></div>
@@ -216,16 +223,35 @@
       <ul class="lib" id="lib"></ul>
     </div>
   </section>
+  <!-- ===== Clubs ===== -->
+  <section id="page-clubs" class="page col" hidden>
+    <div class="pagehead">
+      <span class="label" data-i18n="clubs.eyebrow">Swiss Weightlifting</span>
+      <h1 data-i18n="clubs.h1">From functional fitness to weightlifting?</h1>
+      <p class="lede" data-i18n="clubs.lede">Improve your lifts for good: find a club with a qualified coach. Here are all clubs of the Swiss Weightlifting Federation.</p>
+    </div>
+    <div class="grid clubs-grid">
+      <div class="clubmap" id="clubmap"></div>
+      <aside class="sheet clubpanel" id="clubpanel" aria-live="polite"></aside>
+    </div>
+    <div class="lib-panel">
+      <div class="clubhead"><h2 data-i18n="clubs.all">All clubs</h2><span class="libcount" id="clubcount"></span></div>
+      <ul class="clublist" id="clublist"></ul>
+      <p class="foot" data-i18n="clubs.source">List: Swiss Weightlifting Federation (swiss-weightlifting.ch), as of October 2026. Is a club missing or out of date? Let the federation know.</p>
+    </div>
+  </section>
   </main>
 
 </div>
 
 <script src="data/lib.js"></script>
+<script src="data/clubs.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/lang/de.js"></script>
 <script src="js/lang/fr.js"></script>
 <script src="js/catalog.js"></script>
 <script src="js/app.js"></script>
+<script src="js/clubs.js"></script>
 <script type="module" src="js/video.js"></script>
 <script>if("serviceWorker" in navigator) addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));</script>
 </body>

@@ -119,7 +119,7 @@ button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,s
 nav.tabs{
   position:fixed; z-index:20; left:0; right:0; bottom:0;
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));
-  display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:4px;
+  display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:2px;
   background:var(--glass); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-top:.5px solid var(--line-strong);
 }
@@ -136,7 +136,7 @@ nav.tabs{
   .topbar{position:sticky; top:0; z-index:20; flex-wrap:nowrap; padding:12px 0;
     background:rgba(245,245,247,.8); backdrop-filter:saturate(180%) blur(20px); -webkit-backdrop-filter:saturate(180%) blur(20px)}
   .topbar::after{content:""; position:absolute; left:calc(-1 * var(--gutter)); right:calc(-1 * var(--gutter)); bottom:0; height:.5px; background:var(--line)}
-  nav.tabs{position:static; padding:0; border:0; background:none; backdrop-filter:none; -webkit-backdrop-filter:none; grid-template-columns:repeat(4,auto); gap:4px}
+  nav.tabs{position:static; padding:0; border:0; background:none; backdrop-filter:none; -webkit-backdrop-filter:none; grid-template-columns:repeat(5,auto); gap:4px}
   .tab{flex-direction:row; gap:6px; min-height:40px; padding:6px 14px; font-size:.88rem; color:var(--ink); border-radius:var(--r-full)}
   .tab svg{width:18px; height:18px}
   .tab:hover{background:rgba(0,0,0,.04)}
@@ -569,3 +569,49 @@ body{background-attachment:scroll}
 /* Aktionsleiste: lange Beschriftungen (Französisch, Deutsch) teilen sich den Platz und dürfen umbrechen */
 .actionbar .btn{min-width:0; text-align:center; line-height:1.15}
 @media (max-width:520px){ .actionbar .btn:not(.primary){flex:1 1 0; padding:0 12px} .actionbar .btn.primary{flex:2 1 0} }
+
+/* ---------- 18. Clubs: Karte der Schweiz ---------- */
+.clubs-grid{align-items:start}
+@media (min-width:1024px){ .clubs-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)} .clubpanel{position:sticky; top:84px} }
+.clubmap{position:relative; border-radius:var(--r-xl); padding:14px; background:
+  radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.95), rgba(255,255,255,.6)),
+  linear-gradient(160deg, rgba(255,122,61,.08), rgba(31,95,191,.07)); box-shadow:var(--sh-card)}
+.clubmap svg{display:block; width:100%; height:auto; overflow:visible}
+.ch-land{stroke:rgba(0,0,0,.14); stroke-width:1.5; stroke-linejoin:round}
+.pin{cursor:pointer; outline:none}
+.pin .hit{fill:transparent}
+.pin .dot{stroke:#fff; filter:drop-shadow(0 3px 5px rgba(196,16,27,.35)); transition:transform 200ms var(--spring)}
+.pin .cnt{font-family:var(--f-sans); font-weight:700; fill:#fff; pointer-events:none}
+.pin .ring{fill:rgba(227,38,47,.14); stroke:var(--accent); stroke-width:1.5}
+@media (hover:hover){ .pin:hover .dot{transform:scale(1.25)} }
+.pin:focus-visible .dot{stroke:#1d1d1f}
+.pin.on .dot{transform:scale(1.3)}
+@media (prefers-reduced-motion:no-preference){
+  .pin.on .ring{animation:ripple 1.6s ease-out infinite; transform-origin:center; transform-box:fill-box}
+}
+@keyframes ripple{from{transform:scale(.6); opacity:1} to{transform:scale(1.5); opacity:0}}
+.townlbl{font-family:var(--f-display); font-weight:700; fill:var(--ink); paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; pointer-events:none}
+
+.clubpanel{gap:14px}
+.clubhead{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap}
+ul.clublist{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px}
+.clubpanel ul.clublist{grid-template-columns:minmax(0,1fr)}
+.clubcard{display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:var(--r-md); background:var(--fill)}
+.clubinfo{display:flex; flex-direction:column; gap:2px; min-width:0}
+.clubinfo b{font-weight:600; line-height:1.3}
+.clubact{display:flex; gap:8px; flex-wrap:wrap}
+.clubact .btn{min-height:40px; padding:0 16px; font-size:.92rem}
+
+/* Startseite: Hinweis auf die Clubs */
+.promo{display:grid; grid-template-columns:auto minmax(0,1fr); gap:14px 16px; align-items:center; padding:20px; border-radius:var(--r-xl);
+  background:linear-gradient(120deg,#fff 30%,#fff4ef); box-shadow:var(--sh-card); color:var(--ink); text-decoration:none;
+  transition:transform 300ms var(--spring), box-shadow 300ms var(--ease)}
+.promo-pin{width:48px; height:48px; display:grid; place-items:center; border-radius:14px; background:var(--grad-brand); box-shadow:inset 0 1px 0 rgba(255,255,255,.3), 0 6px 14px rgba(227,38,47,.28)}
+.promo-pin svg{width:26px; height:26px; fill:none; stroke:#fff; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.promo-text{display:flex; flex-direction:column; gap:2px; min-width:0}
+.promo-text b{font-family:var(--f-display); font-size:1.15rem; letter-spacing:-.015em}
+.promo-text span:last-child{color:var(--ink-muted)}
+.promo .btn{grid-column:1 / -1}
+@media (min-width:700px){ .promo{grid-template-columns:auto minmax(0,1fr) auto; padding:22px 26px} .promo .btn{grid-column:auto} }
+@media (hover:hover){ .promo:hover{transform:translateY(-2px); box-shadow:var(--sh-hover)} }
+.ch-lake{fill:#d8e6f5; stroke:#c3d6ec; stroke-width:1}

@@ -1310,3 +1310,16 @@ I18N.de.cat = {
   "CAR": "Tragen"
  }
 };
+Object.assign(I18N.de.ui, {
+  "nav.clubs": "Clubs", "title.clubs": "Clubs · BarPath",
+  "promo.eyebrow": "Swiss Weightlifting", "promo.h": "Bereit für den nächsten Schritt?",
+  "promo.p": "Vom Functional Fitness ins Weightlifting: Finde einen Club mit Coach in deiner Nähe.", "promo.btn": "Club finden",
+  "clubs.eyebrow": "Swiss Weightlifting", "clubs.h1": "Vom Functional Fitness ins Weightlifting?",
+  "clubs.lede": "Verbessere deine Lifts nachhaltig: Such dir einen Club mit professionellem Coach. Hier findest du alle Clubs des Schweizerischen Gewichtheber-Verbands.",
+  "clubs.mapLabel": "Karte der Schweiz mit allen Gewichtheber-Clubs", "clubs.mapEyebrow": "Karte",
+  "clubs.pickH": "Finde deinen Club", "clubs.pick": "Tippe auf einen roten Punkt auf der Karte, um die Clubs an diesem Ort zu sehen und sie direkt zu kontaktieren.",
+  "clubs.n.one": "1 Club", "clubs.n.other": "{n} Clubs", "clubs.count": "{n} Clubs an {towns} Orten",
+  "clubs.mail": "E-Mail schreiben", "clubs.web": "Website", "clubs.all": "Alle Clubs",
+  "clubs.subject": "Interesse an einem Probetraining",
+  "clubs.source": "Liste: Swiss Weightlifting Federation (swiss-weightlifting.ch), Stand Oktober 2026. Fehlt ein Club oder stimmt etwas nicht mehr? Melde es dem Verband."
+});

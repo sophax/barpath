@@ -9,6 +9,7 @@ Web-App für olympisches Gewichtheben und Functional Fitness, auf Englisch, Deut
 
 Weitere Funktionen:
 
+- **Clubs** (`#/clubs`): Karte der Schweiz mit allen 24 Clubs der Swiss Weightlifting Federation, Kontakt per E-Mail (Betreff «Probetraining» vorausgefüllt). Daten in `data/clubs.js`, Quelle: swiss-weightlifting.ch/contact (Stand Oktober 2026). Ort, Koordinaten und Website pro Club von Hand ergänzt. Die Umrisse der Schweiz und der Seen sind von Hand vereinfacht gezeichnet, die Karte lädt nichts aus dem Internet. Bei Änderungen der Clubliste `data/clubs.js` anpassen und in `sw.js` die VERSION erhöhen.
 - **Sprachen:** EN, DE und FR, umschaltbar oben rechts. Ohne Wahl gilt die Sprache des Geräts, die Wahl bleibt auf dem Gerät gespeichert. Lift- und Übungsnamen bleiben überall Englisch. Grundtexte in `js/i18n.js` (Oberfläche) und `js/catalog.js` (Katalog), Übersetzungen in `js/lang/de.js` und `js/lang/fr.js`. Fehlt eine Übersetzung, erscheint der englische Text.
 
 - **Coaching Cues:** Zu jeder Ursache ein kurzer Satz zum Mitdenken im nächsten Versuch (in `js/catalog.js`, Abschnitt `CUES`).
@@ -50,6 +51,7 @@ Dann `http://localhost:8000` im Browser öffnen.
 | `js/analysis.js` | Körpererkennung und Messregeln der Video-Analyse |
 | `js/video.js` | Oberfläche der Video-Analyse |
 | `js/share.js` | Befund als Bild oder Text teilen |
+| `data/clubs.js`, `js/clubs.js` | Clubs der Schweiz und Karte |
 | `js/i18n.js` | Sprachwahl, Texte der Oberfläche (Englisch) |
 | `js/lang/de.js`, `js/lang/fr.js` | Deutsche und französische Texte für Oberfläche, Katalog und Video-Befunde |
 | `sw.js`, `manifest.webmanifest`, `icons/` | Installierbare App und Offline-Betrieb |
