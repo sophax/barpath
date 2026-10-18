@@ -4,7 +4,7 @@ Web-App für olympisches Gewichtheben und Functional Fitness, auf Englisch, Deut
 
 - **Startseite** (`#/`): führt zu den drei Modulen.
 - **Diagnosis** (`#/diagnosis/…`): geführt in vier Schritten (Lift → Faults → Questions → Plan). Der Plan erscheint erst, wenn alle Fragen beantwortet sind.
-- **Video analysis** (`#/video`): Video wählen, Versuch markieren. Die Körpererkennung läuft auf dem Gerät, das Video wird nirgends hochgeladen.
+- **Video analysis** (`#/video`): Video hochladen, den Rest macht die App: Sie findet die Versuche, erkennt die Übung und wertet den ersten Versuch gleich aus. Die Körpererkennung läuft auf dem Gerät, das Video wird nirgends hochgeladen.
 - **Exercises** (`#/exercises`): alle 624 Übungen durchsuchen.
 
 Weitere Funktionen:
@@ -14,6 +14,7 @@ Weitere Funktionen:
 
 - **Coaching Cues:** Zu jeder Ursache ein kurzer Satz zum Mitdenken im nächsten Versuch (in `js/catalog.js`, Abschnitt `CUES`).
 - **Versuche automatisch finden:** Die App geht das Video mit 5 Bildern pro Sekunde durch und listet jeden Versuch (Funktion `findLifts` in `js/analysis.js`).
+- **Übung automatisch erkennen** (`classify` in `js/analysis.js`): Startposition (Boden, Hang, Rack) und Ende (Stange über Kopf oder auf den Schultern) ergeben Snatch, Clean, Clean & Jerk oder Jerk. Hüfte im Empfang auf Kniehöhe oder tiefer = Squat, sonst Power. Beim Jerk: Füsse vorne/hinten auseinander = Split Jerk, Knie bei gestreckten Armen gebeugt = Push Jerk, sonst Push Press. Ein Clean & Jerk wird in zwei Teilen ausgewertet.
 - **Teilen:** Video-Befund als Bild oder Text, Übungsplan als Text. Am Handy über das Teilen-Menü, am Computer als Download bzw. in die Zwischenablage (`js/share.js`).
 
 Die App ist eine reine Sammlung statischer Dateien. Sie braucht keinen Server, keine Datenbank und keine API-Schlüssel und läuft nach dem ersten Öffnen offline.

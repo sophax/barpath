@@ -57,7 +57,6 @@ function route(keep){
   document.querySelectorAll("nav.tabs .tab").forEach(t=>t.setAttribute("aria-current", t.dataset.page===page ? "page" : "false"));
   document.title = t("title."+page);
   if(page==="diagnosis") renderDiagnosis(sub);
-  if(page==="video") renderLifts();
   if(page==="exercises") renderLib();
   if(page==="clubs" && typeof renderClubs==="function") renderClubs();
   if(keep) return;
@@ -192,15 +191,6 @@ $("questions-next").addEventListener("click",()=>{
   go("#/diagnosis/plan");
 });
 $("plan-new").addEventListener("click",()=>{ resetLift(S.lift); go("#/diagnosis/lift"); });
-
-/* ---------- Lift selector on the video page ---------- */
-function renderLifts(){
-  const box=$("vlifts"); box.replaceChildren();
-  Object.entries(LIFTS).forEach(([k,L])=>{
-    box.append(el("button",{class:"lift",type:"button","aria-pressed":String(S.lift===k),onclick:()=>{S.lift=k;renderLifts();}},
-      el("b",{},L.t)));
-  });
-}
 
 /* ---------- Library ---------- */
 function renderLib(){

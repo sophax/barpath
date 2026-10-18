@@ -658,3 +658,7 @@ ul.clubrows{list-style:none; margin:0; padding:0; border-radius:var(--r-md); bac
   h2{font-size:1.3rem}
   .btn{font-size:.95rem}
 }
+
+/* Clean & Jerk: one heading per part in the result */
+.parthead{margin:22px 0 4px; font-size:1.05rem; letter-spacing:-.01em; color:var(--accent-text)}
+.vframes .parthead{margin:14px 0 8px}

@@ -151,6 +151,7 @@ function series(track) {
     hWr: h(wr), hSh: h(sh), hHip: h(hip), hKn: h(kn), hNose: h(nose), hAn: h(an),
     xHip: xs(hip), xSh: xs(sh), xWr: xs(wr), xAn: xs(an),
     xAnL: xs(F.map(f => f.p?.[K.anL])), xAnR: xs(F.map(f => f.p?.[K.anR])),
+    hAnL: h(F.map(f => f.p?.[K.anL])), hAnR: h(F.map(f => f.p?.[K.anR])),
     // Oberkörperneigung: + = nach vorne (in Blickrichtung), − = nach hinten
     lean: g(p => { const s = mid(p, K.shL, K.shR), hp = mid(p, K.hipL, K.hipR); return Math.atan2(face * (s.x - hp.x), hp.y - s.y) * 180 / Math.PI; }),
     // Kopfneigung: wie weit die Nase über dem Ohr liegt (Grad), grösser = Kopf im Nacken
@@ -184,9 +185,78 @@ export function detectView(track) {
 }
 const VIEW_SIDE = 0.07, VIEW_FRONT = 0.22;
 
+/* ---------- Which lift? ----------
+   Start: bar on the floor, in the hang (standing, bar at the thighs) or in the rack (jerk).
+   Finish: bar overhead (snatch, jerk) or on the shoulders (clean). Standing in the rack before
+   the bar goes overhead means a clean, then a jerk. Hip at or below knee height in the catch
+   means a squat lift, otherwise a power lift. Jerk: feet apart front to back = split jerk,
+   knees bent at lockout = push jerk, legs straight = push press. Names stay English. */
+export function liftName(c) {
+  if (!c) return "Lift";
+  if (c.kind === "cj") return "Clean & Jerk";
+  if (c.kind === "jk") return { split: "Split Jerk", push: "Push Jerk", press: "Push Press", squat: "Squat Jerk" }[c.jerk] || "Jerk";
+  return (c.hang ? "Hang " : "") + (c.power ? "Power " : "") + (c.kind === "sn" ? "Snatch" : "Clean");
+}
+function lastRun(end, cond, minLen) {
+  let best = null;
+  for (let i = 0; i < end; i++) { if (!cond(i)) continue; let j = i; while (j + 1 < end && cond(j + 1)) j++; if (j - i + 1 >= minLen) best = [i, j]; i = j; }
+  return best;
+}
+function jerkKind(s, fps, view, a, iW) {
+  const n = s.n, w = Math.min(n - 1, iW + Math.round(0.6 * fps));
+  const at0 = arr => median(arr.slice(a, a + 6));
+  const iL = Math.max(iW, firstIdx(n, iW, i => s.hWr[i] > s.hNose[i] && s.elbow[i] > 158, 2));
+  const b0 = Math.abs(at0(s.xAnL) - at0(s.xAnR)), h0 = Math.abs(at0(s.hAnL) - at0(s.hAnR));
+  let spread = 0, rise = 0, low = Infinity;
+  for (let i = iW; i <= w; i++) {
+    spread = Math.max(spread, Math.abs(s.xAnL[i] - s.xAnR[i]) - b0);
+    rise = Math.max(rise, Math.abs(s.hAnL[i] - s.hAnR[i]) - h0);
+    low = Math.min(low, s.hHip[i] - s.hKn[i]);
+  }
+  // From the side the feet move apart in the picture, from the front the back foot sits higher in the picture
+  const split = view === "side" ? spread > 0.18 : view === "oblique" ? spread > 0.15 || rise > 0.06 : rise > 0.06;
+  if (split) return "split";
+  if (low < 0.05) return "squat";
+  const iD = argmin(s.hHip, a, iW), iT = argmax(s.hHip, iD, Math.min(n - 1, iW + 3));
+  const rebend = s.hHip[iT] - Math.min(...s.hHip.slice(iT, w + 1));
+  return rebend > 0.04 || at0(s.knee) - s.knee[iL] > 15 ? "push" : "press";
+}
+export function classify(track) {
+  const s = series(track), n = s.n, fps = track.fps, sec = x => Math.round(x * fps);
+  if (s.found < 0.6 || n < 6) return null;
+  const view = detectView(track).view;
+  const at0 = arr => median(arr.slice(0, Math.min(6, n)));
+  const over = i => s.hWr[i] > s.hNose[i] && s.elbow[i] > 135;
+  const rack = i => Math.abs(s.hWr[i] - s.hSh[i]) < 0.15 && s.elbow[i] < 110 && s.hWr[i] > s.hHip[i] + 0.2;
+  const stand = i => s.knee[i] > 150 && s.hipAng[i] > 145;
+  // Squat lift: hip at or below the knee somewhere in the catch window
+  const deep = (a, b) => { let m = Infinity, k = Infinity; for (let i = Math.max(0, a); i <= Math.min(n - 1, b); i++) { m = Math.min(m, s.hHip[i] - s.hKn[i]); k = Math.min(k, s.knee[i]); } return m < 0.05 || k < 95; };
+  const base = at0(s.hWr);
+  const start = Math.abs(base - at0(s.hSh)) < 0.15 ? "rack" : base < at0(s.hKn) + 0.08 ? "floor" : "hang";
+  const hang = start === "hang";
+  const iW = firstIdx(n, 0, over, 2);
+  if (start === "rack") {
+    if (iW < 0) return null;
+    const jerk = jerkKind(s, fps, view, 0, iW);
+    return { kind: "jk", jerk, parts: [{ lift: "jk", i0: 0, i1: n - 1, jerk }] };
+  }
+  const iR = firstIdx(n, 0, rack, 2);
+  const hold = iW >= 0 ? lastRun(iW, i => rack(i) && stand(i), sec(0.5)) : null;
+  if (hold) {
+    const j0 = Math.max(hold[0], hold[1] - sec(0.4)); // the hold ends when the dip starts
+    const jerk = jerkKind(s, fps, view, j0, iW);
+    return { kind: "cj", hang, power: iR >= 0 && !deep(iR, hold[0]), jerk,
+      parts: [{ lift: "cl", i0: 0, i1: Math.max(hold[0] + 3, j0 - 1) }, { lift: "jk", i0: j0, i1: n - 1, jerk }] };
+  }
+  if (iW >= 0) return { kind: "sn", hang, power: !deep(iW - sec(0.25), iW + sec(1.5)), parts: [{ lift: "sn", i0: 0, i1: n - 1 }] };
+  if (iR >= 0) return { kind: "cl", hang, power: !deep(iR, iR + sec(1.5)), parts: [{ lift: "cl", i0: 0, i1: n - 1 }] };
+  return null;
+}
+export const sliceTrack = (track, i0, i1) => ({ ...track, frames: track.frames.slice(i0, i1 + 1) });
+
 /* ---------- Auswertung ---------- */
-/* view: "side" | "oblique" | "front" | "back"  · lift: "sn" | "cl" | "jk" */
-export function analyze(track, lift, view) {
+/* view: "side" | "oblique" | "front" | "back"  · lift: "sn" | "cl" | "jk" · jerk: "split" | "push" | "press" | "squat" */
+export function analyze(track, lift, view, jerk) {
   const s = series(track), fps = track.fps, n = s.n;
   const out = { events: {}, metrics: [], findings: [], notAssessable: [], ok: true, summary: "" };
   const sideways = view === "side" || view === "oblique";
@@ -205,7 +275,7 @@ export function analyze(track, lift, view) {
   const sec = i => r2(track.frames[i]?.t ?? 0);
   const fr = (a, b) => [a + 1, (b ?? a) + 1];
 
-  if (lift === "jk") return analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, fps, n });
+  if (lift === "jk") return analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, fps, n, jerk });
 
   /* Abheben: Handgelenke steigen deutlich über die Ausgangshöhe */
   const base = median(s.hWr.slice(0, Math.min(6, n)));
@@ -353,7 +423,8 @@ function smallCheck(s, out) {
   out.findings.forEach(f => { if (!robust(f)) f.sicherheit = "niedrig"; else if (f.sicherheit === "hoch") f.sicherheit = "mittel"; });
 }
 
-function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, fps, n }) {
+function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, fps, n, jerk }) {
+  const press = jerk === "press"; // Push Press: the feet stay put and the arms press the bar out, that's the point of it
   const startHip = median(s.hHip.slice(0, Math.min(6, n)));
   const iW = firstIdx(n, 0, i => s.hWr[i] > s.hNose[i]);
   if (iW < 0) { out.ok = false; out.summary = t("a.fail.overhead"); return out; }
@@ -379,7 +450,7 @@ function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, f
       fehler_ids: ["j_dip", "j_fwd"], ursachen_ids: ["dip_balance", "dip_posture"] });
   }
 
-  if (iF >= 0) {
+  if (iF >= 0 && !press) {
     const early = (iT - iF) / fps;
     out.metrics.push({ label: t("m.early"), value: num(early > 0 ? r2(early) : 0) + " s" });
     if (early > 0.04) add({ titel: t("f.early.t"), sicherheit: early > 0.08 ? "mittel" : "niedrig", bilder: fr(iF, iT), key: iF,
@@ -389,14 +460,14 @@ function analyzeJerk(s, track, out, { sideways, capFA, add, lvl, cap, sec, fr, f
 
   if (iL >= 0) {
     const land = firstIdx(n, Math.max(iF, iT), i => i > 0 && Math.abs(s.xAnL[i] - s.xAnL[i - 1]) < 0.01 && Math.abs(s.xAnR[i] - s.xAnR[i - 1]) < 0.01, 2);
-    if (land >= 0) {
+    if (land >= 0 && !press) {
       const el = s.elbow[land];
       out.metrics.push({ label: t("m.elbowLand"), value: deg(el) + "°" });
       if (el < 150) add({ titel: t("f.bent.t"), sicherheit: el < 135 ? "mittel" : "niedrig", bilder: fr(land, iL), key: land,
         beobachtung: t("f.bent.o", { a: land + 1, d: deg(el), b: iL + 1 }),
         fehler_ids: ["j_pressout"], ursachen_ids: ["foot_speed", "drive_short", "overhead_jerk"] });
     }
-    if (sideways) {
+    if (sideways && (!jerk || jerk === "split")) {
       const split = Math.abs(s.xAnL[iL] - s.xAnR[iL]);
       out.metrics.push({ label: t("m.split"), value: t("a.pct", { n: Math.round(split * 100) }), note: t("a.note.rough") });
       if (split > 0.22 && split < 0.38) add({ titel: t("f.split.t"), sicherheit: "niedrig", bilder: fr(iL), key: iL,
@@ -425,10 +496,12 @@ function finish(out) {
 }
 
 /* ---------- Find lifts automatically ----------
-   Scans the whole video at a low frame rate. A lift is a moment where the wrists are overhead
-   (snatch, jerk) or at the shoulders (clean), preceded by the bar low near the floor (snatch, clean)
-   or in the rack (jerk). Returns windows {a, b} that are then analysed in full. */
-export async function findLifts(video, lift, { fps = 5, onProgress, signal, debug } = {}) {
+   Scans the whole video at a low frame rate, without knowing which lift it is. A lift ends with the
+   wrists overhead (snatch, jerk) or at the shoulders (clean). Looking back from there: bar on the
+   floor or held still in the hang = snatch or clean, standing in the rack first = clean & jerk,
+   nothing before the rack = jerk. Returns windows {a, b, kind, hang}; the exact variant
+   (power, push press, split jerk ...) comes from classify() on the full track. */
+export async function findLifts(video, { fps = 5, onProgress, signal, debug } = {}) {
   const lm = await initPose();
   const W = video.videoWidth, H = video.videoHeight, dur = video.duration;
   const canvas = document.createElement("canvas"); canvas.width = canvas.height = CROP;
@@ -459,10 +532,12 @@ export async function findLifts(video, lift, { fps = 5, onProgress, signal, debu
     const knee = sideAngle(p, K.hipL, K.knL, K.anL, K.hipR, K.knR, K.anR);
     return { t, ok: Math.min(wr.v, sh.v, an.v) > 0.3, wr: h(wr), sh: h(sh), kn: h(kn), hip: h(hp), nose: h(no), knee };
   });
-  const high = r => r.ok && (lift === "cl" ? Math.abs(r.wr - r.sh) < 0.14 && r.wr > r.hip + 0.2 : r.wr > r.nose - 0.02 && r.wr > r.sh + 0.08);
-  const low = r => r.ok && (lift === "jk" ? Math.abs(r.wr - r.sh) < 0.15 : r.wr < r.kn + 0.08);
-  // Runs of "high" samples (at least 2 in a row)
-  // Missed detections (e.g. a small lifter deep in the squat) are bridged for up to 1.2 s
+  const over = r => r.ok && r.wr > r.nose - 0.02 && r.wr > r.sh + 0.08;
+  const rack = r => r.ok && !over(r) && Math.abs(r.wr - r.sh) < 0.14 && r.wr > r.hip + 0.2;
+  const high = r => over(r) || rack(r);
+  const floor = r => r.ok && r.wr < r.kn + 0.08;
+  const hang = r => r.ok && !floor(r) && r.knee > 150 && r.wr < r.hip + 0.12;
+  // Runs of "high" samples (at least 2). Missed detections (e.g. a small lifter deep in the squat) are bridged for up to 1.2 s
   const runs = [];
   for (let i = 0; i < rows.length; i++) {
     if (!high(rows[i])) continue;
@@ -470,26 +545,59 @@ export async function findLifts(video, lift, { fps = 5, onProgress, signal, debu
     for (let k = i + 1; k < rows.length; k++) {
       if (high(rows[k])) { j = k; hits++; continue; }
       if (rows[k].t - rows[j].t > 1.2) break;
-      if (rows[k].ok && low(rows[k])) break;
+      if (floor(rows[k]) || hang(rows[k])) break;
     }
     if (hits >= 2) runs.push([i, j]);
     i = j;
   }
   const lifts = [];
-  for (const [i, j] of runs) {
-    // Look back up to 4 s for the bar low (floor) or in the rack (jerk)
-    let s = -1;
-    for (let k = i - 1; k >= 0 && rows[i].t - rows[k].t <= 5; k--) { if (low(rows[k])) { s = k; break; } }
-    if (s < 0) continue;
-    const a = Math.max(0, rows[s].t - (lift === "jk" ? 0.4 : 0.3));
-    // Standing again: knees straight while the bar is still up, otherwise a fixed margin
-    let e = -1;
-    for (let k = i + 1; k < rows.length && rows[k].t - rows[i].t <= 4; k++) { if (rows[k].ok && rows[k].knee >= 160 && high(rows[k])) { e = k; break; } }
-    const b = Math.min(dur, e >= 0 ? rows[e].t + 0.4 : rows[j].t + 0.4, a + 6);
-    if (b - a < 0.8) continue;
+  const put = l => {
+    l.b = Math.min(dur, l.b);
+    if (l.b - l.a < 0.8) return;
     const last = lifts[lifts.length - 1];
-    if (last && a < last.b) { last.b = Math.max(last.b, b); continue; } // same lift
-    lifts.push({ a, b });
+    if (last && l.a < last.b) { last.b = Math.max(last.b, l.b); return; } // same lift
+    lifts.push(l);
+  };
+  // End: standing again with straight knees while the bar is still up
+  const endAt = (from, to, cond) => { for (let k = from + 1; k <= to; k++) if (rows[k].ok && rows[k].knee >= 160 && cond(rows[k])) return rows[k].t + 0.4; return rows[to].t + 0.4; };
+  for (const [i, j] of runs) {
+    // Start: walk back up to 5 s to the bar on the floor, or to the bar held still in the hang
+    let st = -1, hangStart = false, still = 0, latest = -1;
+    for (let k = i - 1; k >= 0 && rows[i].t - rows[k].t <= 5; k--) {
+      const r = rows[k]; if (!r.ok) continue;
+      if (floor(r)) { st = k; break; }
+      if (hang(r) && rows[k + 1].ok && hang(rows[k + 1]) && Math.abs(r.wr - rows[k + 1].wr) < 0.04) {
+        if (!still++) latest = k + 1;
+        if (still >= 2) { st = latest; hangStart = true; break; }
+      } else still = 0;
+    }
+    // Bar overhead: one or more stretches inside the run (several jerks from the rack are possible)
+    const segs = [];
+    for (let k = i; k <= j; k++) {
+      if (!over(rows[k])) continue;
+      let e = k; while (e + 1 <= j && (over(rows[e + 1]) || !rows[e + 1].ok)) e++;
+      while (e > k && !rows[e].ok) e--;
+      segs.push([k, e]); k = e;
+    }
+    // A new jerk only after standing in the rack again (2 samples); otherwise the bar just dipped while overhead
+    const racked = (x, y) => { let r = 0; for (let m = x; m < y; m++) { r = rack(rows[m]) && rows[m].knee > 150 ? r + 1 : 0; if (r >= 2) return true; } return false; };
+    for (let q = segs.length - 1; q > 0; q--) if (!racked(segs[q - 1][1] + 1, segs[q][0])) { segs[q - 1][1] = segs[q][1]; segs.splice(q, 1); }
+    if (!segs.length) { // clean only
+      if (st >= 0) put({ a: Math.max(0, rows[st].t - 0.3), b: Math.min(endAt(i, j, rack), rows[st].t + 6), kind: "cl", hang: hangStart });
+      continue;
+    }
+    let prevEnd = rows[i].t;
+    segs.forEach(([k, e], q) => {
+      const tO = rows[k].t, b0 = endAt(k, e, over);
+      if (q === 0 && st >= 0) {
+        // Standing in the rack (2 samples in a row) before the bar goes overhead: clean & jerk
+        let held = 0, run = 0;
+        for (let m = st; m < k; m++) { run = rack(rows[m]) && rows[m].knee > 150 ? run + 1 : 0; held = Math.max(held, run); }
+        const a = Math.max(0, rows[st].t - 0.3);
+        put({ a, b: Math.min(b0 + 0.6, a + (held >= 2 ? 14 : 7)), kind: held >= 2 ? "cj" : "sn", hang: hangStart });
+      } else put({ a: Math.max(prevEnd, tO - 1.3), b: Math.min(b0, tO + 3), kind: "jk", hang: false });
+      prevEnd = lifts[lifts.length - 1]?.b ?? prevEnd;
+    });
   }
   if (debug) lifts.rows = rows;
   return lifts;
