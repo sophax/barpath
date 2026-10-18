@@ -19,9 +19,6 @@ I18N.de.ui = {
  "art.ext": "Streckung",
  "art.catch": "Empfang",
  "art.cap": "Hantelbahn · Snatch",
- "mod.1": "Modul 01",
- "mod.2": "Modul 02",
- "mod.3": "Modul 03",
  "mod.diag.h": "Diagnose",
  "mod.diag.p": "Wähle den Fehler, den du siehst, beantworte ein paar Fragen zu dir und erhalte deinen Trainingsplan.",
  "mod.diag.meta": "4 Schritte · etwa 3 Min.",
@@ -34,13 +31,6 @@ I18N.de.ui = {
  "mod.ex.p": "Durchsuche alle 624 Übungen der Catalyst-Athletics-Bibliothek, mit Link zu jedem Video.",
  "mod.ex.meta": "624 Übungen",
  "mod.ex.btn": "Übungen ansehen",
- "hiw.label": "So funktioniert's",
- "hiw.1.h": "Fehler erkennen",
- "hiw.1.p": "Was du in deinem Lift oder im Video siehst.",
- "hiw.2.h": "Ursache finden",
- "hiw.2.p": "Fragen grenzen ein, warum es passiert.",
- "hiw.3.h": "Gezielt trainieren",
- "hiw.3.p": "Übungen, passend zur Ursache.",
  "diag.h1": "Diagnose",
  "diag.steps": "Schritte der Diagnose",
  "step.lift": "Lift",
@@ -1321,5 +1311,23 @@ Object.assign(I18N.de.ui, {
   "clubs.n.one": "1 Club", "clubs.n.other": "{n} Clubs", "clubs.count": "{n} Clubs an {towns} Orten",
   "clubs.mail": "E-Mail schreiben", "clubs.web": "Website", "clubs.all": "Alle Clubs",
   "clubs.subject": "Interesse an einem Probetraining",
-  "clubs.source": "Liste: Swiss Weightlifting Federation (swiss-weightlifting.ch), Stand Oktober 2026. Fehlt ein Club oder stimmt etwas nicht mehr? Melde es dem Verband."
+});
+
+Object.assign(I18N.de.ui, {
+ "clubs.regions": "Regionen",
+ "clubs.region.all": "Ganze Schweiz",
+ "clubs.near": "In meiner Nähe",
+ "clubs.region.leman": "Genfersee",
+ "clubs.region.jura": "Jura & Seeland",
+ "clubs.region.bern": "Bern & Freiburg",
+ "clubs.region.nw": "Nordwestschweiz",
+ "clubs.region.zh": "Zürich & Ostschweiz",
+ "clubs.region.central": "Zentralschweiz & Tessin",
+ "clubs.locating": "Standort wird ermittelt …",
+ "clubs.nearOk": "Sortiert nach Entfernung zu dir. Dein Standort bleibt auf deinem Gerät.",
+ "clubs.far": "Du bist ausserhalb der Schweiz. Der nächste Club ist {club} in {city}, {km} km entfernt.",
+ "clubs.denied": "Standort nicht freigegeben. Wähle stattdessen eine Region.",
+ "clubs.unavailable": "Dein Standort ist nicht verfügbar. Wähle stattdessen eine Region.",
+ "clubs.km": "{km} km",
+ "clubs.mailTo": "E-Mail an {club}"
 });

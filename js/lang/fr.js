@@ -9,18 +9,13 @@ I18N.fr.ui = {
   "home.h1": 'Trouve l’erreur.<br><span class="grad">Corrige le lift.</span>',
   "home.lede": "Comprends pourquoi ton snatch, ton clean ou ton jerk échoue et reçois les exercices qui le corrigent, avec un lien vers la bibliothèque d’exercices de Catalyst Athletics.",
   "art.liftoff": "Décollage", "art.knee": "Genou", "art.ext": "Extension", "art.catch": "Réception", "art.cap": "Trajectoire · Snatch",
-  "mod.1": "Module 01", "mod.2": "Module 02", "mod.3": "Module 03",
   "mod.diag.h": "Diagnostic", "mod.diag.p": "Choisis l’erreur que tu vois, réponds à quelques questions sur toi et reçois ton plan d’entraînement.",
   "mod.diag.meta": "4 étapes · env. 3 min", "mod.diag.btn": "Commencer le diagnostic",
   "mod.video.h": "Analyse vidéo", "mod.video.p": "Charge une vidéo de ton lift. L’app suit ton corps, mesure les angles et le timing, et montre les erreurs.",
   "mod.video.meta": "Fonctionne sur ton appareil · aucun envoi", "mod.video.btn": "Analyser une vidéo",
   "mod.ex.h": "Exercices", "mod.ex.p": "Parcours les 624 exercices de la bibliothèque Catalyst Athletics, avec un lien vers chaque vidéo.",
   "mod.ex.meta": "624 exercices", "mod.ex.btn": "Voir les exercices",
-  "hiw.label": "Comment ça marche",
-  "hiw.1.h": "Repérer l’erreur", "hiw.1.p": "Ce que tu vois dans ton lift ou en vidéo.",
-  "hiw.2.h": "Trouver la cause", "hiw.2.p": "Les questions précisent pourquoi ça arrive.",
-  "hiw.3.h": "Entraîner la correction", "hiw.3.p": "Des exercices choisis pour cette cause.",
-
+  
   "diag.h1": "Diagnostic", "diag.steps": "Étapes du diagnostic",
   "step.lift": "Lift", "step.faults": "Erreurs", "step.questions": "Questions", "step.plan": "Plan",
   "step.1": "Étape 1", "step.2": "Étape 2", "step.3": "Étape 3",
@@ -433,5 +428,23 @@ Object.assign(I18N.fr.ui, {
   "clubs.n.one": "1 club", "clubs.n.other": "{n} clubs", "clubs.count": "{n} clubs dans {towns} localités",
   "clubs.mail": "Envoyer un e-mail", "clubs.web": "Site web", "clubs.all": "Tous les clubs",
   "clubs.subject": "Intéressé·e par un entraînement d’essai",
-  "clubs.source": "Liste : Fédération Suisse d’Haltérophilie (swiss-weightlifting.ch), état octobre 2026. Un club manque ou n’est plus à jour ? Signale-le à la fédération."
+});
+
+Object.assign(I18N.fr.ui, {
+ "clubs.regions": "Régions",
+ "clubs.region.all": "Toute la Suisse",
+ "clubs.near": "Près de moi",
+ "clubs.region.leman": "Arc lémanique",
+ "clubs.region.jura": "Arc jurassien & Seeland",
+ "clubs.region.bern": "Berne & Fribourg",
+ "clubs.region.nw": "Nord-Ouest",
+ "clubs.region.zh": "Zurich & Est",
+ "clubs.region.central": "Suisse centrale & Tessin",
+ "clubs.locating": "Recherche de ta position …",
+ "clubs.nearOk": "Trié par distance. Ta position reste sur ton appareil.",
+ "clubs.far": "Tu es hors de Suisse. Le club le plus proche est {club} à {city}, à {km} km.",
+ "clubs.denied": "Position non autorisée. Choisis plutôt une région.",
+ "clubs.unavailable": "Ta position n’est pas disponible. Choisis plutôt une région.",
+ "clubs.km": "{km} km",
+ "clubs.mailTo": "E-mail à {club}"
 });

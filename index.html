@@ -65,21 +65,21 @@
 
     <div class="modules">
       <a class="module" href="#/diagnosis">
-        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="18" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></span><span class="label" data-i18n="mod.1">Module 01</span></span>
+        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="18" rx="2"/><path d="M9 3.5h6v3H9z"/><path d="M8.5 11.5l2 2 4-4"/><path d="M8.5 17h7"/></svg></span></span>
         <h2 data-i18n="mod.diag.h">Diagnosis</h2>
         <p data-i18n="mod.diag.p">Pick the fault you see, answer a few questions about yourself, then get your training plan.</p>
         <span class="module-meta"><span class="led red"></span><span class="label" data-i18n="mod.diag.meta">4 steps · about 3 min</span></span>
         <span class="btn primary" data-i18n="mod.diag.btn">Start diagnosis</span>
       </a>
       <a class="module" href="#/video">
-        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13.5" height="12" rx="2"/><path d="M16 10.5l5.5-3v9l-5.5-3z"/><circle cx="7" cy="10" r="1.2"/></svg></span><span class="label" data-i18n="mod.2">Module 02</span></span>
+        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="13.5" height="12" rx="2"/><path d="M16 10.5l5.5-3v9l-5.5-3z"/><circle cx="7" cy="10" r="1.2"/></svg></span></span>
         <h2 data-i18n="mod.video.h">Video analysis</h2>
         <p data-i18n="mod.video.p">Upload a video of your lift. The app tracks your body, measures angles and timing, and points to the faults.</p>
         <span class="module-meta"><span class="led on"></span><span class="label" data-i18n="mod.video.meta">Runs on your device · no upload</span></span>
         <span class="btn" data-i18n="mod.video.btn">Analyze a video</span>
       </a>
       <a class="module" href="#/exercises">
-        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4.5h4v15H4z"/><path d="M10 4.5h4v15h-4z"/><path d="M16.2 5.3l3.8-1 3 14.5-3.8 1z"/></svg></span><span class="label" data-i18n="mod.3">Module 03</span></span>
+        <span class="module-top"><span class="icon-housing" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 4.5h4v15H4z"/><path d="M10 4.5h4v15h-4z"/><path d="M16.2 5.3l3.8-1 3 14.5-3.8 1z"/></svg></span></span>
         <h2 data-i18n="mod.ex.h">Exercises</h2>
         <p data-i18n="mod.ex.p">Search all 624 exercises of the Catalyst Athletics library, with a link to each video.</p>
         <span class="module-meta"><span class="led"></span><span class="label" data-i18n="mod.ex.meta">624 exercises</span></span>
@@ -93,18 +93,11 @@
       <span class="btn primary" data-i18n="promo.btn">Find a club</span>
     </a>
 
-    <div class="how-it-works" aria-label="How it works" data-i18n-aria="hiw.label">
-      <div class="pipe" aria-hidden="true"></div>
-      <div class="hiw-step"><span class="dot">1</span><b data-i18n="hiw.1.h">Spot the fault</b><span data-i18n="hiw.1.p">What you see in your lift or on video.</span></div>
-      <div class="hiw-step"><span class="dot">2</span><b data-i18n="hiw.2.h">Find the cause</b><span data-i18n="hiw.2.p">Questions narrow down why it happens.</span></div>
-      <div class="hiw-step"><span class="dot">3</span><b data-i18n="hiw.3.h">Train the fix</b><span data-i18n="hiw.3.p">Exercises chosen for that cause.</span></div>
-    </div>
   </section>
 
   <!-- ===== Diagnosis ===== -->
   <section id="page-diagnosis" class="page col" hidden>
     <div class="pagehead">
-      <span class="label" data-i18n="mod.1">Module 01</span>
       <h1 data-i18n="diag.h1">Diagnosis</h1>
     </div>
     <nav class="stepper" id="stepper" aria-label="Diagnosis steps" data-i18n-aria="diag.steps"></nav>
@@ -150,7 +143,6 @@
   <!-- ===== Video ===== -->
   <section id="page-video" class="page col" hidden>
     <div class="pagehead">
-      <span class="label" data-i18n="mod.2">Module 02</span>
       <h1 data-i18n="v.h1">Video analysis</h1>
     </div>
     <div class="lifts" id="vlifts"></div>
@@ -207,7 +199,6 @@
   <!-- ===== Exercises ===== -->
   <section id="page-exercises" class="page col" hidden>
     <div class="pagehead">
-      <span class="label" data-i18n="mod.3">Module 03</span>
       <h1 data-i18n="lib.h1">Exercises</h1>
     </div>
     <div class="lib-panel">
@@ -230,14 +221,14 @@
       <h1 data-i18n="clubs.h1">From functional fitness to weightlifting?</h1>
       <p class="lede" data-i18n="clubs.lede">Improve your lifts for good: find a club with a qualified coach. Here are all clubs of the Swiss Weightlifting Federation.</p>
     </div>
+    <div class="regionbar" id="regionbar" role="group" aria-label="Regions" data-i18n-aria="clubs.regions"></div>
     <div class="grid clubs-grid">
       <div class="clubmap" id="clubmap"></div>
-      <aside class="sheet clubpanel" id="clubpanel" aria-live="polite"></aside>
-    </div>
-    <div class="lib-panel">
-      <div class="clubhead"><h2 data-i18n="clubs.all">All clubs</h2><span class="libcount" id="clubcount"></span></div>
-      <ul class="clublist" id="clublist"></ul>
-      <p class="foot" data-i18n="clubs.source">List: Swiss Weightlifting Federation (swiss-weightlifting.ch), as of October 2026. Is a club missing or out of date? Let the federation know.</p>
+      <div class="lib-panel clubside">
+        <div class="clubhead"><h2 id="clubtitle"></h2><span class="libcount" id="clubcount"></span></div>
+        <p class="toast" id="clubmsg" aria-live="polite"></p>
+        <ul class="clubrows" id="clublist"></ul>
+      </div>
     </div>
   </section>
   </main>

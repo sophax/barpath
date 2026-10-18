@@ -572,14 +572,12 @@ body{background-attachment:scroll}
 
 /* ---------- 18. Clubs: Karte der Schweiz ---------- */
 .clubs-grid{align-items:start}
-@media (min-width:1024px){ .clubs-grid{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)} .clubpanel{position:sticky; top:84px} }
 .clubmap{position:relative; border-radius:var(--r-xl); padding:14px; background:
   radial-gradient(120% 90% at 50% 0%, rgba(255,255,255,.95), rgba(255,255,255,.6)),
   linear-gradient(160deg, rgba(255,122,61,.08), rgba(31,95,191,.07)); box-shadow:var(--sh-card)}
-.clubmap svg{display:block; width:100%; height:auto; overflow:visible}
+.clubmap svg{display:block; width:100%; height:auto; overflow:hidden; border-radius:var(--r-lg)}
 .ch-land{stroke:rgba(0,0,0,.14); stroke-width:1.5; stroke-linejoin:round}
 .pin{cursor:pointer; outline:none}
-.pin .hit{fill:transparent}
 .pin .dot{stroke:#fff; filter:drop-shadow(0 3px 5px rgba(196,16,27,.35)); transition:transform 200ms var(--spring)}
 .pin .cnt{font-family:var(--f-sans); font-weight:700; fill:#fff; pointer-events:none}
 .pin .ring{fill:rgba(227,38,47,.14); stroke:var(--accent); stroke-width:1.5}
@@ -592,15 +590,7 @@ body{background-attachment:scroll}
 @keyframes ripple{from{transform:scale(.6); opacity:1} to{transform:scale(1.5); opacity:0}}
 .townlbl{font-family:var(--f-display); font-weight:700; fill:var(--ink); paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round; pointer-events:none}
 
-.clubpanel{gap:14px}
 .clubhead{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap}
-ul.clublist{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px}
-.clubpanel ul.clublist{grid-template-columns:minmax(0,1fr)}
-.clubcard{display:flex; flex-direction:column; gap:10px; padding:14px; border-radius:var(--r-md); background:var(--fill)}
-.clubinfo{display:flex; flex-direction:column; gap:2px; min-width:0}
-.clubinfo b{font-weight:600; line-height:1.3}
-.clubact{display:flex; gap:8px; flex-wrap:wrap}
-.clubact .btn{min-height:40px; padding:0 16px; font-size:.92rem}
 
 /* Startseite: Hinweis auf die Clubs */
 .promo{display:grid; grid-template-columns:auto minmax(0,1fr); gap:14px 16px; align-items:center; padding:20px; border-radius:var(--r-xl);
@@ -615,3 +605,56 @@ ul.clublist{list-style:none; margin:0; padding:0; display:grid; grid-template-co
 @media (min-width:700px){ .promo{grid-template-columns:auto minmax(0,1fr) auto; padding:22px 26px} .promo .btn{grid-column:auto} }
 @media (hover:hover){ .promo:hover{transform:translateY(-2px); box-shadow:var(--sh-hover)} }
 .ch-lake{fill:#d8e6f5; stroke:#c3d6ec; stroke-width:1}
+
+
+/* Clubs: Regionen, Zoom, Liste ohne Logos */
+@media (min-width:1024px){ .clubs-grid{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)} .clubside{position:sticky; top:84px; max-height:calc(100vh - 100px); overflow:auto} }
+.regionbar{display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding:2px 2px 6px; margin:0 calc(-1 * var(--gutter)); padding-left:var(--gutter); padding-right:var(--gutter);
+  scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch}
+.regionbar::-webkit-scrollbar{display:none}
+@media (min-width:768px){ .regionbar{flex-wrap:wrap; overflow:visible; margin:0; padding:0} }
+.rchip{flex:none; scroll-snap-align:center; min-height:40px; padding:0 16px; border:0; border-radius:var(--r-full); white-space:nowrap;
+  background:var(--surface); box-shadow:0 0 0 .5px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.06); font-size:.92rem; font-weight:500; color:var(--ink);
+  transition:background 150ms var(--ease), color 150ms, transform 120ms var(--ease)}
+.rchip:active{transform:scale(.96)}
+.rchip[aria-pressed="true"]{background:var(--grad-red); color:#fff; box-shadow:0 4px 12px rgba(227,38,47,.28)}
+.rchip.near::before{content:""; display:inline-block; width:14px; height:14px; margin-right:6px; vertical-align:-2px; background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.2 18.5L12 17l-3.2 3.5z' transform='rotate(45 12 12)' fill='black'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2l3.2 18.5L12 17l-3.2 3.5z' transform='rotate(45 12 12)' fill='black'/%3E%3C/svg%3E") center/contain no-repeat}
+.clubmap{touch-action:manipulation}
+.pin.dim{opacity:.28; pointer-events:none}
+.pin .dot{transition:none}
+.townlbl{font-family:var(--f-sans); font-weight:600; fill:var(--ink); paint-order:stroke; stroke:#fff; stroke-linejoin:round; pointer-events:none}
+.pin.on .townlbl{font-weight:700}
+.me-halo{fill:rgba(10,132,255,.18)}
+.me-dot{fill:#0a84ff; stroke:#fff}
+.clubside{gap:12px}
+.clubside .toast:empty{display:none}
+ul.clubrows{list-style:none; margin:0; padding:0; border-radius:var(--r-md); background:var(--fill); overflow:hidden}
+.clubrow{display:flex; align-items:center; gap:10px; padding:12px 12px 12px 16px; transition:background 200ms var(--ease)}
+.clubrow + .clubrow{border-top:.5px solid var(--line-strong)}
+.clubrow.hl{background:var(--accent-soft)}
+.clubrow .clubinfo{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:2px}
+.clubrow .clubinfo b{font-weight:600; line-height:1.3}
+.clubrow .meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.85rem; color:var(--ink-muted)}
+.clubrow .ct{font-size:.7rem; font-weight:700; padding:1px 6px; border-radius:var(--r-sm); background:var(--surface); color:var(--ink-muted); letter-spacing:.02em}
+.clubrow .dist{font-weight:600; color:var(--accent-text)}
+.webbtn{flex:none; font-size:.85rem; font-weight:600; color:var(--accent-text); text-decoration:none; padding:8px 4px}
+.mailbtn{flex:none; width:44px; height:44px; border-radius:var(--r-full); display:grid; place-items:center; background:var(--grad-red);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 4px 10px rgba(227,38,47,.25); transition:transform 120ms var(--ease)}
+.mailbtn:active{transform:scale(.94)}
+.mailbtn svg{width:20px; height:20px; fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.clubmap svg{aspect-ratio:1.53}
+@media (max-width:767px){ .clubmap{padding:8px} .clubmap svg{aspect-ratio:1.05} }
+
+/* Handy: insgesamt kleinere Schrift */
+@media (max-width:600px){
+  html{font-size:14.5px}
+  body{font-size:15px}
+  h1{font-size:clamp(1.75rem,7vw,2.4rem)}
+  .pagehead h1{font-size:clamp(1.75rem,7.5vw,2.4rem)}
+  .hero h1{font-size:clamp(2.2rem,10vw,3rem)}
+  .hero .lede{font-size:1.02rem}
+  h2{font-size:1.3rem}
+  .btn{font-size:.95rem}
+}

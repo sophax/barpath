@@ -48,18 +48,13 @@ I18N.en.ui = {
   "home.h1": 'Find the fault.<br><span class="grad">Fix the lift.</span>',
   "home.lede": "See why your snatch, clean or jerk goes wrong and get the exercises that fix it, linked to the Catalyst Athletics exercise library.",
   "art.liftoff": "Lift-off", "art.knee": "Knee", "art.ext": "Extension", "art.catch": "Catch", "art.cap": "Bar path · Snatch",
-  "mod.1": "Module 01", "mod.2": "Module 02", "mod.3": "Module 03",
   "mod.diag.h": "Diagnosis", "mod.diag.p": "Pick the fault you see, answer a few questions about yourself, then get your training plan.",
   "mod.diag.meta": "4 steps · about 3 min", "mod.diag.btn": "Start diagnosis",
   "mod.video.h": "Video analysis", "mod.video.p": "Upload a video of your lift. The app tracks your body, measures angles and timing, and points to the faults.",
   "mod.video.meta": "Runs on your device · no upload", "mod.video.btn": "Analyze a video",
   "mod.ex.h": "Exercises", "mod.ex.p": "Search all 624 exercises of the Catalyst Athletics library, with a link to each video.",
   "mod.ex.meta": "624 exercises", "mod.ex.btn": "Browse exercises",
-  "hiw.label": "How it works",
-  "hiw.1.h": "Spot the fault", "hiw.1.p": "What you see in your lift or on video.",
-  "hiw.2.h": "Find the cause", "hiw.2.p": "Questions narrow down why it happens.",
-  "hiw.3.h": "Train the fix", "hiw.3.p": "Exercises chosen for that cause.",
-
+  
   /* Diagnosis */
   "diag.h1": "Diagnosis", "diag.steps": "Diagnosis steps",
   "step.lift": "Lift", "step.faults": "Faults", "step.questions": "Questions", "step.plan": "Plan",
@@ -206,5 +201,23 @@ Object.assign(I18N.en.ui, {
   "clubs.n.one": "1 club", "clubs.n.other": "{n} clubs", "clubs.count": "{n} clubs in {towns} towns",
   "clubs.mail": "Send email", "clubs.web": "Website", "clubs.all": "All clubs",
   "clubs.subject": "Interested in a trial session",
-  "clubs.source": "List: Swiss Weightlifting Federation (swiss-weightlifting.ch), as of October 2026. Is a club missing or out of date? Let the federation know."
+});
+
+Object.assign(I18N.en.ui, {
+ "clubs.regions": "Regions",
+ "clubs.region.all": "All of Switzerland",
+ "clubs.near": "Near me",
+ "clubs.region.leman": "Lake Geneva",
+ "clubs.region.jura": "Jura & Seeland",
+ "clubs.region.bern": "Bern & Fribourg",
+ "clubs.region.nw": "Northwest",
+ "clubs.region.zh": "Zurich & East",
+ "clubs.region.central": "Central & Ticino",
+ "clubs.locating": "Finding your location …",
+ "clubs.nearOk": "Sorted by distance from you. Your location stays on your device.",
+ "clubs.far": "You're outside Switzerland. The nearest club is {club} in {city}, {km} km away.",
+ "clubs.denied": "Location not allowed. Pick a region instead.",
+ "clubs.unavailable": "Your location isn't available. Pick a region instead.",
+ "clubs.km": "{km} km",
+ "clubs.mailTo": "Email {club}"
 });
