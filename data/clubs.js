@@ -1,30 +1,30 @@
 /* Clubs of the Swiss Weightlifting Federation (swiss-weightlifting.ch/contact, as of October 2026).
    Contact addresses as published there. City and coordinates: town of the club or its gym.
-   web: only where the club's own page was checked. logo: from the club's own website (October 2026), dark: light logo on a dark tile. */
+   web: the club's own page, or its gym's page, or its Instagram/Facebook page when there is no website (checked October 2026). logo: from the club's own website (October 2026), dark: light logo on a dark tile. */
 const CLUBS = [
- {n:"Association Neuchâtel Force", city:"Neuchâtel", ct:"NE", lat:46.990, lon:6.931, mail:"neuchatelforce@gmail.com"},
- {n:"Club Haltérophile Neuchâtel", city:"Neuchâtel", ct:"NE", lat:46.990, lon:6.931, mail:"zyad.haddad1@gmail.com"},
+ {n:"Association Neuchâtel Force", city:"Neuchâtel", ct:"NE", lat:46.990, lon:6.931, mail:"neuchatelforce@gmail.com", web:"https://www.instagram.com/neuchatelforce/"},
+ {n:"Club Haltérophile Neuchâtel", city:"Neuchâtel", ct:"NE", lat:46.990, lon:6.931, mail:"zyad.haddad1@gmail.com", web:"https://chn.ch/halterophilie/"},
  {n:"B.O.G Barbell Club Landeron", city:"Le Landeron", ct:"NE", lat:47.057, lon:7.070, mail:"bog.barbellclub@gmail.com"},
- {n:"Club Haltérophile La Chaux-de-Fonds", city:"La Chaux-de-Fonds", ct:"NE", lat:47.100, lon:6.826, mail:"noemie1311@gmail.com"},
- {n:"Athletik-Sport Rorschach", city:"Rorschach", ct:"SG", lat:47.478, lon:9.490, mail:"info@asrorschach.ch", logo:"icons/clubs/asr-240.jpg"},
- {n:"Barbell Club Bienne Seeland", city:"Biel/Bienne", ct:"BE", lat:47.137, lon:7.247, mail:"info@barbellclub-bienneseeland.ch", logo:"icons/clubs/bcbs-240.png"},
- {n:"Haltéro-Club Tramelan", city:"Tramelan", ct:"BE", lat:47.223, lon:7.103, mail:"president.halteroclubtramelan@gmail.com"},
+ {n:"Club Haltérophile La Chaux-de-Fonds", city:"La Chaux-de-Fonds", ct:"NE", lat:47.100, lon:6.826, mail:"noemie1311@gmail.com", web:"https://www.facebook.com/CHC1903/"},
+ {n:"Athletik-Sport Rorschach", city:"Rorschach", ct:"SG", lat:47.478, lon:9.490, mail:"info@asrorschach.ch", web:"https://www.asrorschach.ch", logo:"icons/clubs/asr-240.jpg"},
+ {n:"Barbell Club Bienne Seeland", city:"Biel/Bienne", ct:"BE", lat:47.137, lon:7.247, mail:"info@barbellclub-bienneseeland.ch", web:"https://www.barbellclub-bienneseeland.ch", logo:"icons/clubs/bcbs-240.png"},
+ {n:"Haltéro-Club Tramelan", city:"Tramelan", ct:"BE", lat:47.223, lon:7.103, mail:"president.halteroclubtramelan@gmail.com", web:"https://www.halteroclubtramelan.com"},
  {n:"Société d'Haltérophilie Prévôtoise", city:"Moutier", ct:"BE", lat:47.279, lon:7.369, mail:"cyril.gosteli@gmail.com"},
- {n:"Schwerathletik Club Bern", city:"Bern", ct:"BE", lat:46.948, lon:7.447, mail:"info@gewichthebenbern.ch", logo:"icons/clubs/scb.svg", dark:true},
+ {n:"Schwerathletik Club Bern", city:"Bern", ct:"BE", lat:46.948, lon:7.447, mail:"info@gewichthebenbern.ch", web:"https://www.gewichthebenbern.ch", logo:"icons/clubs/scb.svg", dark:true},
  {n:"PB Weightlifting Club", city:"Bern", ct:"BE", lat:46.948, lon:7.447, mail:"pbweightlifting@tst-fitness.ch", web:"https://www.tst-fitness.ch"},
- {n:"CLHM Lausanne", city:"Lausanne", ct:"VD", lat:46.520, lon:6.633, mail:"info@clhm.ch", logo:"icons/clubs/clhm-240.jpg"},
- {n:"CHC Lignon", city:"Vernier (Le Lignon)", ct:"GE", lat:46.207, lon:6.093, mail:"chc.lignon@gmail.com"},
+ {n:"CLHM Lausanne", city:"Lausanne", ct:"VD", lat:46.520, lon:6.633, mail:"info@clhm.ch", web:"https://www.clhm.ch", logo:"icons/clubs/clhm-240.jpg"},
+ {n:"CHC Lignon", city:"Vernier (Le Lignon)", ct:"GE", lat:46.207, lon:6.093, mail:"chc.lignon@gmail.com", web:"https://www.facebook.com/chc.haltero"},
  {n:"PTL Weightlifting", city:"Grand-Lancy", ct:"GE", lat:46.178, lon:6.123, mail:"ptlweightlifting@gmail.com", web:"https://ptlgeneva.ch"},
  {n:"Weightlifting Club 1700", city:"Fribourg", ct:"FR", lat:46.806, lon:7.162, mail:"weightliftingclub1700@gmail.com"},
- {n:"Crossfit Basel", city:"Basel", ct:"BS", lat:47.559, lon:7.588, mail:"rg@crossfitbasel.ch"},
+ {n:"Crossfit Basel", city:"Basel", ct:"BS", lat:47.559, lon:7.588, mail:"rg@crossfitbasel.ch", web:"https://www.crossfitbasel.ch"},
  {n:"Weightlifting Northwest", city:"Reinach BL", ct:"BL", lat:47.493, lon:7.591, mail:"t.schwander@hispeed.ch", web:"https://cftodoma.ch"},
  {n:"GHC Grenchen", city:"Grenchen", ct:"SO", lat:47.192, lon:7.396, mail:"eliano.morandi@besonet.ch"},
- {n:"Weightlifting Solothurn", city:"Solothurn", ct:"SO", lat:47.208, lon:7.537, mail:"christof.kellenberger@gmx.ch"},
+ {n:"Weightlifting Solothurn", city:"Solothurn", ct:"SO", lat:47.208, lon:7.537, mail:"christof.kellenberger@gmx.ch", web:"https://kraftsportclub.ch"},
  {n:"Gewichtheber Klub der Sportfreunde", city:"Zürich-Altstetten", ct:"ZH", lat:47.389, lon:8.488, mail:"gewichtheben@klubdersportfreunde.ch", web:"https://www.klubdersportfreunde.ch", logo:"icons/clubs/kds.svg"},
- {n:"United Lifters Zürich", city:"Zürich", ct:"ZH", lat:47.377, lon:8.540, mail:"info@crossfitzuerich.ch"},
- {n:"Vereinigung der Zürcher Gewichtheber", city:"Zürich", ct:"ZH", lat:47.377, lon:8.540, mail:"lukas.stirnemann@gmail.com"},
- {n:"Gewichtheber*innen Luzern", city:"Luzern", ct:"LU", lat:47.050, lon:8.309, mail:"gwechthebelozaern@gmail.com"},
- {n:"Gewichtheberclub Schwyz", city:"Schwyz", ct:"SZ", lat:47.021, lon:8.654, mail:"ghc-schwyz@gmx.ch"},
+ {n:"United Lifters Zürich", city:"Zürich", ct:"ZH", lat:47.377, lon:8.540, mail:"info@crossfitzuerich.ch", web:"https://www.instagram.com/unitedlifterszurich/"},
+ {n:"Vereinigung der Zürcher Gewichtheber", city:"Zürich", ct:"ZH", lat:47.377, lon:8.540, mail:"lukas.stirnemann@gmail.com", web:"https://www.zuerchergewichtheber.ch"},
+ {n:"Gewichtheber*innen Luzern", city:"Luzern", ct:"LU", lat:47.050, lon:8.309, mail:"gwechthebelozaern@gmail.com", web:"https://www.ghluzern.ch"},
+ {n:"Gewichtheberclub Schwyz", city:"Schwyz", ct:"SZ", lat:47.021, lon:8.654, mail:"ghc-schwyz@gmx.ch", web:"https://www.trainingshalle.ch/gewichtheberclub-schwyz"},
  {n:"Società Atletica VIS NOVA", city:"Lugano", ct:"TI", lat:46.004, lon:8.951, mail:"teresita.bramante@gmail.com"}
 ];
 

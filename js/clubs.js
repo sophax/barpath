@@ -192,6 +192,8 @@ function renderRegionBar() {
 
 /* List: plain rows, no logos */
 const MAIL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>';
+// Instagram- und Facebook-Seiten mit ihrem Namen beschriften, sonst «Website»
+const webLabel = u => /instagram\.com/.test(u) ? "Instagram" : /facebook\.com/.test(u) ? "Facebook" : t("clubs.web");
 function clubRow(c, tw) {
   const a = el("a", { class: "mailbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }) });
   a.innerHTML = MAIL_ICON;
@@ -199,7 +201,7 @@ function clubRow(c, tw) {
   if (ST.near && tw.km != null) meta.append(el("span", { class: "dist" }, t("clubs.km", { km: tw.km < 10 ? num(tw.km, 1) : Math.round(tw.km) })));
   return el("li", { class: "clubrow" + (tw === ST.town ? " hl" : "") },
     el("span", { class: "clubinfo" }, el("b", {}, c.n), meta),
-    c.web ? el("a", { class: "webbtn", href: c.web, target: "_blank", rel: "noopener" }, t("clubs.web")) : "", a);
+    c.web ? el("a", { class: "webbtn", href: c.web, target: "_blank", rel: "noopener" }, webLabel(c.web)) : "", a);
 }
 function renderSide() {
   let towns = TOWNS.filter(tw => ST.near || !ST.region || tw.region === ST.region);
