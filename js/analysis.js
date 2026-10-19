@@ -27,6 +27,72 @@ export function seek(video, t) {
   });
 }
 
+/* Bilder lesen durch Abspielen statt Springen. Springen dekodiert jedes Mal ab dem letzten Schlüsselbild,
+   bei Handyvideos (1080p, HEVC) dauert das pro Bild ein Vielfaches der Erkennung. Beim Abspielen liefert
+   requestVideoFrameCallback jedes Bild mit seiner Zeit. step(t) läuft höchstens alle `every` Sekunden Videozeit;
+   die Abspielgeschwindigkeit passt sich laufend an, wie lange die Erkennung pro Bild braucht.
+   Ohne requestVideoFrameCallback oder wenn das Abspielen nicht startet: wie bisher Bild für Bild springen. */
+const RVFC = typeof HTMLVideoElement !== "undefined" && "requestVideoFrameCallback" in HTMLVideoElement.prototype;
+function playRead(video, a, b, every, step, { signal, maxRate = 8, minRate = 0.25 } = {}) {
+  return new Promise(async (resolve, reject) => {
+    try { await seek(video, a); } catch (e) { return reject(e); }
+    const muted = video.muted, rate0 = video.playbackRate;
+    let next = a, cost = 35, done = false, last = performance.now(), got = 0, mode = RVFC ? "frames" : "poll";
+    const rateFor = () => Math.min(maxRate, Math.max(minRate, 0.85 * every * 1000 / (cost + 4)));
+    const finish = err => {
+      if (done) return; done = true; clearInterval(watch);
+      video.pause(); video.playbackRate = rate0; video.muted = muted;
+      err ? reject(err) : resolve();
+    };
+    const handle = t => {
+      last = performance.now();
+      if (t >= b - 1e-3) return finish(got ? null : { code: "noplay" });
+      if (t + 1e-3 < next) return;
+      const t0 = performance.now();
+      try { step(t); } catch (e) { return finish(e); }
+      got++;
+      cost = cost * 0.7 + (performance.now() - t0) * 0.3;
+      video.playbackRate = rateFor();
+      next = t + every * 0.6;
+    };
+    // Normalfall: jedes angezeigte Bild mit seiner genauen Zeit
+    const onFrame = (now, meta) => { if (done || mode !== "frames") return; handle(meta.mediaTime); if (!done) video.requestVideoFrameCallback(onFrame); };
+    // Ersatz, falls der Browser keine Bilder meldet (z.B. nicht sichtbar): aktuelle Zeit ablesen
+    const poll = () => { if (done) return; if (!video.paused && !video.seeking) handle(video.currentTime); setTimeout(poll, 4); };
+    const watch = setInterval(() => {
+      if (signal?.aborted) return finish({ code: "cancelled" });
+      if (video.ended) return finish(got ? null : { code: "noplay" });
+      if (document.hidden) { last = performance.now(); return; } // im Hintergrund hält der Browser das Video an
+      if (video.paused && !video.seeking) video.play().catch(() => {});
+      if (performance.now() - last > 6000) finish({ code: got ? "video" : "noplay" });
+    }, 400);
+    video.muted = true; video.playbackRate = rateFor();
+    if (mode === "frames") {
+      video.requestVideoFrameCallback(onFrame);
+      // Keine Bilder gemeldet: zurück an den Anfang und die Zeit ablesen
+      setTimeout(() => {
+        if (done || got || mode !== "frames") return;
+        mode = "poll"; video.pause();
+        seek(video, a).then(() => { next = a; last = performance.now(); video.play().catch(() => {}); poll(); }, finish);
+      }, 700);
+    } else poll();
+    video.addEventListener("ended", () => finish(got ? null : { code: "noplay" }), { once: true });
+    video.play().catch(() => finish({ code: "noplay" }));
+  });
+}
+async function readFrames(video, a, b, every, step, { signal, maxRate } = {}) {
+  try { return await playRead(video, a, b, every, step, { signal, maxRate }); }
+  catch (e) { if (e?.code !== "noplay") throw e; }
+  const n = Math.max(1, Math.round((b - a) / every));
+  for (let i = 0; i < n; i++) {
+    if (signal?.aborted) throw { code: "cancelled" };
+    const t = a + i * every;
+    await seek(video, t);
+    step(t);
+    if (i % 4 === 3) await new Promise(r => setTimeout(r, 0));
+  }
+}
+
 /* MediaPipe-Indizes */
 const K = { nose: 0, earL: 7, earR: 8, shL: 11, shR: 12, elL: 13, elR: 14, wrL: 15, wrR: 16, hipL: 23, hipR: 24, knL: 25, knR: 26, anL: 27, anR: 28, heelL: 29, heelR: 30, toeL: 31, toeR: 32 };
 export const BONES = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28], [27, 29], [29, 31], [27, 31], [28, 30], [30, 32], [28, 32]];
@@ -75,20 +141,32 @@ export async function track(video, a, b, { fps = 30, onProgress, signal } = {}) 
   }
   const box = probes.length ? cropBox(probes, W, H) : full;
   // 2. Durchgang: jedes Bild im vergrösserten Ausschnitt
-  const frames = [];
-  let prev = first;
-  for (let i = 0; i < n; i++) {
-    if (signal?.aborted) throw { code: "cancelled" };
-    const t = a + i / fps;
-    await seek(video, t);
+  // Feste Bildfolge mit `fps`; jedes gelesene Bild kommt in den nächstgelegenen Platz
+  const frames = Array.from({ length: n }, (_, i) => ({ i, t: a + i / fps, p: null }));
+  const seen = new Uint8Array(n);
+  let prev = first, filled = 0;
+  await readFrames(video, a, b + 0.5 / fps, 1 / fps, t => {
+    const i = Math.round((t - a) * fps);
+    if (i < 0 || i >= n || seen[i]) return;
     draw(box); ts += 34;
     const p = pick(lm.detectForVideo(canvas, ts).landmarks, prev, box);
     if (p) prev = p;
-    frames.push({ i, t, p });
-    onProgress?.(i + 1, n);
-    if (i % 5 === 4) await new Promise(r => setTimeout(r, 0));
+    frames[i].p = p; seen[i] = 1; filled++;
+    onProgress?.(Math.min(n, i + 1), n);
+  }, { signal, maxRate: 2 });
+  // Beim Abspielen ausgelassene Bilder aus den Nachbarn ergänzen (nur kurze Lücken)
+  for (let i = 0; i < n; i++) {
+    if (seen[i]) continue;
+    let l = i - 1, r = i + 1;
+    while (l >= 0 && !seen[l]) l--;
+    while (r < n && !seen[r]) r++;
+    const L = l >= 0 ? frames[l].p : null, R = r < n ? frames[r].p : null;
+    if ((r - l) > 6 || !(L || R)) continue;
+    if (!L || !R) { frames[i].p = (L || R).map(q => ({ ...q })); continue; }
+    const u = (i - l) / (r - l);
+    frames[i].p = L.map((q, k) => ({ x: q.x + (R[k].x - q.x) * u, y: q.y + (R[k].y - q.y) * u, v: Math.min(q.v, R[k].v) }));
   }
-  return { frames, W, H, fps, box };
+  return { frames, W, H, fps, box, read: filled };
 }
 
 /* ---------- Geometrie ---------- */
@@ -507,22 +585,17 @@ export async function findLifts(video, { fps = 5, onProgress, signal, debug } = 
   const canvas = document.createElement("canvas"); canvas.width = canvas.height = CROP;
   const g = canvas.getContext("2d");
   const full = { x: 0, y: 0, s: Math.max(W, H) };
-  const n = Math.max(2, Math.floor(dur * fps));
   const samples = [];
   let prev = null;
-  for (let i = 0; i < n; i++) {
-    if (signal?.aborted) throw { code: "cancelled" };
-    const t = Math.min(dur - 0.05, i / fps);
-    await seek(video, t);
+  await readFrames(video, 0, dur - 0.05, 1 / fps, t => {
     g.fillStyle = "#000"; g.fillRect(0, 0, CROP, CROP);
     const k = CROP / full.s; g.drawImage(video, 0, 0, W * k, H * k);
     ts += 200;
     const p = pick(lm.detectForVideo(canvas, ts).landmarks, prev, full);
     if (p) prev = p;
     samples.push({ t, p });
-    onProgress?.(i + 1, n);
-    if (i % 4 === 3) await new Promise(r => setTimeout(r, 0));
-  }
+    onProgress?.(t, dur);
+  }, { signal, maxRate: 5 });
   // Per sample: heights relative to the ankles, normalised by shoulder–ankle length
   const rows = samples.map(({ t, p }) => {
     if (!p) return { t, ok: false };

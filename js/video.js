@@ -6,7 +6,7 @@ import { findingsImage, findingsText, shareFile } from "./share.js";
 const $ = id => document.getElementById(id);
 const vid = $("vid");
 const FPS = 30;
-const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null };
+const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [] };
 
 function msg(t, err) { const m = $("vmsg"); m.textContent = t; m.classList.toggle("err", !!err); }
 function progress(p) { const b = $("vprog"); b.hidden = p == null; if (p != null) b.firstElementChild.style.width = Math.round(p * 100) + "%"; }
@@ -72,7 +72,7 @@ async function scan(auto) {
         keyLabel(b, i, liftName(l));
         return b;
       });
-      $("vfound").replaceChildren(...keys);
+      $("vfound").replaceChildren(...keys); V.lifts = lifts;
       V.busy = false; pickLift(keys[0], lifts[0]); V.busy = true;
       final = [tn("v.found", lifts.length), false];
       first = auto;
@@ -82,7 +82,7 @@ async function scan(auto) {
     else if (e?.code === "video") final = [t("v.noFrames"), true];
     else { console.error(e); final = [t("v.scanFailed"), true]; }
   } finally { V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]); }
-  if (first) analyzeRange();
+  if (first) analyzeRange(true);
 }
 
 /* Analyse the marked range: track it, recognise the lift, analyse each part (a clean & jerk has two) */
@@ -93,10 +93,10 @@ function evaluate() {
   });
 }
 $("vgo").addEventListener("click", () => { V.key = $("vfound").querySelector('[aria-pressed="true"]'); analyzeRange(); });
-async function analyzeRange() {
+async function analyzeRange(auto) {
   if (V.busy || V.a == null || V.b == null || V.b <= V.a) return;
   V.busy = true; updateRange(); $("vstop").hidden = false; V.ctl = new AbortController();
-  let final = ["", false];
+  let final = ["", false], none = false;
   try {
     vid.pause();
     msg(t("v.loading")); progress(0);
@@ -106,7 +106,7 @@ async function analyzeRange() {
     msg(t("v.evaluating"));
     V.cam = detectView(tr);
     V.cls = classify(tr);
-    if (!V.cls) { V.parts = null; renderNone(); final = [t("v.unknown"), true]; }
+    if (!V.cls) { V.parts = null; renderNone(); final = [t("v.unknown"), true]; none = true; }
     else {
       V.parts = evaluate();
       if (V.key) keyLabel(V.key, +V.key.dataset.i, liftName(V.cls));
@@ -119,6 +119,11 @@ async function analyzeRange() {
     else if (e?.code === "video") final = [t("v.noFrames"), true];
     else { console.error(e); final = [t("v.failed"), true]; }
   } finally { V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]); }
+  // Automatisch: war das kein erkennbarer Versuch, gleich den nächsten gefundenen nehmen
+  if (auto && none && V.key) {
+    const i = +V.key.dataset.i + 1, k = $("vfound").querySelectorAll(".liftkey")[i];
+    if (k && V.lifts[i]) { pickLift(k, V.lifts[i]); analyzeRange(true); }
+  }
 }
 
 /* Draw a frame with the skeleton */

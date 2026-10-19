@@ -13,7 +13,7 @@ Weitere Funktionen:
 - **Sprachen:** EN, DE und FR, umschaltbar oben rechts. Ohne Wahl gilt die Sprache des Geräts, die Wahl bleibt auf dem Gerät gespeichert. Lift- und Übungsnamen bleiben überall Englisch. Grundtexte in `js/i18n.js` (Oberfläche) und `js/catalog.js` (Katalog), Übersetzungen in `js/lang/de.js` und `js/lang/fr.js`. Fehlt eine Übersetzung, erscheint der englische Text.
 
 - **Coaching Cues:** Zu jeder Ursache ein kurzer Satz zum Mitdenken im nächsten Versuch (in `js/catalog.js`, Abschnitt `CUES`).
-- **Versuche automatisch finden:** Die App geht das Video mit 5 Bildern pro Sekunde durch und listet jeden Versuch (Funktion `findLifts` in `js/analysis.js`).
+- **Versuche automatisch finden:** Die App geht das Video mit 5 Bildern pro Sekunde durch und listet jeden Versuch (Funktion `findLifts` in `js/analysis.js`). Die Bilder werden beim schnellen Abspielen gelesen statt Bild für Bild angesprungen (`readFrames`): Springen dekodiert jedes Mal ab dem letzten Schlüsselbild und ist bei Handyvideos sehr langsam. Die Abspielgeschwindigkeit passt sich der Erkennungszeit an (Suche bis 5-fach, Auswertung bis 2-fach).
 - **Übung automatisch erkennen** (`classify` in `js/analysis.js`): Startposition (Boden, Hang, Rack) und Ende (Stange über Kopf oder auf den Schultern) ergeben Snatch, Clean, Clean & Jerk oder Jerk. Hüfte im Empfang auf Kniehöhe oder tiefer = Squat, sonst Power. Beim Jerk: Füsse vorne/hinten auseinander = Split Jerk, Knie bei gestreckten Armen gebeugt = Push Jerk, sonst Push Press. Ein Clean & Jerk wird in zwei Teilen ausgewertet.
 - **Teilen:** Video-Befund als Bild oder Text, Übungsplan als Text. Am Handy über das Teilen-Menü, am Computer als Download bzw. in die Zwischenablage (`js/share.js`).
 
