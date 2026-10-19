@@ -13,6 +13,24 @@ function resolveEx(item, lift){
   return item;
 }
 function exFor(cause, lift){ const seen=new Set(); return CAUSES[cause].ex.map(i=>resolveEx(i,lift)).filter(i=>i&&BYID[i]&&!seen.has(i)&&seen.add(i)); }
+/* Main exercise and supplement first (FOCUS), then the rest of the cause's list */
+function focusEx(cause, lift){
+  const all=exFor(cause,lift), f=(FOCUS[cause]?.[lift]||[]).filter(i=>all.includes(i));
+  const top=f.length?f:all.slice(0,2);
+  return { top, more: all.filter(i=>!top.includes(i)) };
+}
+/* Exercises for one cause: main exercise and supplement, the rest folded away */
+function exBlock(cause, lift){
+  const {top, more}=focusEx(cause,lift);
+  const item=(id,i,role)=>{ const r=BYID[id];
+    return el("li",{class:role?"focus":""},el("span",{class:"n"},String(i+1).padStart(2,"0")),
+      el("span",{},role?el("span",{class:"role"},t("ex."+role)):"",el("a",{href:url(id),target:"_blank",rel:"noopener"},r[1]),el("span",{class:"tag"},SEC[r[2]]||"")),
+      el("span",{class:"note"},NOTE[id]||"")); };
+  const out=[el("ol",{class:"ex"},...top.map((id,i)=>item(id,i,i?"sup":"main")))];
+  if(more.length) out.push(el("details",{class:"exmore"},el("summary",{},t("ex.more",{n:more.length})),
+    el("ol",{class:"ex",start:String(top.length+1)},...more.map((id,i)=>item(id,i+top.length,null)))));
+  return out;
+}
 const USED = new Set(); Object.keys(CAUSES).forEach(c=>["sn","cl","jk"].forEach(l=>exFor(c,l).forEach(i=>USED.add(i))));
 
 /* ---------- Diagnosis state ---------- */
@@ -140,21 +158,20 @@ function renderPlan(){
   box.append(el("p",{class:"why"},t("plan.based",{list:faults.join(", ")})));
   if(!res.length){ box.append(el("div",{class:"empty"},t("plan.none"))); return; }
   const max=res[0].s;
-  res.slice(0,5).forEach(({c,s})=>{
+  // Die zwei wahrscheinlichsten Ursachen offen, je mit Hauptübung und Ergänzung; weitere zum Aufklappen
+  const card=({c,s})=>{
     const C=CAUSES[c];
     const lvl = s>=4?["hi",t("lvl.likely")]: s>=2?["mid",t("lvl.possible")]:["lo",t("lvl.check")];
-    const ol=el("ol",{class:"ex"});
-    exFor(c,S.lift).slice(0,6).forEach((id,i)=>{ const r=BYID[id];
-      ol.append(el("li",{},el("span",{class:"n"},String(i+1).padStart(2,"0")),
-        el("span",{},el("a",{href:url(id),target:"_blank",rel:"noopener"},r[1]),el("span",{class:"tag"},SEC[r[2]]||"")),
-        el("span",{class:"note"},NOTE[id]||""))); });
     const meter=el("div",{class:"meter","aria-hidden":"true"}); const bar=el("i"); bar.style.width=Math.round(s/max*100)+"%"; meter.append(bar);
-    box.append(el("div",{class:"cause"},
+    return el("div",{class:"cause"},
       el("div",{class:"ctop"},el("h3",{},C.t),el("span",{class:"pill "+lvl[0]},lvl[1])),
       meter, el("p",{class:"why"},C.why),
       cueEl(C.cue),
-      el("p",{class:"test"},el("b",{},t("selfcheck")),C.test), ol));
-  });
+      el("p",{class:"test"},el("b",{},t("selfcheck")),C.test), ...exBlock(c,S.lift));
+  };
+  res.slice(0,2).forEach(r=>box.append(card(r)));
+  const rest=res.slice(2,5);
+  if(rest.length) box.append(el("details",{class:"others"},el("summary",{},tn("plan.others",rest.length)),...rest.map(card)));
   if(res.length>5) box.append(el("p",{class:"lede"},t("plan.more",{n:res.length-5})));
 }
 /* Cue: a dark readout with an LED, the one thought to take into the next lift */
@@ -163,7 +180,7 @@ function cueEl(cue){ return cue ? el("p",{class:"cue"},el("span",{class:"led red
 function planText(res){
   const L=LIFTS[S.lift], NL=String.fromCharCode(10);
   const faults=selFaults().map(f=>"- "+f.t).join(NL);
-  const body=res.slice(0,5).map(({c})=>CAUSES[c].t+NL+"  "+t("txt.cue",{c:CAUSES[c].cue})+NL+exFor(c,S.lift).slice(0,6).map(id=>"  • "+BYID[id][1]+" – "+url(id)).join(NL)).join(NL+NL);
+  const body=res.slice(0,5).map(({c})=>CAUSES[c].t+NL+"  "+t("txt.cue",{c:CAUSES[c].cue})+NL+focusEx(c,S.lift).top.map((id,i)=>"  • "+t(i?"ex.sup":"ex.main")+": "+BYID[id][1]+" – "+url(id)).join(NL)).join(NL+NL);
   return "BarPath · "+L.t+NL+NL+t("txt.faults")+NL+faults+NL+NL+t("txt.causes")+NL+body+NL;
 }
 /* Share: the phone's share sheet where available, otherwise copy to the clipboard */

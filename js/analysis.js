@@ -299,6 +299,13 @@ function jerkKind(s, fps, view, a, iW) {
   const rebend = s.hHip[iT] - Math.min(...s.hHip.slice(iT, w + 1));
   return rebend > 0.04 || at0(s.knee) - s.knee[iL] > 15 ? "push" : "press";
 }
+/* Tiefer Empfang (Squat): Hüfte auf Kniehöhe oder tiefer, oder Knie stark gebeugt.
+   Der Kniewinkel zählt mit, weil die Höhen im Bild bei schräger Sicht täuschen. */
+function isDeep(s, a, b) {
+  let m = Infinity, k = Infinity;
+  for (let i = Math.max(0, a); i <= Math.min(s.n - 1, b); i++) { m = Math.min(m, s.hHip[i] - s.hKn[i]); k = Math.min(k, s.knee[i]); }
+  return m < 0.05 || k < 95;
+}
 export function classify(track) {
   const s = series(track), n = s.n, fps = track.fps, sec = x => Math.round(x * fps);
   if (s.found < 0.6 || n < 6) return null;
@@ -308,7 +315,7 @@ export function classify(track) {
   const rack = i => Math.abs(s.hWr[i] - s.hSh[i]) < 0.15 && s.elbow[i] < 110 && s.hWr[i] > s.hHip[i] + 0.2;
   const stand = i => s.knee[i] > 150 && s.hipAng[i] > 145;
   // Squat lift: hip at or below the knee somewhere in the catch window
-  const deep = (a, b) => { let m = Infinity, k = Infinity; for (let i = Math.max(0, a); i <= Math.min(n - 1, b); i++) { m = Math.min(m, s.hHip[i] - s.hKn[i]); k = Math.min(k, s.knee[i]); } return m < 0.05 || k < 95; };
+  const deep = (a, b) => isDeep(s, a, b);
   const base = at0(s.hWr);
   const start = Math.abs(base - at0(s.hSh)) < 0.15 ? "rack" : base < at0(s.hKn) + 0.08 ? "floor" : "hang";
   const hang = start === "hang";
@@ -333,8 +340,9 @@ export function classify(track) {
 export const sliceTrack = (track, i0, i1) => ({ ...track, frames: track.frames.slice(i0, i1 + 1) });
 
 /* ---------- Auswertung ---------- */
-/* view: "side" | "oblique" | "front" | "back"  · lift: "sn" | "cl" | "jk" · jerk: "split" | "push" | "press" | "squat" */
-export function analyze(track, lift, view, jerk) {
+/* view: "side" | "oblique" | "front" | "back"  · lift: "sn" | "cl" | "jk" · jerk: "split" | "push" | "press" | "squat"
+   plan (snatch, clean): "power" = Power-Variante geplant, die Hocke-Regeln entfallen; "squat" = tiefer Empfang geplant */
+export function analyze(track, lift, view, jerk, plan = "squat") {
   const s = series(track), fps = track.fps, n = s.n;
   const out = { events: {}, metrics: [], findings: [], notAssessable: [], ok: true, summary: "" };
   const sideways = view === "side" || view === "oblique";
@@ -415,14 +423,23 @@ export function analyze(track, lift, view, jerk) {
       fehler_ids: ["slow_under"], ursachen_ids: ["slow_turnover", "transition_timing"] });
   }
 
-  /* 4. Hoch empfangen, dann gerutscht */
-  {
+  /* 4. Hoch empfangen, dann gerutscht. Bei einer Power-Variante ist das Abfedern nach dem Empfang normal. */
+  if (plan === "power") {
+    const hipAboveKneeAtCatch = s.hHip[iL] > s.hKn[iL] + 0.02;
+    out.metrics.push({ label: t("m.catchH"), value: t(hipAboveKneeAtCatch ? "m.catchH.power" : "m.catchH.low") });
+  } else {
     const drop = s.hHip[iL] - s.hHip[iB];
     const hipAboveKneeAtCatch = s.hHip[iL] > s.hKn[iL] + 0.02;
     out.metrics.push({ label: t("m.drop"), value: t("a.pct", { n: Math.round(drop * 100) }) });
     out.metrics.push({ label: t("m.catchH"), value: t(hipAboveKneeAtCatch ? "m.catchH.power" : "m.catchH.low") });
+    // Squat geplant, aber nie unter Parallel: nicht unter die Stange gegangen (ersetzt «hoch empfangen, dann gerutscht»)
+    const end = iU > 0 ? iU : n - 1, high = !isDeep(s, iL, end);
+    const low = Math.min(...s.hHip.slice(iL, end + 1).map((h, k) => h - s.hKn[iL + k]));
     const a = lvl(drop, 0.09, 0.18);
-    if (a) add({ titel: t("f.high.t"), sicherheit: a, bilder: fr(iL, iB), key: iL,
+    if (high) add({ rule: "nosquat", titel: t("f.nosquat.t"), sicherheit: low > 0.12 && Math.min(...s.knee.slice(iL, end + 1)) > 110 ? "hoch" : "mittel", bilder: fr(iL, iB), key: iB,
+      beobachtung: t("f.nosquat.o", { f: iB + 1 }),
+      fehler_ids: ["catch_high"], ursachen_ids: ["receive_conf", "slow_turnover", "mobility"] });
+    else if (a) add({ titel: t("f.high.t"), sicherheit: a, bilder: fr(iL, iB), key: iL,
       beobachtung: t(hipAboveKneeAtCatch ? "f.high.o.above" : "f.high.o.fair", { a: iL + 1, b: iB + 1 }),
       fehler_ids: ["catch_high"], ursachen_ids: ["receive_conf", "meet_bar"] });
   }
@@ -461,8 +478,8 @@ export function analyze(track, lift, view, jerk) {
       fehler_ids: ["jump_fwd"], ursachen_ids: ["bar_away", "heels_early"] });
   }
 
-  /* 8. Lange Stabilisierung unten und Aufstehen */
-  {
+  /* 8. Lange Stabilisierung unten und Aufstehen (nur bei tiefem Empfang) */
+  if (plan !== "power") {
     let k = iB; while (k > iL && s.hHip[k - 1] < s.hHip[iB] + 0.03) k--;
     let m = iB; while (m < n - 1 && s.hHip[m + 1] < s.hHip[iB] + 0.03) m++;
     const hold = (m - k) / fps;

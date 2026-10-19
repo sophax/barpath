@@ -6,7 +6,7 @@ import { findingsImage, findingsText, shareFile } from "./share.js";
 const $ = id => document.getElementById(id);
 const vid = $("vid");
 const FPS = 30;
-const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [] };
+const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [], plan: "squat" };
 
 /* Bildschirm wach halten, solange die Analyse läuft: im Hintergrund hält das Handy die Seite an */
 let wake = null;
@@ -105,7 +105,7 @@ async function scan(auto) {
 function evaluate() {
   return V.cls.parts.map(pt => {
     const tr = sliceTrack(V.track, pt.i0, pt.i1);
-    return { lift: pt.lift, track: tr, r: analyze(tr, pt.lift, V.cam.view, pt.jerk) };
+    return { lift: pt.lift, track: tr, r: analyze(tr, pt.lift, V.cam.view, pt.jerk, V.plan) };
   });
 }
 $("vgo").addEventListener("click", () => { V.key = $("vfound").querySelector('[aria-pressed="true"]'); analyzeRange(); });
@@ -124,8 +124,9 @@ async function analyzeRange(auto) {
     V.cls = classify(tr);
     if (!V.cls) { V.parts = null; renderNone(); final = [t("v.unknown"), true]; none = true; }
     else {
+      V.plan = V.cls.power ? "power" : "squat"; // erkannt; im Ergebnis umschaltbar
       V.parts = evaluate();
-      if (V.key) keyLabel(V.key, +V.key.dataset.i, liftName(V.cls));
+      if (V.key) keyLabel(V.key, +V.key.dataset.i, shownName());
       await renderResult();
       const bad = V.parts.find(p => !p.r.ok);
       final = bad ? [bad.r.summary, true] : [t("v.done"), false];
@@ -164,6 +165,14 @@ async function snapshot(tr, i, label, w = 360) {
   return c;
 }
 
+const shownName = () => liftName({ ...V.cls, power: V.plan === "power" });
+async function setPlan(p) {
+  if (V.busy || V.plan === p || !V.parts) return;
+  V.plan = p; V.parts = evaluate();
+  if (V.key) keyLabel(V.key, +V.key.dataset.i, shownName());
+  const y = scrollY; await renderResult(); scrollTo(0, y);
+}
+
 function renderNone() {
   $("vsheet").replaceChildren(el("div", { class: "sheethead" }, el("div", {}, el("span", { class: "stepnum" }, t("v.result")), el("h2", {}, t("v.findings")))), el("div", { class: "empty" }, t("v.unknown")));
   $("vframes").replaceChildren();
@@ -171,7 +180,7 @@ function renderNone() {
 
 async function renderResult() {
   const box = $("vsheet"); box.replaceChildren();
-  const name = liftName(V.cls), viewLabel = t("view." + V.cam.view), multi = V.parts.length > 1;
+  const name = shownName(), viewLabel = t("view." + V.cam.view), multi = V.parts.length > 1;
   const share = { lift: name, view: viewLabel, summary: V.parts.map(p => p.r.summary).join(" "), findings: [], metrics: [] };
   const toast = el("span", { class: "toast", "aria-live": "polite" });
   const shareBtns = el("div", { class: "actions" },
@@ -184,6 +193,11 @@ async function renderResult() {
     el("button", { class: "btn", type: "button", onclick: () => shareText("BarPath · " + name, findingsText(share), toast) }, t("v.shareTxt")));
   const anyFindings = V.parts.some(p => p.r.ok && p.r.findings.length);
   box.append(el("div", { class: "sheethead" }, el("div", {}, el("span", { class: "stepnum" }, t("v.resultHead", { lift: name, view: viewLabel })), el("h2", {}, t("v.findings"))), anyFindings ? shareBtns : ""), toast);
+  // Power oder Squat: aus dem Video erkannt, umschaltbar, falls etwas anderes geplant war
+  if (V.cls.kind !== "jk") {
+    const opt = p => el("button", { class: "opt", type: "button", "aria-pressed": String(V.plan === p), onclick: () => setPlan(p) }, t("v.plan." + p));
+    box.append(el("div", { class: "planpick" }, el("span", { class: "label" }, t("v.plan")), el("div", { class: "opts", role: "group", "aria-label": t("v.plan") }, opt("power"), opt("squat")), el("p", { class: "note" }, t("v.planHint"))));
+  }
   const faults = { sn: [], cl: [], jk: [] };
   const fr = $("vframes"); fr.replaceChildren(el("h3", {}, t("v.phases")));
   for (const { lift, track: tr, r } of V.parts) {
@@ -203,18 +217,12 @@ async function renderResult() {
       card.append(shot);
       const sf = { titel: (part ? part + " · " : "") + f.titel, sicherheit: f.sicherheit, beobachtung: f.beobachtung, shot, causes: [] };
       share.findings.push(sf);
-      [...new Set(f.ursachen_ids)].filter(c => CAUSES[c] && exFor(c, lift).length).slice(0, 2).forEach(c => {
-        const ids = exFor(c, lift).slice(0, 4);
-        sf.causes.push({ t: CAUSES[c].t, cue: CAUSES[c].cue, ex: ids.map(id => BYID[id][1]), urls: ids.map(id => url(id)) });
-        const ol = el("ol", { class: "ex" });
-        ids.forEach((id, i) => {
-          const row = BYID[id];
-          ol.append(el("li", {}, el("span", { class: "n" }, String(i + 1).padStart(2, "0")),
-            el("span", {}, el("a", { href: url(id), target: "_blank", rel: "noopener" }, row[1]), el("span", { class: "tag" }, SEC[row[2]] || "")),
-            el("span", { class: "note" }, NOTE[id] || "")));
-        });
-        card.append(el("div", { class: "subcause" }, el("h4", {}, t("v.cause", { c: CAUSES[c].t })), cueEl(CAUSES[c].cue), ol));
-      });
+      // Pro Befund die wahrscheinlichste Ursache mit Hauptübung und Ergänzung, eine zweite Ursache zum Aufklappen
+      const cs = [...new Set(f.ursachen_ids)].filter(c => CAUSES[c] && exFor(c, lift).length).slice(0, 2);
+      const sub = c => el("div", { class: "subcause" }, el("h4", {}, t("v.cause", { c: CAUSES[c].t })), cueEl(CAUSES[c].cue), ...exBlock(c, lift));
+      cs.forEach(c => { const ids = focusEx(c, lift).top; sf.causes.push({ t: CAUSES[c].t, cue: CAUSES[c].cue, ex: ids.map(id => BYID[id][1]), urls: ids.map(id => url(id)) }); });
+      if (cs[0]) card.append(sub(cs[0]));
+      if (cs[1]) card.append(el("details", { class: "others" }, el("summary", {}, tn("plan.others", 1)), sub(cs[1])));
       box.append(card);
     }
     r.metrics.forEach(m => share.metrics.push({ label: (part ? part + " · " : "") + m.label, value: m.value }));

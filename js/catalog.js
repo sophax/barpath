@@ -191,6 +191,48 @@ const CAUSES = {
  cj_fatigue:{t:"Fatigue after the clean",why:"The clean costs so much that legs or trunk are missing for the jerk.",test:"Is your jerk from the rack clearly better than after a clean?",ex:[381,372,651]}
 };
 
+/* Focus: per cause and lift the one main exercise that trains the fault most directly, and one supplement
+   that attacks it from another side (strength, timing or position). Picked from the cause's own list above;
+   the rest of the list stays available as "more exercises". [main, supplement] */
+const FOCUS = {
+ pull_balance:{sn:[627,642],cl:[644,648]},
+ pull_posture:{sn:[205,317],cl:[177,355]},
+ stay_over:{sn:[186,392],cl:[185,362]},
+ bar_away:{sn:[628,577],cl:[629,577]},
+ hip_bang:{sn:[434,316],cl:[433,321]},
+ legs_quit:{sn:[400,99],cl:[378,100]},
+ heels_early:{sn:[456,434],cl:[455,433]},
+ lean_back:{sn:[388,453],cl:[367,450]},
+ early_arms:{sn:[401,96],cl:[371,149]},
+ transition_timing:{sn:[400,385],cl:[378,373]},
+ slow_turnover:{sn:[217,96],cl:[150,149]},
+ meet_bar:{sn:[439,61],cl:[442,67]},
+ clean_rack:{cl:[149,544]},
+ overhead_stab:{sn:[79,89]},
+ receive_conf:{sn:[80,312],cl:[442,355]},
+ mobility:{sn:[95,81],cl:[209,355]},
+ footwork:{sn:[400,312],cl:[378,695]},
+ squat_strength:{sn:[317,168],cl:[355,605]},
+ trunk_receive:{sn:[317,448],cl:[355,181]},
+ rfd:{sn:[207,552],cl:[379,552]},
+ pull_strength:{sn:[97,101],cl:[98,101]},
+ scoop:{sn:[402,315],cl:[359,322]},
+ dip_balance:{jk:[194,639]},
+ dip_posture:{jk:[196,78]},
+ drive_short:{jk:[413,87]},
+ bar_path_forward:{jk:[213,406]},
+ patience:{jk:[407,410]},
+ split_position:{jk:[193,408]},
+ chest_dive:{jk:[459,411]},
+ foot_speed:{jk:[218,417]},
+ overhead_jerk:{jk:[198,204]},
+ dip_elastic:{jk:[412,404]},
+ rack_jerk:{jk:[196,761]},
+ split_strength:{jk:[174,173]},
+ recovery:{jk:[197,485]},
+ cj_fatigue:{jk:[372,381]}
+};
+
 /* Questions. o: [label, {cause: weight}]. The last option is always "Not sure". */
 const YN = (yes, no={}) => [["Yes",yes],["No",no],["Not sure",{}]];
 const Q = {

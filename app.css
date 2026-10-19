@@ -669,3 +669,21 @@ ul.clubrows{list-style:none; margin:0; padding:0; border-radius:var(--r-md); bac
 .vhint svg{flex:0 0 18px; width:18px; height:18px; margin-top:1px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round}
 .vhint.warn{background:rgba(255,159,10,.12); color:#8a5300}
 .vhint.warn::before{content:""; flex:0 0 8px; height:8px; margin-top:6px; border-radius:50%; background:#ff9f0a}
+
+/* Power oder Squat im Video-Ergebnis */
+.planpick{display:grid; grid-template-columns:auto 1fr; align-items:center; gap:6px 12px; margin:4px 0 14px}
+.planpick .label{font-weight:600; font-size:.92rem}
+.planpick .opts{max-width:260px}
+.planpick .opt{min-height:38px}
+.planpick .note{grid-column:1 / -1; margin:0; font-size:.82rem; color:var(--ink-muted)}
+
+/* Fokus: Hauptübung und Ergänzung, der Rest zum Aufklappen */
+ol.ex .role{display:block; margin-bottom:2px; font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent-text)}
+ol.ex li.focus a{font-weight:600}
+details.exmore{margin-top:6px}
+details.exmore summary, details.others > summary{cursor:pointer; min-height:40px; display:inline-flex; align-items:center; gap:6px; font-size:.92rem; font-weight:600; color:var(--accent-text); list-style:none}
+details.exmore summary::-webkit-details-marker, details.others > summary::-webkit-details-marker{display:none}
+details.exmore summary::after, details.others > summary::after{content:""; width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg) translateY(-2px); transition:transform 150ms var(--ease)}
+details[open].exmore > summary::after, details[open].others > summary::after{transform:rotate(225deg) translate(-2px,0)}
+details.exmore ol.ex{opacity:.92}
+details.others{margin-top:6px; padding-top:6px; border-top:1px solid var(--line, rgba(0,0,0,.08))}
