@@ -1,6 +1,6 @@
 /* Offline-Unterstützung: App-Dateien beim Installieren speichern, Modell und Laufzeit beim ersten Gebrauch.
    Bei jeder Änderung an der App VERSION erhöhen, damit Nutzer die neue Version bekommen. */
-const VERSION = "v12";
+const VERSION = "v13";
 const CACHE = "hantel-diagnose-" + VERSION;
 const SHELL = [
   "./", "index.html", "app.css", "fonts/fonts.css", "manifest.webmanifest",
@@ -10,7 +10,8 @@ const SHELL = [
 ];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
+  // cache: "reload" umgeht den Browser-Cache (GitHub Pages: 10 Minuten), sonst landen alte Dateien im neuen Speicher
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener("activate", e => {
