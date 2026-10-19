@@ -100,7 +100,7 @@ I18N.en.ui = {
   "v.endBefore": "The end has to be after the start.", "v.long": "The clip is longer than 14 s. The analysis will take longer.",
   "v.cantPlay": "This browser can't play the video. Try an MP4 file.",
   "v.loading": "Loading the pose model …", "v.scanning": "Scanning the video: {p} %",
-  "v.noneFound": "No lift found. Mark it yourself below.", "v.unknown": "Couldn't tell which lift this is. Make sure the whole lift is in the clip, from the start position until you're standing.",
+  "v.noneFound": "No lift found. Mark it yourself below.", "v1.hint": "<b>Only the lift itself:</b> trim the video to one attempt, a few seconds from setting up until you're standing. Long videos (a minute or more) take a long time to analyse.", "v.longVideo": "This video is {s} s long, so the analysis will take a while. It's much quicker if you trim it to the lift. Keep the app open in the meantime.", "v.unknown": "Couldn't tell which lift this is. Make sure the whole lift is in the clip, from the start position until you're standing.",
   "v.found.one": "Found 1 lift.", "v.found.other": "Found {n} lifts. Tap one to analyse it.",
   "v.scanStopped": "Scan stopped.", "v.noFrames": "The video can't be read frame by frame. Try an MP4 file.",
   "v.scanFailed": "The scan failed. Mark the lift yourself below.",

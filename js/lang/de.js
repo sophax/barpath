@@ -112,7 +112,7 @@ I18N.de.ui = {
  "v.cantPlay": "Dieser Browser kann das Video nicht abspielen. Versuche eine MP4-Datei.",
  "v.loading": "Erkennungsmodell wird geladen …",
  "v.scanning": "Video wird durchsucht: {p} %",
- "v.noneFound": "Kein Versuch gefunden. Markiere ihn unten selbst.", "v.unknown": "Die App konnte nicht erkennen, welche Übung das ist. Achte darauf, dass der ganze Versuch im Ausschnitt ist, von der Startposition bis du stehst.",
+ "v.noneFound": "Kein Versuch gefunden. Markiere ihn unten selbst.", "v1.hint": "<b>Nur der Versuch selbst:</b> Schneide das Video auf einen Versuch zu, ein paar Sekunden vom Ansetzen bis du stehst. Lange Videos (eine Minute und mehr) brauchen viel Zeit für die Analyse.", "v.longVideo": "Dieses Video ist {s} s lang, die Analyse dauert deshalb eine Weile. Viel schneller geht es, wenn du es auf den Versuch zuschneidest. Lass die App solange offen.", "v.unknown": "Die App konnte nicht erkennen, welche Übung das ist. Achte darauf, dass der ganze Versuch im Ausschnitt ist, von der Startposition bis du stehst.",
  "v.found.one": "1 Versuch gefunden.",
  "v.found.other": "{n} Versuche gefunden. Tippe auf einen, um ihn auszuwerten.",
  "v.scanStopped": "Suche gestoppt.",

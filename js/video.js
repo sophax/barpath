@@ -8,6 +8,22 @@ const vid = $("vid");
 const FPS = 30;
 const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [] };
 
+/* Bildschirm wach halten, solange die Analyse läuft: im Hintergrund hält das Handy die Seite an */
+let wake = null;
+async function awake(on) {
+  try {
+    if (on && !wake && navigator.wakeLock && document.visibilityState === "visible") { wake = await navigator.wakeLock.request("screen"); wake.addEventListener("release", () => { wake = null; }); }
+    if (!on && wake) { const w = wake; wake = null; await w.release(); }
+  } catch { /* nicht unterstützt oder abgelehnt: dann eben ohne */ }
+}
+document.addEventListener("visibilitychange", () => { if (V.busy) awake(true); }); // beim Zurückkommen wieder anfordern
+function longWarn() {
+  const w = $("vlongwarn"), d = vid.duration;
+  w.hidden = !(d > 30);
+  if (!w.hidden) w.textContent = t("v.longVideo", { s: Math.round(d) });
+}
+vid.addEventListener("loadedmetadata", longWarn);
+
 function msg(t, err) { const m = $("vmsg"); m.textContent = t; m.classList.toggle("err", !!err); }
 function progress(p) { const b = $("vprog"); b.hidden = p == null; if (p != null) b.firstElementChild.style.width = Math.round(p * 100) + "%"; }
 function updateRange() {
@@ -54,7 +70,7 @@ function pickLift(btn, l, run) {
 $("vfind").addEventListener("click", () => scan(false));
 async function scan(auto) {
   if (V.busy) return;
-  V.busy = true; updateRange(); $("vstop").hidden = false; V.ctl = new AbortController();
+  V.busy = true; updateRange(); $("vstop").hidden = false; V.ctl = new AbortController(); awake(true);
   $("vfound").replaceChildren();
   let final = ["", false], first = false;
   try {
@@ -81,7 +97,7 @@ async function scan(auto) {
     if (e?.code === "cancelled") final = [t("v.scanStopped"), false];
     else if (e?.code === "video") final = [t("v.noFrames"), true];
     else { console.error(e); final = [t("v.scanFailed"), true]; }
-  } finally { V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]); }
+  } finally { V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]); if (!first) awake(false); }
   if (first) analyzeRange(true);
 }
 
@@ -95,7 +111,7 @@ function evaluate() {
 $("vgo").addEventListener("click", () => { V.key = $("vfound").querySelector('[aria-pressed="true"]'); analyzeRange(); });
 async function analyzeRange(auto) {
   if (V.busy || V.a == null || V.b == null || V.b <= V.a) return;
-  V.busy = true; updateRange(); $("vstop").hidden = false; V.ctl = new AbortController();
+  V.busy = true; updateRange(); $("vstop").hidden = false; V.ctl = new AbortController(); awake(true);
   let final = ["", false], none = false;
   try {
     vid.pause();
@@ -118,7 +134,10 @@ async function analyzeRange(auto) {
     if (e?.code === "cancelled") final = [t("v.stopped"), false];
     else if (e?.code === "video") final = [t("v.noFrames"), true];
     else { console.error(e); final = [t("v.failed"), true]; }
-  } finally { V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]); }
+  } finally {
+    V.busy = false; $("vstop").hidden = true; progress(null); updateRange(); msg(final[0], final[1]);
+    if (!(auto && none)) { awake(false); if (V.parts) navigator.vibrate?.(120); } // fertig: kurz vibrieren (Android)
+  }
   // Automatisch: war das kein erkennbarer Versuch, gleich den nächsten gefundenen nehmen
   if (auto && none && V.key) {
     const i = +V.key.dataset.i + 1, k = $("vfound").querySelectorAll(".liftkey")[i];
@@ -221,6 +240,7 @@ addEventListener("langchange", async () => {
   updateRange();
   if (!V.file) $("vfilename").textContent = t("v.upload");
   if (!V.busy) msg("");
+  if (vid.src) longWarn();
   if (V.busy || !V.track) return;
   if (V.parts) { V.parts = evaluate(); await renderResult(); }
   else renderNone();

@@ -58,7 +58,7 @@ I18N.fr.ui = {
   "v.endBefore": "La fin doit être après le début.", "v.long": "L’extrait dure plus de 14 s. L’analyse prendra plus de temps.",
   "v.cantPlay": "Ce navigateur ne peut pas lire la vidéo. Essaie un fichier MP4.",
   "v.loading": "Chargement du modèle de détection …", "v.scanning": "Analyse de la vidéo : {p} %",
-  "v.noneFound": "Aucun essai trouvé. Marque-le toi-même ci-dessous.", "v.unknown": "L’app n’a pas pu reconnaître le mouvement. Vérifie que tout l’essai est dans l’extrait, de la position de départ jusqu’à ce que tu sois debout.",
+  "v.noneFound": "Aucun essai trouvé. Marque-le toi-même ci-dessous.", "v1.hint": "<b>Seulement l’essai :</b> coupe la vidéo sur un seul essai, quelques secondes de la mise en place jusqu’à ce que tu sois debout. Les longues vidéos (une minute ou plus) prennent beaucoup de temps à analyser.", "v.longVideo": "Cette vidéo dure {s} s, l’analyse va donc prendre un moment. C’est bien plus rapide si tu la coupes sur l’essai. Garde l’app ouverte en attendant.", "v.unknown": "L’app n’a pas pu reconnaître le mouvement. Vérifie que tout l’essai est dans l’extrait, de la position de départ jusqu’à ce que tu sois debout.",
   "v.found.one": "1 essai trouvé.", "v.found.other": "{n} essais trouvés. Touche-en un pour l’analyser.",
   "v.scanStopped": "Recherche arrêtée.", "v.noFrames": "La vidéo ne peut pas être lue image par image. Essaie un fichier MP4.",
   "v.scanFailed": "La recherche a échoué. Marque l’essai toi-même ci-dessous.",

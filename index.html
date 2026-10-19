@@ -153,6 +153,8 @@
           <div class="libbar">
             <label class="btn primary filekey"><input id="vfile" type="file" accept="video/*"><span id="vfilename">Upload video</span></label>
           </div>
+          <p class="vhint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.01"/></svg><span data-i18n-html="v1.hint"><b>Only the lift itself:</b> trim the video to one attempt, a few seconds from setting up until you're standing. Long videos (a minute or more) take a long time to analyse.</span></p>
+          <p class="vhint warn" id="vlongwarn" role="status" hidden></p>
           <div class="vbox" id="vbox" hidden>
             <video id="vid" controls playsinline muted preload="auto"></video>
             <div class="vctl">

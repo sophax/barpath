@@ -662,3 +662,10 @@ ul.clubrows{list-style:none; margin:0; padding:0; border-radius:var(--r-md); bac
 /* Clean & Jerk: one heading per part in the result */
 .parthead{margin:22px 0 4px; font-size:1.05rem; letter-spacing:-.01em; color:var(--accent-text)}
 .vframes .parthead{margin:14px 0 8px}
+
+/* Hinweis beim Hochladen: nur den Versuch, kein Minutenvideo */
+.vhint{display:flex; gap:10px; align-items:flex-start; margin:12px 0 0; padding:11px 13px; border-radius:var(--r-md, 12px); background:var(--bg); color:var(--ink-muted); font-size:.9rem; line-height:1.45}
+.vhint b{color:var(--ink)}
+.vhint svg{flex:0 0 18px; width:18px; height:18px; margin-top:1px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round}
+.vhint.warn{background:rgba(255,159,10,.12); color:#8a5300}
+.vhint.warn::before{content:""; flex:0 0 8px; height:8px; margin-top:6px; border-radius:50%; background:#ff9f0a}
