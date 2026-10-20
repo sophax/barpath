@@ -50,7 +50,7 @@ function compute(){
 function resetLift(lift){ S.sel[lift]=[]; Object.keys(S.ans).forEach(k=>{ if(k.startsWith(lift+":")) delete S.ans[k]; }); }
 
 /* ---------- Router ---------- */
-const PAGES = ["home","diagnosis","video","exercises","clubs"];
+const PAGES = ["home","diagnosis","video","exercises","clubs","legal"];
 const STEPS = ["lift","faults","questions","plan"];
 function go(hash){ if(location.hash===hash) route(); else location.hash=hash; }
 function parse(){
@@ -58,11 +58,13 @@ function parse(){
   const page=parts[0]||"home";
   return {page: PAGES.includes(page)?page:"home", sub: parts[1]};
 }
-let lastPage = null;
+let lastPage = null, legalFrom = null;
 function route(keep){
   let {page, sub} = parse();
   // Von einer anderen Seite in die Diagnose: neu beginnen, ausser die Video-Analyse übergibt ihre Befunde
-  if(page==="diagnosis" && lastPage!=="diagnosis"){ if(S.handoff) S.handoff=false; else { freshDiagnosis(); sub="lift"; } }
+  // Neu beginnen beim Betreten, ausser man kommt vom Video-Befund oder kurz von den Hinweisen (#/legal) zurück
+  if(page==="diagnosis" && lastPage!=="diagnosis" && !(lastPage==="legal" && legalFrom==="diagnosis")){ if(S.handoff) S.handoff=false; else { freshDiagnosis(); sub="lift"; } }
+  if(page==="legal" && lastPage!=="legal") legalFrom=lastPage;
   lastPage = page;
   if(page==="diagnosis"){
     if(!STEPS.includes(sub)) sub = S.sel[S.lift].length ? (allAnswered()?"plan":"questions") : "lift";
@@ -173,6 +175,7 @@ function renderPlan(){
   const rest=res.slice(2,5);
   if(rest.length) box.append(el("details",{class:"others"},el("summary",{},tn("plan.others",rest.length)),...rest.map(card)));
   if(res.length>5) box.append(el("p",{class:"lede"},t("plan.more",{n:res.length-5})));
+  box.append(el("p",{class:"foot"},t("plan.disc")+" ",el("a",{href:"#/legal"},t("legal.more"))));
 }
 /* Cue: a dark readout with an LED, the one thought to take into the next lift */
 function cueEl(cue){ return cue ? el("p",{class:"cue"},el("span",{class:"led red"}),el("span",{},el("b",{},t("cue")),cue)) : ""; }

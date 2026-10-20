@@ -85,6 +85,6 @@ Die Grenzwerte stehen in `js/analysis.js` und sind an den ersten Testvideos eing
 
 - **Körpererkennung:** [MediaPipe](https://github.com/google-ai-edge/mediapipe) Pose Landmarker von Google, Apache License 2.0.
 - **Schriften:** Inter und JetBrains Mono, SIL Open Font License.
-- **Übungen:** Die App verlinkt auf die Übungsseiten und Videos von Catalyst Athletics. Die Kurznotizen zu den Übungen sind eigene Zusammenfassungen. Vor einer kommerziellen oder breiten Veröffentlichung die Nutzung mit Catalyst Athletics absprechen.
-- **Datenschutz:** Videos und Antworten bleiben auf dem Gerät. Die App speichert nichts: Jede Diagnose beginnt neu, sobald man die Diagnose-Seite wieder öffnet. GitHub als Hoster sieht beim Abruf der Seite die IP-Adresse. Für eine öffentliche Nutzung gehört eine kurze Datenschutzerklärung dazu.
+- **Übungen:** Die App verlinkt auf die Übungsseiten und Videos von Catalyst Athletics, mit deren Erlaubnis (Oktober 2026). Die Kurznotizen zu den Übungen sind eigene Zusammenfassungen.
+- **Datenschutz:** Videos und Antworten bleiben auf dem Gerät. Die App speichert nichts: Jede Diagnose beginnt neu, sobald man die Diagnose-Seite wieder öffnet. GitHub als Hoster sieht beim Abruf der Seite die IP-Adresse. Datenschutz, Impressum und Haftungshinweis stehen in der App unter `#/legal`.
 - Die App ersetzt kein Coaching.

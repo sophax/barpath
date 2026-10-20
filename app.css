@@ -704,3 +704,13 @@ details.others{margin-top:6px; padding-top:6px; border-top:1px solid var(--line,
   .hero-art-m .bp-plate{transform-box:fill-box; transform-origin:center} /* der Ausschnitt verschiebt den Nullpunkt */
 }
 @media (max-width:359px){ .herowrap{grid-template-columns:minmax(0,1fr) 60px; column-gap:12px} }
+
+/* Datenschutz, Impressum, Hinweis */
+.homefoot{margin:8px 0 0; text-align:center; font-size:.85rem}
+.homefoot a, .foot a{color:var(--ink-muted); text-decoration:underline; text-underline-offset:3px}
+.legal{display:grid; gap:14px; max-width:46rem}
+.legal > section{background:var(--surface); border-radius:var(--r-lg); box-shadow:var(--sh-card); padding:18px 20px}
+.legal h2{font-size:1.15rem; margin:0 0 8px}
+.legal p, .legal li{color:var(--ink-muted); line-height:1.55; margin:0 0 8px}
+.legal ul{margin:0 0 8px; padding-left:1.2em}
+.legal a{color:var(--accent-text)}
