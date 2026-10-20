@@ -37,15 +37,16 @@ function playRead(video, a, b, every, step, { signal, maxRate = 8, minRate = 0.2
   return new Promise(async (resolve, reject) => {
     try { await seek(video, a); } catch (e) { return reject(e); }
     const muted = video.muted, rate0 = video.playbackRate;
-    let next = a, cost = 35, done = false, last = performance.now(), got = 0, mode = RVFC ? "frames" : "poll";
+    let next = a, cost = 35, done = false, last = performance.now(), got = 0, mode = RVFC ? "frames" : "poll", lastT = a, frameAt = performance.now();
     const rateFor = () => Math.min(maxRate, Math.max(minRate, 0.85 * every * 1000 / (cost + 4)));
+    const finishHooks = [];
     const finish = err => {
-      if (done) return; done = true; clearInterval(watch);
+      if (done) return; done = true; clearInterval(watch); finishHooks.forEach(f => f());
       video.pause(); video.playbackRate = rate0; video.muted = muted;
       err ? reject(err) : resolve();
     };
     const handle = t => {
-      last = performance.now();
+      last = performance.now(); lastT = Math.max(lastT, t);
       if (t >= b - 1e-3) return finish(got ? null : { code: "noplay" });
       if (t + 1e-3 < next) return;
       const t0 = performance.now();
@@ -56,39 +57,50 @@ function playRead(video, a, b, every, step, { signal, maxRate = 8, minRate = 0.2
       next = t + every * 0.6;
     };
     // Normalfall: jedes angezeigte Bild mit seiner genauen Zeit
-    const onFrame = (now, meta) => { if (done || mode !== "frames") return; handle(meta.mediaTime); if (!done) video.requestVideoFrameCallback(onFrame); };
+    const onFrame = (now, meta) => { if (done || mode !== "frames") return; frameAt = performance.now(); handle(meta.mediaTime); if (!done) video.requestVideoFrameCallback(onFrame); };
     // Ersatz, falls der Browser keine Bilder meldet (z.B. nicht sichtbar): aktuelle Zeit ablesen
     const poll = () => { if (done) return; if (!video.paused && !video.seeking) handle(video.currentTime); setTimeout(poll, 4); };
+    // Meldet der Browser keine Bilder mehr (oder nie): zurück zum zuletzt gelesenen Bild und ab dort die Zeit ablesen
+    const toPoll = () => {
+      if (done || mode !== "frames") return;
+      mode = "poll"; video.pause();
+      const from = got ? lastT : a;
+      seek(video, from).then(() => { next = got ? from + every * 0.6 : a; last = performance.now(); video.play().catch(() => {}); poll(); }, finish);
+    };
+    const atEnd = () => { if (mode === "frames" && lastT < b - 0.5) return toPoll(); finish(got ? null : { code: "noplay" }); };
     const watch = setInterval(() => {
       if (signal?.aborted) return finish({ code: "cancelled" });
-      if (video.ended) return finish(got ? null : { code: "noplay" });
+      if (video.ended && !video.seeking) return atEnd();
       if (document.hidden) { last = performance.now(); return; } // im Hintergrund hält der Browser das Video an
-      if (video.paused && !video.seeking) video.play().catch(() => {});
+      if (mode === "frames" && !video.paused && performance.now() - frameAt > 600) return toPoll();
+      if (video.paused && !video.seeking && !video.ended) video.play().catch(() => {});
       if (performance.now() - last > 6000) finish({ code: got ? "video" : "noplay" });
     }, 400);
     video.muted = true; video.playbackRate = rateFor();
     if (mode === "frames") {
       video.requestVideoFrameCallback(onFrame);
-      // Keine Bilder gemeldet: zurück an den Anfang und die Zeit ablesen
-      setTimeout(() => {
-        if (done || got || mode !== "frames") return;
-        mode = "poll"; video.pause();
-        seek(video, a).then(() => { next = a; last = performance.now(); video.play().catch(() => {}); poll(); }, finish);
-      }, 700);
     } else poll();
-    video.addEventListener("ended", () => finish(got ? null : { code: "noplay" }), { once: true });
+    const onEnded = () => { if (!done) atEnd(); };
+    video.addEventListener("ended", onEnded);
+    // Listener beim Abschluss wieder entfernen
+    finishHooks.push(() => video.removeEventListener("ended", onEnded));
     video.play().catch(() => finish({ code: "noplay" }));
   });
 }
 async function readFrames(video, a, b, every, step, { signal, maxRate } = {}) {
-  try { return await playRead(video, a, b, every, step, { signal, maxRate }); }
+  const seen = [];
+  try { await playRead(video, a, b, every, t => { seen.push(t); step(t); }, { signal, maxRate }); }
   catch (e) { if (e?.code !== "noplay") throw e; }
-  const n = Math.max(1, Math.round((b - a) / every));
-  for (let i = 0; i < n; i++) {
+  // Sicherheitsnetz: Wo beim Abspielen Bilder fehlen (gebremste Zeitgeber, Browser ohne Bildmeldungen, Abspielen ging nicht),
+  // diese Stellen Bild für Bild nachlesen. Normalerweise gibt es keine Lücken, dann kostet das nichts.
+  const ts = [a - every, ...seen.sort((x, y) => x - y), b], todo = [];
+  for (let k = 1; k < ts.length; k++)
+    if (ts[k] - ts[k - 1] > every * 2.5)
+      for (let t = ts[k - 1] + every; t < ts[k] - every * 0.5; t += every) if (t >= a && t < b) todo.push(t);
+  for (let i = 0; i < todo.length; i++) {
     if (signal?.aborted) throw { code: "cancelled" };
-    const t = a + i * every;
-    await seek(video, t);
-    step(t);
+    await seek(video, todo[i]);
+    step(todo[i]);
     if (i % 4 === 3) await new Promise(r => setTimeout(r, 0));
   }
 }
@@ -613,6 +625,7 @@ export async function findLifts(video, { fps = 5, onProgress, signal, debug } = 
     samples.push({ t, p });
     onProgress?.(t, dur);
   }, { signal, maxRate: 5 });
+  samples.sort((x, y) => x.t - y.t); // nachgelesene Lücken kommen ausser der Reihe
   // Per sample: heights relative to the ankles, normalised by shoulder–ankle length
   const rows = samples.map(({ t, p }) => {
     if (!p) return { t, ok: false };
@@ -620,7 +633,7 @@ export async function findLifts(video, { fps = 5, onProgress, signal, debug } = 
     const L = Math.max(dist(sh, an), 20);
     const h = q => (an.y - q.y) / L;
     const knee = sideAngle(p, K.hipL, K.knL, K.anL, K.hipR, K.knR, K.anR);
-    return { t, ok: Math.min(wr.v, sh.v, an.v) > 0.3, wr: h(wr), sh: h(sh), kn: h(kn), hip: h(hp), nose: h(no), knee };
+    return { t, ok: Math.min(wr.v, sh.v, an.v) > 0.3, wr: h(wr), sh: h(sh), kn: h(kn), hip: h(hp), nose: h(no), knee, anY: an.y, len: dist(sh, an) };
   });
   const over = r => r.ok && r.wr > r.nose - 0.02 && r.wr > r.sh + 0.08;
   const rack = r => r.ok && !over(r) && Math.abs(r.wr - r.sh) < 0.14 && r.wr > r.hip + 0.2;
@@ -644,6 +657,13 @@ export async function findLifts(video, { fps = 5, onProgress, signal, debug } = 
   const put = l => {
     l.b = Math.min(dur, l.b);
     if (l.b - l.a < 0.8) return;
+    // Bei einem Versuch bleiben die Füsse am Platz (Sprung und Split: höchstens ein Drittel der Körperlänge).
+    // Wandern sie im Bild weit, geht jemand herum oder auf die Kamera zu: kein Versuch.
+    const w = rows.filter(r => r.ok && r.t >= l.a && r.t <= l.b);
+    if (w.length >= 3) {
+      const ys = w.map(r => r.anY), L0 = Math.max(...w.map(r => r.len));
+      if (Math.max(...ys) - Math.min(...ys) > 0.35 * L0) return;
+    }
     const last = lifts[lifts.length - 1];
     if (last && l.a < last.b) { last.b = Math.max(last.b, l.b); return; } // same lift
     lifts.push(l);
