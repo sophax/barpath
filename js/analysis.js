@@ -18,10 +18,12 @@ export async function initPose() {
   return landmarker;
 }
 
+/* Springen; Fehler erst nach 8 s Wartezeit im Vordergrund (im Hintergrund lässt der Browser Sprünge warten) */
 export function seek(video, t) {
   return new Promise((resolve, reject) => {
-    const done = () => { clearTimeout(timer); video.removeEventListener("seeked", done); resolve(); };
-    const timer = setTimeout(() => { video.removeEventListener("seeked", done); reject({ code: "video" }); }, 5000);
+    let waited = 0;
+    const done = () => { clearInterval(timer); video.removeEventListener("seeked", done); resolve(); };
+    const timer = setInterval(() => { if (!document.hidden) waited += 500; if (waited >= 8000) { clearInterval(timer); video.removeEventListener("seeked", done); reject({ code: "video" }); } }, 500);
     video.addEventListener("seeked", done);
     video.currentTime = Math.abs(video.currentTime - t) < 1e-3 ? t + 0.002 : t;
   });
