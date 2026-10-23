@@ -6,7 +6,7 @@ import { findingsImage, findingsText, shareFile } from "./share.js";
 const $ = id => document.getElementById(id);
 const vid = $("vid");
 const FPS = 30;
-const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [], plan: "squat" };
+const V = { a: null, b: null, ctl: null, busy: false, track: null, cls: null, parts: null, cam: null, file: false, key: null, lifts: [], plan: "squat", counted: false };
 
 /* Bildschirm wach halten, solange die Analyse läuft: im Hintergrund hält das Handy die Seite an */
 let wake = null;
@@ -42,7 +42,7 @@ $("vfile").addEventListener("change", e => {
   V.file = true; $("vfilename").textContent = f.name.length > 24 ? f.name.slice(0, 21) + "…" : f.name;
   if (vid.src) URL.revokeObjectURL(vid.src);
   vid.src = URL.createObjectURL(f);
-  V.a = V.b = null; V.track = V.cls = V.parts = V.key = null; $("vfound").replaceChildren(); $("vbox").hidden = false; $("vmarkstep").hidden = false; updateRange();
+  V.a = V.b = null; V.track = V.cls = V.parts = V.key = null; V.counted = false; $("vfound").replaceChildren(); $("vbox").hidden = false; $("vmarkstep").hidden = false; updateRange();
   vid.addEventListener("error", () => msg(t("v.cantPlay"), true), { once: true });
   initPose().catch(() => {}); // preload the model
   // No extra clicks: as soon as the video can be read, find the lifts and analyse the first one
@@ -128,6 +128,7 @@ async function analyzeRange(auto) {
       V.parts = evaluate();
       if (V.key) keyLabel(V.key, +V.key.dataset.i, shownName());
       await renderResult();
+      if (!V.counted) { V.counted = true; count("video-analysed", true); } // einmal pro Video
       const bad = V.parts.find(p => !p.r.ok);
       final = bad ? [bad.r.summary, true] : [t("v.done"), false];
     }

@@ -4,7 +4,8 @@ const DEFAULT = {lift:"sn",sel:{sn:[],cl:[],jk:[]},ans:{}};
 /* Die Diagnose lebt nur im Speicher der Seite: jeder Besuch beginnt neu, nichts wird gespeichert. */
 let S = structuredClone(DEFAULT);
 try{ localStorage.removeItem("lff-state"); }catch(e){} // gespeicherte Daten älterer Versionen entfernen
-function freshDiagnosis(){ S.sel={sn:[],cl:[],jk:[]}; S.ans={}; }
+function freshDiagnosis(){ S.sel={sn:[],cl:[],jk:[]}; S.ans={}; planCounted=false; }
+let planCounted = false; // Plan einmal pro Diagnose zählen, nicht bei jedem Neuzeichnen
 const el = (tag, attrs={}, ...kids) => { const n=document.createElement(tag); for(const [k,v] of Object.entries(attrs)){ if(k==="class") n.className=v; else if(k.startsWith("on")) n.addEventListener(k.slice(2),v); else n.setAttribute(k,v); } kids.flat().forEach(k=>n.append(k)); return n; };
 const $ = id => document.getElementById(id);
 
@@ -65,6 +66,7 @@ function route(keep){
   // Neu beginnen beim Betreten, ausser man kommt vom Video-Befund oder kurz von den Hinweisen (#/legal) zurück
   if(page==="diagnosis" && lastPage!=="diagnosis" && !(lastPage==="legal" && legalFrom==="diagnosis")){ if(S.handoff) S.handoff=false; else { freshDiagnosis(); sub="lift"; } }
   if(page==="legal" && lastPage!=="legal") legalFrom=lastPage;
+  if(page!==lastPage && page!=="legal") count("/"+page);
   lastPage = page;
   if(page==="diagnosis"){
     if(!STEPS.includes(sub)) sub = S.sel[S.lift].length ? (allAnswered()?"plan":"questions") : "lift";
@@ -158,6 +160,7 @@ function renderPlan(){
     el("div",{class:"actions"},el("button",{class:"btn primary",type:"button",onclick:()=>sharePlan(res)},t("plan.share")))), toast);
   const faults=selFaults().map(f=>f.t);
   box.append(el("p",{class:"why"},t("plan.based",{list:faults.join(", ")})));
+  if(!planCounted){ planCounted=true; count("diagnosis-plan-"+{sn:"snatch",cl:"clean",jk:"jerk"}[S.lift], true); }
   if(!res.length){ box.append(el("div",{class:"empty"},t("plan.none"))); return; }
   const max=res[0].s;
   // Die zwei wahrscheinlichsten Ursachen offen, je mit Hauptübung und Ergänzung; weitere zum Aufklappen
@@ -210,7 +213,7 @@ $("questions-next").addEventListener("click",()=>{
   }
   go("#/diagnosis/plan");
 });
-$("plan-new").addEventListener("click",()=>{ resetLift(S.lift); go("#/diagnosis/lift"); });
+$("plan-new").addEventListener("click",()=>{ resetLift(S.lift); planCounted=false; go("#/diagnosis/lift"); });
 
 /* ---------- Library ---------- */
 function renderLib(){

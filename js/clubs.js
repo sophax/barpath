@@ -171,6 +171,7 @@ function nearMe() {
     me.inMap = me.xy[0] > -40 && me.xy[0] < FULL.w + 40 && me.xy[1] > -40 && me.xy[1] < FULL.h + 40;
     me.close = first.km < 150 && me.inMap;
     me.nearest = sorted.slice(0, 4);
+    count("clubs-near-me", true);
     ST.me = me; ST.near = true; ST.region = null; ST.town = null;
     setMsg(me.close ? t("clubs.nearOk") : t("clubs.far", { club: first.clubs[0].n, city: first.city, km: Math.round(first.km) }));
     renderRegionBar(); renderSide(); zoomTo(targetBox());
@@ -196,7 +197,7 @@ const IG_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.
 // Facebook-Seiten mit ihrem Namen beschriften, sonst «Website»
 const webLabel = u => /facebook\.com/.test(u) ? "Facebook" : t("clubs.web");
 function clubRow(c, tw) {
-  const a = el("a", { class: "mailbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }) });
+  const a = el("a", { class: "mailbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }), onclick: () => count("club-contact", true) });
   a.innerHTML = MAIL_ICON;
   // Instagram als runder Knopf wie die Mail, damit die Zeile auf dem Handy nicht zu breit wird
   let ig = "";
