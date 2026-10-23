@@ -192,16 +192,20 @@ function renderRegionBar() {
 
 /* List: plain rows, no logos */
 const MAIL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>';
-// Instagram- und Facebook-Seiten mit ihrem Namen beschriften, sonst «Website»
-const webLabel = u => /instagram\.com/.test(u) ? "Instagram" : /facebook\.com/.test(u) ? "Facebook" : t("clubs.web");
+const IG_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="#fff"/></svg>';
+// Facebook-Seiten mit ihrem Namen beschriften, sonst «Website»
+const webLabel = u => /facebook\.com/.test(u) ? "Facebook" : t("clubs.web");
 function clubRow(c, tw) {
   const a = el("a", { class: "mailbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }) });
   a.innerHTML = MAIL_ICON;
+  // Instagram als runder Knopf wie die Mail, damit die Zeile auf dem Handy nicht zu breit wird
+  let ig = "";
+  if (c.ig) { ig = el("a", { class: "igbtn", href: c.ig, target: "_blank", rel: "noopener", "aria-label": "Instagram · " + c.n }); ig.innerHTML = IG_ICON; }
   const meta = el("span", { class: "meta" }, el("span", {}, c.city), el("span", { class: "ct" }, c.ct));
   if (ST.near && tw.km != null) meta.append(el("span", { class: "dist" }, t("clubs.km", { km: tw.km < 10 ? num(tw.km, 1) : Math.round(tw.km) })));
   return el("li", { class: "clubrow" + (tw === ST.town ? " hl" : "") },
     el("span", { class: "clubinfo" }, el("b", {}, c.n), meta),
-    c.web ? el("a", { class: "webbtn", href: c.web, target: "_blank", rel: "noopener" }, webLabel(c.web)) : "", a);
+    c.web ? el("a", { class: "webbtn", href: c.web, target: "_blank", rel: "noopener" }, webLabel(c.web)) : "", ig, a);
 }
 function renderSide() {
   let towns = TOWNS.filter(tw => ST.near || !ST.region || tw.region === ST.region);
