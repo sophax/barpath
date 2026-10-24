@@ -448,3 +448,32 @@ Object.assign(I18N.fr.ui, {
  "clubs.km": "{km} km",
  "clubs.mailTo": "E-mail à {club}"
 });
+
+Object.assign(I18N.fr.ui, {
+ "r.h": "Mes records (facultatif)",
+ "r.lede": "Entre tes records. Les rapports montrent si c’est plutôt la force ou plutôt la technique qui te freine.",
+ "r.more": "Autres mouvements",
+ "r.src": "Repères : Greg Everett, <i>Olympic Weightlifting</i>, tableau 33.3 (Catalyst Athletics). Repères approximatifs, pas une règle fixe.",
+ "r.empty": "Entre au moins deux valeurs qui vont ensemble, par exemple Snatch et Back Squat.",
+ "r.target": "repère {lo}–{hi} %",
+ "r.low": "Bas",
+ "r.high": "Haut",
+ "r.inRange": "Dans le repère",
+ "r.ok": "Dans le repère : force et technique sont équilibrées ici.",
+ "r.str.low": "La force est là, mais elle ne passe pas dans le {a}. La technique et la vitesse sont le chantier.",
+ "r.str.high": "Pour ta force, ton {a} est déjà fort. Plus de force au {b} t’aidera le plus.",
+ "r.sncj.low": "Le snatch est en retard sur le clean & jerk. Travaille le snatch, surtout la technique.",
+ "r.sncj.high": "Le clean & jerk est en retard sur le snatch. Vérifie si c’est le clean ou le jerk qui freine.",
+ "r.fsbs.low": "Le front squat est faible en comparaison. Souvent, le haut du dos ou la posture droite manquent. Plus de front squats.",
+ "r.fsbs.high": "Le back squat est faible en comparaison. Renforce les hanches et l’arrière des jambes.",
+ "r.power.low": "La tirée manque de puissance : c’est la réception basse qui sauve beaucoup d’essais. Travaille une extension explosive.",
+ "r.power.high": "Ton {a} est presque aussi lourd que ton {b}. Tu utilises trop peu la réception basse : travaille la descente rapide sous la barre et la position basse.",
+ "r.press.low": "La force des épaules et des bras est faible en comparaison. Plus de press.",
+ "r.press.high": "Tu utilises peu les jambes au push press. Travaille le dip and drive.",
+ "r.ppjk.low": "Ta technique de jerk est bonne, la force au-dessus de la tête freine. Plus de push press et de press.",
+ "r.ppjk.high": "La force au-dessus de la tête est là, mais le jerk ne l’utilise pas. Travaille la technique du jerk : passe vite sous la barre.",
+ "r.ohs.low": "Il manque de la stabilité ou de la mobilité au-dessus de la tête. Plus d’overhead squats et de snatch balances.",
+ "r.ohs.high": "Le back squat est faible en comparaison. Renforce les jambes.",
+ "r.planH": "Tes records",
+ "r.planOk": "Tes rapports pour ce mouvement sont dans les repères."
+});

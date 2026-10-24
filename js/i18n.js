@@ -221,3 +221,32 @@ Object.assign(I18N.en.ui, {
  "clubs.km": "{km} km",
  "clubs.mailTo": "Email {club}"
 });
+
+Object.assign(I18N.en.ui, {
+ "r.h": "My best lifts (optional)",
+ "r.lede": "Enter your best lifts. The ratios show whether strength or technique is more likely holding you back.",
+ "r.more": "More lifts",
+ "r.src": "Guidelines: Greg Everett, <i>Olympic Weightlifting</i>, table 33.3 (Catalyst Athletics). Rough guidelines, not a fixed rule.",
+ "r.empty": "Enter at least two lifts that belong together, for example Snatch and Back Squat.",
+ "r.target": "guideline {lo}–{hi} %",
+ "r.low": "Low",
+ "r.high": "High",
+ "r.inRange": "In range",
+ "r.ok": "Within the guideline: strength and technique are in balance here.",
+ "r.str.low": "The strength is there, but it doesn't reach the {a}. Technique and speed are the main work.",
+ "r.str.high": "Your {a} is already strong for your strength. More strength in the {b} will help most.",
+ "r.sncj.low": "Your snatch lags behind your clean & jerk. Work on the snatch, above all its technique.",
+ "r.sncj.high": "Your clean & jerk lags behind your snatch. Check whether the clean or the jerk is holding you back.",
+ "r.fsbs.low": "Your front squat is weak in comparison. Often the upper back or an upright position is missing. Front squat more.",
+ "r.fsbs.high": "Your back squat is weak in comparison. Build strength in the hips and the back of the legs.",
+ "r.power.low": "The pull lacks power: you save a lot of lifts with the deep catch. Work on an explosive extension.",
+ "r.power.high": "Your {a} is almost as heavy as your {b}. You don't use the deep catch enough: work on getting under the bar fast and on the bottom position.",
+ "r.press.low": "Shoulder and arm strength is weak in comparison. Press more.",
+ "r.press.high": "You hardly use your legs in the push press. Work on the dip and drive.",
+ "r.ppjk.low": "Your jerk technique is good, overhead strength holds you back. More push press and press.",
+ "r.ppjk.high": "The overhead strength is there, but the jerk doesn't use it. Work on the jerk technique: get under the bar fast.",
+ "r.ohs.low": "Overhead stability or mobility is missing. More overhead squats and snatch balances.",
+ "r.ohs.high": "Your back squat is weak in comparison. Build leg strength.",
+ "r.planH": "Your best lifts",
+ "r.planOk": "Your ratios for this lift are within the guidelines."
+});
