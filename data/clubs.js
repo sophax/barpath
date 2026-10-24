@@ -17,7 +17,7 @@ const CLUBS = [
  {n:"CHC Lignon", city:"Vernier (Le Lignon)", ct:"GE", lat:46.207, lon:6.093, mail:"chc.lignon@gmail.com", web:"https://www.facebook.com/chc.haltero"},
  {n:"PTL Weightlifting", city:"Grand-Lancy", ct:"GE", lat:46.178, lon:6.123, mail:"ptlweightlifting@gmail.com", web:"https://ptlgeneva.ch", ig:"https://www.instagram.com/ptlgeneva/"},
  {n:"Weightlifting Club 1700", city:"Fribourg", ct:"FR", lat:46.806, lon:7.162, mail:"weightliftingclub1700@gmail.com", ig:"https://www.instagram.com/wlc_1700/"},
- {n:"Crossfit Basel", city:"Basel", ct:"BS", lat:47.559, lon:7.588, mail:"rg@crossfitbasel.ch", web:"https://www.crossfitbasel.ch", ig:"https://www.instagram.com/gewichtheberclubbeiderbasel/"},
+ {n:"Gewichtheberclub Beider Basel", city:"Basel", ct:"BS", lat:47.559, lon:7.588, mail:"rg@crossfitbasel.ch", web:"https://www.crossfitbasel.ch", ig:"https://www.instagram.com/gewichtheberclubbeiderbasel/"},
  {n:"Weightlifting Northwest", city:"Reinach BL", ct:"BL", lat:47.493, lon:7.591, mail:"t.schwander@hispeed.ch", web:"https://cftodoma.ch"},
  {n:"GHC Grenchen", city:"Grenchen", ct:"SO", lat:47.192, lon:7.396, mail:"eliano.morandi@besonet.ch"},
  {n:"Kraftsportclub Solothurn", city:"Solothurn", ct:"SO", lat:47.208, lon:7.537, mail:"christof.kellenberger@gmx.ch", web:"https://kraftsportclub.ch", ig:"https://www.instagram.com/kraftsportclubsolothurn/"},
