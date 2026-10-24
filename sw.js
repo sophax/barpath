@@ -1,6 +1,6 @@
 /* Offline-Unterstützung: App-Dateien beim Installieren speichern, Modell und Laufzeit beim ersten Gebrauch.
    Bei jeder Änderung an der App VERSION erhöhen, damit Nutzer die neue Version bekommen. */
-const VERSION = "v22";
+const VERSION = "v23";
 const CACHE = "hantel-diagnose-" + VERSION;
 const SHELL = [
   "./", "index.html", "app.css", "fonts/fonts.css", "manifest.webmanifest",
