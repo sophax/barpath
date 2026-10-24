@@ -1331,3 +1331,32 @@ Object.assign(I18N.de.ui, {
  "clubs.km": "{km} km",
  "clubs.mailTo": "E-Mail an {club}"
 });
+
+Object.assign(I18N.de.ui, {
+ "r.h": "Meine Bestwerte (optional)",
+ "r.lede": "Gib deine Bestwerte ein. Die Verhältnisse zeigen, ob eher die Kraft oder eher die Technik bremst.",
+ "r.more": "Weitere Werte",
+ "r.src": "Richtwerte: Greg Everett, <i>Olympic Weightlifting</i>, Tabelle 33.3 (Catalyst Athletics). Grobe Richtwerte, keine feste Regel.",
+ "r.empty": "Gib mindestens zwei zusammengehörende Werte ein, zum Beispiel Snatch und Back Squat.",
+ "r.target": "Richtwert {lo}–{hi} %",
+ "r.low": "Tief",
+ "r.high": "Hoch",
+ "r.inRange": "Im Richtwert",
+ "r.ok": "Im Richtwert: Kraft und Technik passen hier zusammen.",
+ "r.str.low": "Die Kraft wäre da, sie kommt aber nicht in den {a}. Technik und Schnelligkeit sind die Baustelle.",
+ "r.str.high": "Für deine Kraft ist dein {a} schon stark. Mehr Kraft im {b} bringt dich am ehesten weiter.",
+ "r.sncj.low": "Der Snatch hinkt dem Clean & Jerk hinterher. Arbeite am Snatch, vor allem an der Technik.",
+ "r.sncj.high": "Der Clean & Jerk hinkt dem Snatch hinterher. Prüfe, ob der Clean oder der Jerk bremst.",
+ "r.fsbs.low": "Der Front Squat ist im Verhältnis schwach. Oft fehlt es am oberen Rücken oder an der aufrechten Haltung. Mehr Front Squats.",
+ "r.fsbs.high": "Der Back Squat ist im Verhältnis schwach. Baue Kraft in Hüfte und Beinrückseite auf.",
+ "r.power.low": "Dem Zug fehlt Kraft: Viele Versuche rettet erst der tiefe Empfang. Arbeite an einer explosiven Streckung.",
+ "r.power.high": "Dein {a} ist fast so schwer wie dein {b}. Du nutzt den tiefen Empfang zu wenig: Arbeite am schnellen Weg unter die Hantel und an der tiefen Position.",
+ "r.press.low": "Die Kraft in Schultern und Armen ist im Verhältnis schwach. Mehr Press.",
+ "r.press.high": "Du nutzt die Beine beim Push Press kaum. Arbeite an Dip und Drive.",
+ "r.ppjk.low": "Deine Jerk-Technik ist gut, die Kraft über Kopf bremst. Mehr Push Press und Press.",
+ "r.ppjk.high": "Die Kraft über Kopf wäre da, der Jerk nutzt sie nicht. Arbeite an der Jerk-Technik: schnell unter die Hantel.",
+ "r.ohs.low": "Über Kopf fehlt Stabilität oder Beweglichkeit. Mehr Overhead Squats und Snatch Balance.",
+ "r.ohs.high": "Der Back Squat ist im Verhältnis schwach. Baue Beinkraft auf.",
+ "r.planH": "Deine Bestwerte",
+ "r.planOk": "Deine Verhältnisse für diesen Lift liegen im Richtwert."
+});

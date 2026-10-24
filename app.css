@@ -714,3 +714,31 @@ details.others{margin-top:6px; padding-top:6px; border-top:1px solid var(--line,
 .legal p, .legal li{color:var(--ink-muted); line-height:1.55; margin:0 0 8px}
 .legal ul{margin:0 0 8px; padding-left:1.2em}
 .legal a{color:var(--accent-text)}
+
+/* ---------- Bestwerte im Verhältnis (Diagnose, Schritt 1, und im Plan) ---------- */
+details.ratios{margin-top:18px; padding-top:14px; border-top:.5px solid var(--line-strong); display:flex; flex-direction:column}
+details.ratios > summary{cursor:pointer; min-height:44px; display:flex; align-items:center; gap:8px; font-weight:600; list-style:none}
+details.ratios > summary::-webkit-details-marker{display:none}
+details.ratios > summary::after{content:""; width:7px; height:7px; border-right:2px solid currentColor; border-bottom:2px solid currentColor; transform:rotate(45deg) translateY(-2px); transition:transform 150ms var(--ease)}
+details[open].ratios > summary::after{transform:rotate(225deg) translate(-2px,0)}
+details.ratios > *:not(summary){margin-top:12px}
+.rgrid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+@media (min-width:700px){ .rgrid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+details.exmore .rgrid{margin-top:8px}
+.rfield{display:flex; flex-direction:column; gap:4px; font-size:.8rem; font-weight:600; color:var(--ink-muted); min-width:0}
+.rinput{display:flex; align-items:center; background:var(--fill-strong); border-radius:10px; padding-right:12px}
+.rinput input{flex:1; min-width:0; min-height:44px; border:0; background:none; padding:0 12px; font:400 1rem/1.2 var(--f-sans); color:var(--ink); font-variant-numeric:tabular-nums}
+.rinput:focus-within{outline:3px solid rgba(227,38,47,.35)}
+.rinput input:focus-visible{outline:0}
+.rinput .unit{color:var(--ink-muted); font-weight:400}
+.ratiolist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.ratio{padding:12px 14px; border-radius:var(--r-md); background:var(--fill); display:flex; flex-direction:column; gap:4px}
+.rtop{display:flex; gap:10px; align-items:center; justify-content:space-between}
+.rname{font-weight:600; font-size:.95rem}
+.rnums{display:flex; gap:10px; align-items:baseline; color:var(--ink-muted); font-size:.85rem}
+.rnums b{font-size:1.25rem; color:var(--ink)}
+.ratio .why{margin:0; font-size:.92rem; color:var(--ink-muted); max-width:62ch}
+.pill.ok{background:var(--green-soft); color:#1e7b34}
+.rationote{display:flex; flex-direction:column; gap:10px}
+.rationote .why{margin:0}
+details.ratios .foot{font-size:.8rem; color:var(--ink-muted)}

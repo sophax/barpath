@@ -147,6 +147,14 @@
       <div class="stephead"><span class="stepnum" aria-hidden="true">01</span><div><span class="label" data-i18n="step.1">Step 1</span><h2 data-i18n="d1.h">Which lift?</h2></div></div>
       <p class="lede" data-i18n="d1.lede">Choose the lift you want to fix.</p>
       <div class="lifts lifts-col" id="dlifts"></div>
+      <details class="ratios">
+        <summary data-i18n="r.h">My best lifts (optional)</summary>
+        <p class="lede" data-i18n="r.lede">Enter your best lifts. The ratios show whether strength or technique is more likely holding you back.</p>
+        <div class="rgrid" id="ratio-main"></div>
+        <details class="exmore"><summary data-i18n="r.more">More lifts</summary><div class="rgrid" id="ratio-more"></div></details>
+        <div id="ratio-out" aria-live="polite"></div>
+        <p class="foot" data-i18n-html="r.src">Guidelines: Greg Everett, <i>Olympic Weightlifting</i>, table 33.3 (Catalyst Athletics). Rough guidelines, not a fixed rule.</p>
+      </details>
     </div>
 
     <div class="step" id="dstep-faults" hidden>
@@ -285,6 +293,7 @@
 <script src="js/catalog.js"></script>
 <script src="js/stats.js"></script>
 <script src="js/app.js"></script>
+<script src="js/ratios.js"></script>
 <script src="js/clubs.js"></script>
 <script type="module" src="js/video.js"></script>
 <script>
