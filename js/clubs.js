@@ -194,19 +194,23 @@ function renderRegionBar() {
 /* List: plain rows, no logos */
 const MAIL_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>';
 const IG_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6" fill="#fff"/></svg>';
-// Facebook-Seiten mit ihrem Namen beschriften, sonst «Website»
-const webLabel = u => /facebook\.com/.test(u) ? "Facebook" : t("clubs.web");
+const WEB_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17"/><path d="M12 3.5c2.4 2.3 3.5 5.2 3.5 8.5s-1.1 6.2-3.5 8.5c-2.4-2.3-3.5-5.2-3.5-8.5s1.1-6.2 3.5-8.5z"/></svg>';
+const FB_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M15.5 8h-1.5a2.5 2.5 0 0 0-2.5 2.5v10"/><path d="M9 13h6"/></svg>';
+// Facebook-Seiten mit dem Facebook-Zeichen, sonst die Weltkugel für «Website»
+const isFb = u => /facebook\.com/.test(u);
 function clubRow(c, tw) {
-  const a = el("a", { class: "mailbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }), onclick: () => count("club-contact", true) });
+  const a = el("a", { class: "iconbtn", href: "mailto:" + c.mail + "?subject=" + encodeURIComponent(t("clubs.subject")), "aria-label": t("clubs.mailTo", { club: c.n }), onclick: () => count("club-contact", true) });
   a.innerHTML = MAIL_ICON;
   // Instagram als runder Knopf wie die Mail, damit die Zeile auf dem Handy nicht zu breit wird
   let ig = "";
-  if (c.ig) { ig = el("a", { class: "igbtn", href: c.ig, target: "_blank", rel: "noopener", "aria-label": "Instagram · " + c.n }); ig.innerHTML = IG_ICON; }
+  if (c.ig) { ig = el("a", { class: "iconbtn", href: c.ig, target: "_blank", rel: "noopener", "aria-label": "Instagram · " + c.n }); ig.innerHTML = IG_ICON; }
+  let web = "";
+  if (c.web) { web = el("a", { class: "iconbtn", href: c.web, target: "_blank", rel: "noopener", "aria-label": (isFb(c.web) ? "Facebook" : t("clubs.web")) + " · " + c.n }); web.innerHTML = isFb(c.web) ? FB_ICON : WEB_ICON; }
   const meta = el("span", { class: "meta" }, el("span", {}, c.city), el("span", { class: "ct" }, c.ct));
   if (ST.near && tw.km != null) meta.append(el("span", { class: "dist" }, t("clubs.km", { km: tw.km < 10 ? num(tw.km, 1) : Math.round(tw.km) })));
   return el("li", { class: "clubrow" + (tw === ST.town ? " hl" : "") },
     el("span", { class: "clubinfo" }, el("b", {}, c.n), meta),
-    c.web ? el("a", { class: "webbtn", href: c.web, target: "_blank", rel: "noopener" }, webLabel(c.web)) : "", ig, a);
+    web, ig, a);
 }
 function renderSide() {
   let towns = TOWNS.filter(tw => ST.near || !ST.region || tw.region === ST.region);
