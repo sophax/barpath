@@ -639,11 +639,12 @@ ul.clubrows{list-style:none; margin:0; padding:0; border-radius:var(--r-md); bac
 .clubrow .meta{display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:.85rem; color:var(--ink-muted)}
 .clubrow .ct{font-size:.7rem; font-weight:700; padding:1px 6px; border-radius:var(--r-sm); background:var(--surface); color:var(--ink-muted); letter-spacing:.02em}
 .clubrow .dist{font-weight:600; color:var(--accent-text)}
-.webbtn{flex:none; font-size:.85rem; font-weight:600; color:var(--accent-text); text-decoration:none; padding:8px 4px}
-.mailbtn,.igbtn{flex:none; width:44px; height:44px; border-radius:var(--r-full); display:grid; place-items:center; background:var(--grad-red);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 4px 10px rgba(227,38,47,.25); transition:transform 120ms var(--ease)}
-.mailbtn:active,.igbtn:active{transform:scale(.94)}
-.mailbtn svg,.igbtn svg{width:20px; height:20px; fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+/* Runde Knöpfe (Website, Instagram, Mail): Kreis 36 px, Tippfläche 44 px */
+.iconbtn{flex:none; position:relative; isolation:isolate; width:44px; height:44px; margin:-4px -2px; display:grid; place-items:center; transition:transform 120ms var(--ease)}
+.iconbtn::before{content:""; position:absolute; inset:4px; z-index:-1; border-radius:var(--r-full); background:var(--grad-red);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28), 0 3px 8px rgba(227,38,47,.22)}
+.iconbtn:active{transform:scale(.94)}
+.iconbtn svg{width:20px; height:20px; fill:none; stroke:#fff; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
 .clubmap svg{aspect-ratio:1.53}
 @media (max-width:767px){ .clubmap{padding:8px} .clubmap svg{aspect-ratio:1.05} }
 
